@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- FreeCAD DocumentObject -->
+<Document SchemaVersion="4" FileVersion="2">
+<Object name="Spreadsheet">
+  <Properties Count="12" TransientCount="0">
+    <Property name="ExpressionEngine" type="App::PropertyExpressionEngine" status="67108864">
+      <ExpressionEngine count="0"></ExpressionEngine>
+    </Property>
+    <Property name="Label" type="App::PropertyString" status="134217728">
+      <String value="SteeringAckermannSpreadsheet"/>
+    </Property>
+    <Property name="Label2" type="App::PropertyString" status="128">
+      <String value=""/>
+    </Property>
+    <Property name="PythonMode" type="App::PropertyBool">
+      <Bool value="false"/>
+    </Property>
+    <Property name="ShowCells" type="App::PropertyEnumeration">
+      <Integer value="0"/>
+    </Property>
+    <Property name="TreeRank" type="App::PropertyInteger" status="2184">
+      <Integer value="17"/>
+    </Property>
+    <Property name="Visibility" type="App::PropertyBool" status="648">
+      <Bool value="false"/>
+    </Property>
+    <Property name="cells" type="Spreadsheet::PropertySheet" status="67108864">
+      <Cells Count="32">
+        <Cell address="A1" content="CarConfig"/>
+        <Cell address="B1" content="Value"/>
+        <Cell address="C1" content="ServoConfig"/>
+        <Cell address="D1" content="Value"/>
+        <Cell address="A2" content="BodyLength"/>
+        <Cell address="B2" content="250"/>
+        <Cell address="C2" content="PositionOffset"/>
+        <Cell alias="servoposoffset" address="D2" content="-4"/>
+        <Cell address="A3" content="BodyWidth"/>
+        <Cell address="B3" content="120"/>
+        <Cell address="C3" content="LinkageLength"/>
+        <Cell alias="servolinkagelength" address="D3" content="12"/>
+        <Cell address="A4" content="WheelDiameter"/>
+        <Cell alias="wheeldia" address="B4" content="56"/>
+        <Cell address="C4" content="LinkageTwoHoleSeperation"/>
+        <Cell alias="servolinkagesep" address="D4" content="10"/>
+        <Cell address="A5" content="WheelDepth"/>
+        <Cell address="B5" content="24"/>
+        <Cell address="A6" content="Wheelbase"/>
+        <Cell alias="wheelbase" address="B6" content="=B2 - B4"/>
+        <Cell address="A7" content="Track"/>
+        <Cell address="B7" content="=B3 - B5"/>
+        <Cell address="A8" content="WheelLinkageOffset"/>
+        <Cell alias="wheellinkageoffset" address="B8" content="14"/>
+        <Cell address="A9" content="TrackAdj"/>
+        <Cell alias="track" address="B9" content="=B7 - B8 * 2"/>
+        <Cell address="A10" content="TransferLinkageLength"/>
+        <Cell alias="transferlinkagelength" address="B10" content="32"/>
+        <Cell address="A11" content="WheelLinkageLength"/>
+        <Cell alias="wheellinkagelength" address="B11" content="12"/>
+        <Cell address="A12" content="WheelLinkageAngle"/>
+        <Cell alias="wheellinkageangle" address="B12" content="76.5"/>
+      </Cells>
+    </Property>
+    <Property name="columnWidths" type="Spreadsheet::PropertyColumnWidths" status="218103808">
+      <ColumnInfo Count="3">
+        <Column name="A" width="152" />
+        <Column name="C" width="189" />
+        <Column name="E" width="127" />
+      </ColumnInfo>
+    </Property>
+    <Property name="hiddenColumns" type="App::PropertyIntegerSet" status="201326592">
+      <IntegerSet count="0">
+      </IntegerSet>
+    </Property>
+    <Property name="hiddenRows" type="App::PropertyIntegerSet" status="201326592">
+      <IntegerSet count="0">
+      </IntegerSet>
+    </Property>
+    <Property name="rowHeights" type="Spreadsheet::PropertyRowHeights" status="218103808">
+      <RowInfo Count="0">
+      </RowInfo>
+    </Property>
+  </Properties>
+</Object>
+</Document>
