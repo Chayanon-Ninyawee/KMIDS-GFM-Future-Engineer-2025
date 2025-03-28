@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+ FreeCAD Document, see http://www.freecadweb.org for more information...
+-->
+<Document SchemaVersion="4" ProgramVersion="2024.1006R14555 (Git shallow)" FileVersion="2" Uid="802bf53d-f8c3-4e0a-91f0-9b833abe6661" StringHasher="1">
+  <StringHasher saveall="0" threshold="0" count="0"></StringHasher>
+  <Properties Count="21" TransientCount="3">
+    <_Property name="FileName" type="App::PropertyString" status="50331649"/>
+    <_Property name="Tip" type="App::PropertyLink" status="33554433"/>
+    <_Property name="TransientDir" type="App::PropertyString" status="50331649"/>
+    <Property name="Comment" type="App::PropertyString">
+      <String value=""/>
+    </Property>
+    <Property name="Company" type="App::PropertyString">
+      <String value=""/>
+    </Property>
+    <Property name="CreatedBy" type="App::PropertyString">
+      <String value=""/>
+    </Property>
+    <Property name="CreationDate" type="App::PropertyString" status="16777217">
+      <String value="2024-09-29T05:44:03Z"/>
+    </Property>
+    <Property name="ForceXML" type="App::PropertyInteger" status="1">
+      <Integer value="3"/>
+    </Property>
+    <Property name="Id" type="App::PropertyString">
+      <String value=""/>
+    </Property>
+    <Property name="Label" type="App::PropertyString" status="1">
+      <String value="SteeringAckermannModel"/>
+    </Property>
+    <Property name="LastModifiedBy" type="App::PropertyString">
+      <String value=""/>
+    </Property>
+    <Property name="LastModifiedDate" type="App::PropertyString" status="16777217">
+      <String value="2025-03-28T17:50:45Z"/>
+    </Property>
+    <Property name="License" type="App::PropertyString" status="1">
+      <String value="All rights reserved"/>
+    </Property>
+    <Property name="LicenseURL" type="App::PropertyString" status="1">
+      <String value="https://en.wikipedia.org/wiki/All_rights_reserved"/>
+    </Property>
+    <Property name="Material" type="App::PropertyMap" status="1">
+      <Map count="0">
+      </Map>
+    </Property>
+    <Property name="Meta" type="App::PropertyMap" status="1">
+      <Map count="0">
+      </Map>
+    </Property>
+    <Property name="PreferBinary" type="App::PropertyBool" status="1">
+      <Bool value="false"/>
+    </Property>
+    <Property name="SaveThumbnail" type="App::PropertyBool" status="1">
+      <Bool value="true"/>
+    </Property>
+    <Property name="ShowHidden" type="App::PropertyBool" status="1">
+      <Bool value="false"/>
+    </Property>
+    <Property name="SplitXML" type="App::PropertyBool" status="1">
+      <Bool value="true"/>
+    </Property>
+    <Property name="ThumbnailFile" type="App::PropertyFile">
+      <String value=""/>
+    </Property>
+    <Property name="TipName" type="App::PropertyString" status="83886080">
+      <String value=""/>
+    </Property>
+    <Property name="Uid" type="App::PropertyUUID" status="16777217">
+      <Uuid value="802bf53d-f8c3-4e0a-91f0-9b833abe6661"/>
+    </Property>
+    <Property name="UseHasher" type="App::PropertyBool" status="67108865">
+      <Bool value="true"/>
+    </Property>
+  </Properties>
+  <Objects Count="10" Dependencies="1">
+    <ObjectDeps Name="Sketch001" Count="2">
+      <Dep Name="Spreadsheet"/>
+      <Dep Name="XY_Plane"/>
+    </ObjectDeps>
+    <ObjectDeps Name="Spreadsheet" Count="0"/>
+    <ObjectDeps Name="Body" Count="2">
+      <Dep Name="Sketch001"/>
+      <Dep Name="Origin"/>
+    </ObjectDeps>
+    <ObjectDeps Name="Origin" Count="6">
+      <Dep Name="XY_Plane"/>
+      <Dep Name="Y_Axis"/>
+      <Dep Name="Z_Axis"/>
+      <Dep Name="XZ_Plane"/>
+      <Dep Name="X_Axis"/>
+      <Dep Name="YZ_Plane"/>
+    </ObjectDeps>
+    <ObjectDeps Name="X_Axis" Count="0"/>
+    <ObjectDeps Name="Y_Axis" Count="0"/>
+    <ObjectDeps Name="Z_Axis" Count="0"/>
+    <ObjectDeps Name="XY_Plane" Count="0"/>
+    <ObjectDeps Name="XZ_Plane" Count="0"/>
+    <ObjectDeps Name="YZ_Plane" Count="0"/>
+    <Object type="Sketcher::SketchObject" name="Sketch001" id="4094" revision="1776" file="Sketch001.xml" />
+    <Object type="Spreadsheet::Sheet" name="Spreadsheet" id="4095" revision="0" file="Spreadsheet.xml" />
+    <Object type="PartDesign::Body" name="Body" id="4101" revision="7" file="Body.xml" />
+    <Object type="App::Origin" name="Origin" id="4102" revision="0" file="Origin.xml" />
+    <Object type="App::Line" name="X_Axis" id="4103" revision="1" file="X_Axis.xml" />
+    <Object type="App::Line" name="Y_Axis" id="4104" revision="2" file="Y_Axis.xml" />
+    <Object type="App::Line" name="Z_Axis" id="4105" revision="2" file="Z_Axis.xml" />
+    <Object type="App::Plane" name="XY_Plane" id="4106" revision="1" file="XY_Plane.xml" />
+    <Object type="App::Plane" name="XZ_Plane" id="4107" revision="2" file="XZ_Plane.xml" />
+    <Object type="App::Plane" name="YZ_Plane" id="4108" revision="2" file="YZ_Plane.xml" />
+  </Objects>
+  <ObjectData Count="0">
+  </ObjectData>
+</Document>
