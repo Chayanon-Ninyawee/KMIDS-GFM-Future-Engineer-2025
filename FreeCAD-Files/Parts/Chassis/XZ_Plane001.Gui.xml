@@ -37,7 +37,7 @@
       <Bool value="true"/>
     </Property>
     <Property name="Size" type="App::PropertyFloat" status="16777217">
-      <Float value="74.15475463867188"/>
+      <Float value="62"/>
     </Property>
     <Property name="Transparency" type="App::PropertyPercent" status="1">
       <Integer value="0"/>
