@@ -19,7 +19,7 @@
     <Property name="Role" type="App::PropertyString" status="16777216">
       <String value="XY_Plane"/>
     </Property>
-    <Property name="TreeRank" type="App::PropertyInteger" status="2185">
+    <Property name="TreeRank" type="App::PropertyInteger" status="2184">
       <Integer value="40"/>
     </Property>
     <Property name="Visibility" type="App::PropertyBool" status="648">

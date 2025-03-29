@@ -3,12 +3,7 @@
  FreeCAD Document, see http://www.freecadweb.org for more information...
 -->
 <Document SchemaVersion="4" ProgramVersion="2024.1006R14555 (Git shallow)" FileVersion="2" Uid="802bf53d-f8c3-4e0a-91f0-9b833abe6661" StringHasher="1">
-  <StringHasher saveall="0" threshold="0" count="0" new="1"/>
-  <StringHasher2  count="1">
-<![CDATA[
--1.0 0:Shape cache
-]]>
-  </StringHasher2>
+  <StringHasher saveall="0" threshold="0" count="0"></StringHasher>
   <Properties Count="21" TransientCount="3">
     <_Property name="FileName" type="App::PropertyString" status="50331649"/>
     <_Property name="Tip" type="App::PropertyLink" status="33554433"/>
@@ -38,7 +33,7 @@
       <String value=""/>
     </Property>
     <Property name="LastModifiedDate" type="App::PropertyString" status="16777217">
-      <String value="2025-03-29T07:25:54Z"/>
+      <String value="2025-03-29T09:25:34Z"/>
     </Property>
     <Property name="License" type="App::PropertyString" status="1">
       <String value="All rights reserved"/>
@@ -81,22 +76,22 @@
   </Properties>
   <Objects Count="11" Dependencies="1">
     <ObjectDeps Name="Sketch001" Count="2">
-      <Dep Name="Spreadsheet"/>
       <Dep Name="XY_Plane001"/>
+      <Dep Name="Spreadsheet"/>
     </ObjectDeps>
     <ObjectDeps Name="Spreadsheet" Count="0"/>
     <ObjectDeps Name="Part" Count="3">
       <Dep Name="Sketch"/>
-      <Dep Name="Origin001"/>
       <Dep Name="Sketch001"/>
+      <Dep Name="Origin001"/>
     </ObjectDeps>
     <ObjectDeps Name="Origin001" Count="6">
-      <Dep Name="YZ_Plane001"/>
-      <Dep Name="XY_Plane001"/>
-      <Dep Name="XZ_Plane001"/>
+      <Dep Name="Z_Axis001"/>
       <Dep Name="Y_Axis001"/>
       <Dep Name="X_Axis001"/>
-      <Dep Name="Z_Axis001"/>
+      <Dep Name="XY_Plane001"/>
+      <Dep Name="XZ_Plane001"/>
+      <Dep Name="YZ_Plane001"/>
     </ObjectDeps>
     <ObjectDeps Name="X_Axis001" Count="0"/>
     <ObjectDeps Name="Y_Axis001" Count="0"/>
@@ -105,12 +100,12 @@
     <ObjectDeps Name="XZ_Plane001" Count="0"/>
     <ObjectDeps Name="YZ_Plane001" Count="0"/>
     <ObjectDeps Name="Sketch" Count="2">
-      <Dep Name="XY_Plane001"/>
       <Dep Name="Sketch001"/>
+      <Dep Name="XY_Plane001"/>
     </ObjectDeps>
-    <Object type="Sketcher::SketchObject" name="Sketch001" id="4094" revision="2253" file="Sketch001.xml" />
+    <Object type="Sketcher::SketchObject" name="Sketch001" id="4094" revision="2279" file="Sketch001.xml" />
     <Object type="Spreadsheet::Sheet" name="Spreadsheet" id="4095" revision="0" file="Spreadsheet.xml" />
-    <Object type="App::Part" name="Part" id="4109" revision="27" Touched="1" file="Part.xml" />
+    <Object type="App::Part" name="Part" id="4109" revision="76" file="Part.xml" />
     <Object type="App::Origin" name="Origin001" id="4110" revision="0" file="Origin001.xml" />
     <Object type="App::Line" name="X_Axis001" id="4111" revision="1" file="X_Axis001.xml" />
     <Object type="App::Line" name="Y_Axis001" id="4112" revision="2" file="Y_Axis001.xml" />
@@ -118,7 +113,7 @@
     <Object type="App::Plane" name="XY_Plane001" id="4114" revision="1" file="XY_Plane001.xml" />
     <Object type="App::Plane" name="XZ_Plane001" id="4115" revision="2" file="XZ_Plane001.xml" />
     <Object type="App::Plane" name="YZ_Plane001" id="4116" revision="2" file="YZ_Plane001.xml" />
-    <Object type="Sketcher::SketchObject" name="Sketch" id="4118" revision="84" file="Sketch.xml" />
+    <Object type="Sketcher::SketchObject" name="Sketch" id="4118" revision="91" file="Sketch.xml" />
   </Objects>
   <ObjectData Count="0">
   </ObjectData>

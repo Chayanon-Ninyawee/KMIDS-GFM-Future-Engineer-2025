@@ -62,15 +62,15 @@
       <Integer value="1"/>
     </Property>
     <Property name="LineColor" type="App::PropertyColor" status="1">
-      <PropertyColor value="3537428991"/>
+      <PropertyColor value="4289363712"/>
     </Property>
     <Property name="LineColorArray" type="App::PropertyColorList" status="1">
       <ColorList count="1" >
-d2d8e1ff
+ffaa7f00
       </ColorList>
     </Property>
     <Property name="LineMaterial" type="App::PropertyMaterial" status="33">
-      <PropertyMaterial ambientColor="858993408" diffuseColor="3537428991" specularColor="0" emissiveColor="0" shininess="1" transparency="0"/>
+      <PropertyMaterial ambientColor="858993408" diffuseColor="4289363712" specularColor="0" emissiveColor="0" shininess="1" transparency="0"/>
     </Property>
     <Property name="LineWidth" type="App::PropertyFloatConstraint" status="1">
       <Float value="2"/>
@@ -94,15 +94,15 @@ d2d8e1ff
       <Integer value="0"/>
     </Property>
     <Property name="PointColor" type="App::PropertyColor" status="1">
-      <PropertyColor value="3537428991"/>
+      <PropertyColor value="4289363712"/>
     </Property>
     <Property name="PointColorArray" type="App::PropertyColorList" status="1">
       <ColorList count="1" >
-d2d8e1ff
+ffaa7f00
       </ColorList>
     </Property>
     <Property name="PointMaterial" type="App::PropertyMaterial" status="33">
-      <PropertyMaterial ambientColor="858993408" diffuseColor="3537428991" specularColor="0" emissiveColor="0" shininess="1" transparency="0"/>
+      <PropertyMaterial ambientColor="858993408" diffuseColor="4289363712" specularColor="0" emissiveColor="0" shininess="1" transparency="0"/>
     </Property>
     <Property name="PointSize" type="App::PropertyFloatConstraint" status="1">
       <Float value="4"/>

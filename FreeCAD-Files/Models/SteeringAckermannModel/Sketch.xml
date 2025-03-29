@@ -83,7 +83,7 @@
             <GeoExtension type="Sketcher::SketchGeometryExtension" id="2" internalGeometryType="0" geometryModeFlags="00000000000000000000000000000010" geometryLayer="0"/>
             <GeoExtension type="Sketcher::ExternalGeometryExtension" Ref="Sketch001.;g14;SKT;:H,E" Flags="0"/>
           </GeoExtensions>
-          <LineSegment StartX="34" StartY="0" StartZ="0" EndX="44.06376237736168" EndY="9.732455333162322" EndZ="0"/>
+          <LineSegment StartX="34" StartY="0" StartZ="0" EndX="44.06376237736168" EndY="9.732455333162319" EndZ="0"/>
           <Construction value="1"/>
         </Geometry>
         <Geometry type="Part::GeomPoint" id="7" ref="Sketch001.;g3v2;SKT" migrated="1">
@@ -91,7 +91,7 @@
             <GeoExtension type="Sketcher::SketchGeometryExtension" id="7" internalGeometryType="0" geometryModeFlags="00000000000000000000000000000010" geometryLayer="0"/>
             <GeoExtension type="Sketcher::ExternalGeometryExtension" Ref="Sketch001.;g3v2;SKT" Flags="0"/>
           </GeoExtensions>
-          <GeomPoint X="0" Y="-194" Z="0"/>
+          <GeomPoint X="4.239299189179106e-24" Y="-194" Z="0"/>
           <Construction value="1"/>
         </Geometry>
       </GeometryList>
@@ -159,7 +159,7 @@ TShapes 0
     <Property name="InvalidShape" type="App::PropertyBool" status="67108864">
       <Bool value="false"/>
     </Property>
-    <Property name="Label" type="App::PropertyString" status="134217729">
+    <Property name="Label" type="App::PropertyString" status="134217728">
       <String value="SteeringAckermannModelLineOverlay"/>
     </Property>
     <Property name="Label2" type="App::PropertyString" status="128">
@@ -193,7 +193,7 @@ Locations 1
 Curve2ds 0
 Curves 3
 1 -34 0 0 -0.57357643635104583 -0.81915204428899202 0 
-1 44.063762377361684 9.7324553331623207 0 -0.71884016981154841 -0.69517538094016562 0 
+1 44.063762377361677 9.7324553331623207 0 -0.71884016981154841 -0.69517538094016562 0 
 1 -500 -194 0 1 0 0 
 Polygon3D 0
 PolygonOnTriangulations 0

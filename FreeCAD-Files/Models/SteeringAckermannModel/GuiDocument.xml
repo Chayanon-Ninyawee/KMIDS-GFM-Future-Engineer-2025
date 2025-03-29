@@ -9,7 +9,7 @@
 <Expand  count="1">
   <Expand name="Part"/>
 </Expand>
-  <Camera extra="0" id="33" binding="0" view3d="1">
+  <Camera extra="0" id="23" binding="0" view3d="1">
 <![CDATA[
 OrthographicCamera {
   viewportMapping ADJUST_CAMERA
@@ -24,7 +24,7 @@ OrthographicCamera {
 }
 ## overrideMode: As Is]]>
   </Camera>
-  <View3D id="33"><![CDATA[
+  <View3D id="23"><![CDATA[
   <Properties Count="3" TransientCount="0">
     <Property name="DrawStyle" type="App::PropertyEnumeration" status="1">
       <Integer value="0"/>
