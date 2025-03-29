@@ -4,7 +4,7 @@
 -->
 <!-- FreeCAD ViewProvider -->
 <Document SchemaVersion="1" FileVersion="2">
-<ViewProvider name="Y_Axis" expanded="0">
+<ViewProvider name="X_Axis001" expanded="0">
   <Properties Count="13" TransientCount="0">
     <Property name="BoundingBox" type="App::PropertyBool" status="9">
       <Bool value="false"/>
@@ -28,16 +28,16 @@
       <Integer value="3"/>
     </Property>
     <Property name="ShapeColor" type="App::PropertyColor" status="1">
-      <PropertyColor value="16711935"/>
+      <PropertyColor value="4278190335"/>
     </Property>
     <Property name="ShapeMaterial" type="App::PropertyMaterial" status="33">
-      <PropertyMaterial ambientColor="858993408" diffuseColor="16711935" specularColor="0" emissiveColor="0" shininess="0.2000000029802322" transparency="0"/>
+      <PropertyMaterial ambientColor="858993408" diffuseColor="4278190335" specularColor="0" emissiveColor="0" shininess="0.2000000029802322" transparency="0"/>
     </Property>
     <Property name="ShowInTree" type="App::PropertyBool" status="1">
       <Bool value="true"/>
     </Property>
     <Property name="Size" type="App::PropertyFloat" status="16777217">
-      <Float value="617.3640289306641"/>
+      <Float value="1015.164642333984"/>
     </Property>
     <Property name="Transparency" type="App::PropertyPercent" status="1">
       <Integer value="0"/>
