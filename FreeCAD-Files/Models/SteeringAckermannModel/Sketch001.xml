@@ -28,38 +28,38 @@
     </Property>
     <Property name="Constraints" type="Sketcher::PropertyConstraintList">
       <ConstraintList count="33">
+        <Constrain Name="Wheelbase" Type="6" Value="194" First="1" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="4.885612010955811" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="TrackAdj" Type="6" Value="68" First="0" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="7.043862342834473" LabelPosition="2.278421878814697" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="ServoPositionOffset" Type="8" Value="-4" First="1" FirstPos="1" Second="3" SecondPos="1" Third="-2000" ThirdPos="0" LabelDistance="2.195249080657959" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="ServoLinkageLength" Type="6" Value="12" First="4" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="0.8075874447822571" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="ServoLinkageSeperation" Type="6" Value="10" First="5" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="-1.314470648765564" LabelPosition="-0.03442336618900299" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="LeftTransferLinkageLength" Type="6" Value="32" First="6" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="2.195252656936646" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="LeftWheelLinkageLength" Type="6" Value="12" First="7" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="2.195252656936646" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="LeftWheelLinkageAngle" Type="9" Value="1.335176877775662" First="8" FirstPos="1" Second="7" SecondPos="1" Third="-2000" ThirdPos="0" LabelDistance="2.681289434432983" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="RightTransferLinkageLength" Type="6" Value="32" First="9" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="-2.290897130966187" LabelPosition="-0.5138265490531921" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="RightWheelLinkageLength" Type="6" Value="12" First="10" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="2.70372748374939" LabelPosition="-2.103682518005371" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="RightWheelLinkageAngle" Type="9" Value="1.806415775814131" First="11" FirstPos="1" Second="10" SecondPos="2" Third="-2000" ThirdPos="0" LabelDistance="1.471524357795715" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="BackWheelRefLine" Type="6" Value="1000" First="2" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="-89.20196533203125" LabelPosition="24.14163208007812" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="LeftWheelRef" Type="6" Value="500" First="8" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="-6.84104585647583" LabelPosition="27.15484619140625" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="RightWheelRef" Type="6" Value="500" First="11" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="3.274937868118286" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
+        <Constrain Name="" Type="1" Value="0" First="6" FirstPos="1" Second="5" SecondPos="1" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="2" Value="0" First="0" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="14" Value="0" First="0" FirstPos="1" Second="0" SecondPos="2" Third="-1" ThirdPos="1" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="TrackAdj" Type="6" Value="68" First="0" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="7.043862342834473" LabelPosition="2.278421878814697" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="1" Value="0" First="1" FirstPos="1" Second="-1" SecondPos="1" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="13" Value="0" First="1" FirstPos="2" Second="-2" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="Wheelbase" Type="6" Value="194" First="1" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="4.885612010955811" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="2" Value="0" First="2" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="14" Value="0" First="2" FirstPos="1" Second="2" SecondPos="2" Third="1" ThirdPos="2" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="BackWheelRefLine" Type="6" Value="1000" First="2" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="-89.20196533203125" LabelPosition="24.14163208007812" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="13" Value="0" First="3" FirstPos="1" Second="-2" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="ServoPositionOffset" Type="8" Value="-4" First="1" FirstPos="1" Second="3" SecondPos="1" Third="-2000" ThirdPos="0" LabelDistance="2.195249080657959" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="1" Value="0" First="4" FirstPos="1" Second="3" SecondPos="1" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="10" Value="0" First="4" FirstPos="0" Second="5" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="14" Value="0" First="5" FirstPos="1" Second="5" SecondPos="2" Third="4" ThirdPos="2" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="" Type="6" Value="12" First="4" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="0.8075874447822571" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="" Type="6" Value="10" First="5" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="-1.314470648765564" LabelPosition="-0.03442336618900299" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="" Type="1" Value="0" First="6" FirstPos="1" Second="5" SecondPos="1" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="" Type="6" Value="32" First="6" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="2.195252656936646" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="1" Value="0" First="7" FirstPos="1" Second="0" SecondPos="1" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="1" Value="0" First="7" FirstPos="2" Second="6" SecondPos="2" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="" Type="6" Value="12" First="7" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="2.195252656936646" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="1" Value="0" First="8" FirstPos="1" Second="0" SecondPos="1" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="LeftWheelRef" Type="6" Value="500" First="8" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="-6.84104585647583" LabelPosition="27.15484619140625" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="" Type="9" Value="1.335176877775662" First="8" FirstPos="1" Second="7" SecondPos="1" Third="-2000" ThirdPos="0" LabelDistance="2.681289434432983" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="1" Value="0" First="9" FirstPos="1" Second="5" SecondPos="2" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="" Type="6" Value="32" First="9" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="-2.290897130966187" LabelPosition="-0.5138265490531921" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="1" Value="0" First="10" FirstPos="1" Second="9" SecondPos="2" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="1" Value="0" First="10" FirstPos="2" Second="0" SecondPos="2" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="" Type="6" Value="12" First="10" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="2.70372748374939" LabelPosition="-2.103682518005371" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="1" Value="0" First="11" FirstPos="1" Second="0" SecondPos="2" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="RightWheelRef" Type="6" Value="500" First="11" FirstPos="0" Second="-2000" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="3.274937868118286" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
-        <Constrain Name="" Type="9" Value="1.806415775814131" First="11" FirstPos="1" Second="10" SecondPos="2" Third="-2000" ThirdPos="0" LabelDistance="1.471524357795715" LabelPosition="0" IsDriving="1" IsInVirtualSpace="1" IsActive="1" />
         <Constrain Name="" Type="13" Value="0" First="12" FirstPos="1" Second="8" SecondPos="0" Third="-2000" ThirdPos="0" LabelDistance="10" LabelPosition="0" IsDriving="1" IsInVirtualSpace="0" IsActive="1" />
       </ConstraintList>
     </Property>
@@ -70,48 +70,48 @@
     <Property name="ExpressionEngine" type="App::PropertyExpressionEngine" status="67108864">
       <ExpressionEngine count="11" cdata="1">
         <Expressions><![CDATA[
+0:.Constraints.LeftTransferLinkageLength
+0:<<SteeringAckermannSpreadsheet>>.transferlinkagelength
+0:
+
+0:.Constraints.LeftWheelLinkageAngle
+0:<<SteeringAckermannSpreadsheet>>.wheellinkageangle
+0:
+
+0:.Constraints.LeftWheelLinkageLength
+0:<<SteeringAckermannSpreadsheet>>.wheellinkagelength
+0:
+
+0:.Constraints.RightTransferLinkageLength
+0:<<SteeringAckermannSpreadsheet>>.transferlinkagelength
+0:
+
+0:.Constraints.RightWheelLinkageAngle
+0:abs(<<SteeringAckermannSpreadsheet>>.wheellinkageangle - 180 °)
+0:
+
+0:.Constraints.RightWheelLinkageLength
+0:<<SteeringAckermannSpreadsheet>>.wheellinkagelength
+0:
+
+0:.Constraints.ServoLinkageLength
+0:<<SteeringAckermannSpreadsheet>>.servolinkagelength
+0:
+
+0:.Constraints.ServoLinkageSeperation
+0:<<SteeringAckermannSpreadsheet>>.servolinkagesep
+0:
+
 0:.Constraints.ServoPositionOffset
 0:<<SteeringAckermannSpreadsheet>>.servoposoffset
 0:
 
 0:.Constraints.TrackAdj
-0:<<SteeringAckermannSpreadsheet>>.track
+0:Spreadsheet.trackadj
 0:
 
 0:.Constraints.Wheelbase
 0:<<SteeringAckermannSpreadsheet>>.wheelbase
-0:
-
-0:Constraints[14]
-0:<<SteeringAckermannSpreadsheet>>.servolinkagelength
-0:
-
-0:Constraints[15]
-0:<<SteeringAckermannSpreadsheet>>.servolinkagesep
-0:
-
-0:Constraints[17]
-0:<<SteeringAckermannSpreadsheet>>.transferlinkagelength
-0:
-
-0:Constraints[20]
-0:<<SteeringAckermannSpreadsheet>>.wheellinkagelength
-0:
-
-0:Constraints[23]
-0:<<SteeringAckermannSpreadsheet>>.wheellinkageangle
-0:
-
-0:Constraints[25]
-0:<<SteeringAckermannSpreadsheet>>.transferlinkagelength
-0:
-
-0:Constraints[28]
-0:<<SteeringAckermannSpreadsheet>>.wheellinkagelength
-0:
-
-0:Constraints[31]
-0:abs(<<SteeringAckermannSpreadsheet>>.wheellinkageangle - 180 °)
 0:
 
 ]]>
@@ -308,16 +308,16 @@ Locations 1
 Curve2ds 0
 Curves 11
 1 44.046620815752142 -6.5624241088560993 0 -0.83721840131267855 0.54686867573800824 0 
-1 12.118470314600012 -8.7056006241667312 0 0.99775470316100412 0.066974266103457247 0 
-1 5.1918691866117994 -15.918242083004984 0 0.69266011279882145 0.72126414588382537 0 
-1 5.1918691866117994 -15.918242083004984 0 -0.97626339400071693 0.21658666979802998 0 
-1 -34 -2.3213507567871296e-33 0 0.66262004821573772 -0.74895572078900197 0 
-1 -34 -2.3213507567871296e-33 0 1 0 0 
-1 34 -2.3213507567871296e-33 0 -0.72720340501664749 -0.68642203325082296 0 
-1 -34 -2.3213507567871296e-33 0 -0.57357643635104583 -0.81915204428899202 0 
+1 12.11847031460001 -8.7056006241667312 0 0.99775470316100412 0.066974266103457247 0 
+1 5.1918691866117994 -15.91824208300498 0 0.69266011279882145 0.72126414588382526 0 
+1 5.1918691866117994 -15.91824208300498 0 -0.97626339400071716 0.21658666979802993 0 
+1 -34 -2.3213507567871299e-33 0 0.66262004821573772 -0.74895572078900197 0 
+1 -34 -2.3213507567871299e-33 0 1 0 0 
+1 34 -2.3213507567871299e-33 0 -0.72720340501664749 -0.68642203325082296 0 
+1 -34 -2.3213507567871299e-33 0 -0.57357643635104594 -0.81915204428899191 0 
 1 0 0 0 0 -1 0 
 1 -500 -194 0 1 0 0 
-1 0 -4 0 0.72126414588382526 -0.69266011279882145 0 
+1 0 -4 0 0.72126414588382526 -0.69266011279882156 0 
 Polygon3D 0
 PolygonOnTriangulations 0
 Surfaces 0
@@ -346,7 +346,7 @@ Ed
 0101000
 +30 0 -29 0 *
 Ve
-1.00000000888178e-07
+1e-07
 12.1184703146 -8.70560062416673 0
 0 0
 
@@ -368,7 +368,7 @@ Ve
 *
 Ed
  1e-07 1 1 0
-1  3 0 0 10
+1  3 0 0 9.99999999999999
 0
 
 0101000
@@ -624,7 +624,7 @@ EndMap
     <Property name="ValidateShape" type="App::PropertyBool">
       <Bool value="false"/>
     </Property>
-    <Property name="Visibility" type="App::PropertyBool" status="648">
+    <Property name="Visibility" type="App::PropertyBool" status="649">
       <Bool value="true"/>
     </Property>
   </Properties>

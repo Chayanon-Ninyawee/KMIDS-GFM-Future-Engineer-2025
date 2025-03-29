@@ -25,46 +25,48 @@
       <Bool value="false"/>
     </Property>
     <Property name="cells" type="Spreadsheet::PropertySheet" status="67108864">
-      <Cells Count="32">
-        <Cell address="A1" content="CarConfig"/>
+      <Cells Count="34">
+        <Cell address="A1" content="CarDimension"/>
         <Cell address="B1" content="Value"/>
-        <Cell address="C1" content="ServoConfig"/>
+        <Cell address="C1" content="SteeringDimension"/>
         <Cell address="D1" content="Value"/>
+        <Cell address="E1" content="CalculatedDimension"/>
+        <Cell address="F1" content="Value"/>
         <Cell address="A2" content="BodyLength"/>
         <Cell address="B2" content="250"/>
-        <Cell address="C2" content="PositionOffset"/>
+        <Cell address="C2" content="ServoPositionOffset"/>
         <Cell alias="servoposoffset" address="D2" content="-4"/>
+        <Cell address="E2" content="Wheelbase"/>
+        <Cell alias="wheelbase" address="F2" content="=B2 - B4"/>
         <Cell address="A3" content="BodyWidth"/>
         <Cell address="B3" content="120"/>
-        <Cell address="C3" content="LinkageLength"/>
+        <Cell address="C3" content="ServoLinkageLength"/>
         <Cell alias="servolinkagelength" address="D3" content="12"/>
+        <Cell address="E3" content="Track"/>
+        <Cell address="F3" content="=B3 - B5"/>
         <Cell address="A4" content="WheelDiameter"/>
         <Cell alias="wheeldia" address="B4" content="56"/>
-        <Cell address="C4" content="LinkageTwoHoleSeperation"/>
+        <Cell address="C4" content="ServoLinkageTwoHoleSeperation"/>
         <Cell alias="servolinkagesep" address="D4" content="10"/>
+        <Cell address="E4" content="TrackAdj"/>
+        <Cell alias="trackadj" address="F4" content="=F3 - D6 * 2"/>
         <Cell address="A5" content="WheelDepth"/>
         <Cell address="B5" content="24"/>
-        <Cell address="A6" content="Wheelbase"/>
-        <Cell alias="wheelbase" address="B6" content="=B2 - B4"/>
-        <Cell address="A7" content="Track"/>
-        <Cell address="B7" content="=B3 - B5"/>
-        <Cell address="A8" content="WheelLinkageOffset"/>
-        <Cell alias="wheellinkageoffset" address="B8" content="14"/>
-        <Cell address="A9" content="TrackAdj"/>
-        <Cell alias="track" address="B9" content="=B7 - B8 * 2"/>
-        <Cell address="A10" content="TransferLinkageLength"/>
-        <Cell alias="transferlinkagelength" address="B10" content="32"/>
-        <Cell address="A11" content="WheelLinkageLength"/>
-        <Cell alias="wheellinkagelength" address="B11" content="12"/>
-        <Cell address="A12" content="WheelLinkageAngle"/>
-        <Cell alias="wheellinkageangle" address="B12" content="76.5"/>
+        <Cell address="C5" content="TransferLinkageLength"/>
+        <Cell alias="transferlinkagelength" address="D5" content="32"/>
+        <Cell address="C6" content="WheelLinkageOffset"/>
+        <Cell alias="wheellinkageoffset" address="D6" content="14"/>
+        <Cell address="C7" content="WheelLinkageLength"/>
+        <Cell alias="wheellinkagelength" address="D7" content="12"/>
+        <Cell address="C8" content="WheelLinkageAngle"/>
+        <Cell alias="wheellinkageangle" address="D8" content="76.5"/>
       </Cells>
     </Property>
     <Property name="columnWidths" type="Spreadsheet::PropertyColumnWidths" status="218103808">
       <ColumnInfo Count="3">
         <Column name="A" width="152" />
-        <Column name="C" width="189" />
-        <Column name="E" width="127" />
+        <Column name="C" width="223" />
+        <Column name="E" width="183" />
       </ColumnInfo>
     </Property>
     <Property name="hiddenColumns" type="App::PropertyIntegerSet" status="201326592">
