@@ -3,12 +3,7 @@
  FreeCAD Document, see http://www.freecadweb.org for more information...
 -->
 <Document SchemaVersion="4" ProgramVersion="2024.1006R14555 (Git shallow)" FileVersion="2" Uid="5d49f2cd-cebd-423e-94ab-9093bb117631" StringHasher="1">
-  <StringHasher saveall="0" threshold="0" count="0" new="1"/>
-  <StringHasher2  count="1">
-<![CDATA[
--1.0 0:Shape cache
-]]>
-  </StringHasher2>
+  <StringHasher saveall="0" threshold="0" count="0"></StringHasher>
   <Properties Count="21" TransientCount="3">
     <_Property name="FileName" type="App::PropertyString" status="50331649"/>
     <_Property name="Tip" type="App::PropertyLink" status="33554433"/>
@@ -38,7 +33,7 @@
       <String value=""/>
     </Property>
     <Property name="LastModifiedDate" type="App::PropertyString" status="16777217">
-      <String value="2025-03-30T19:15:11Z"/>
+      <String value="2025-03-30T19:16:48Z"/>
     </Property>
     <Property name="License" type="App::PropertyString" status="1">
       <String value="All rights reserved"/>
@@ -46,11 +41,11 @@
     <Property name="LicenseURL" type="App::PropertyString" status="1">
       <String value="https://en.wikipedia.org/wiki/All_rights_reserved"/>
     </Property>
-    <Property name="Material" type="App::PropertyMap">
+    <Property name="Material" type="App::PropertyMap" status="1">
       <Map count="0">
       </Map>
     </Property>
-    <Property name="Meta" type="App::PropertyMap">
+    <Property name="Meta" type="App::PropertyMap" status="1">
       <Map count="0">
       </Map>
     </Property>
@@ -58,7 +53,7 @@
       <Bool value="false"/>
     </Property>
     <Property name="SaveThumbnail" type="App::PropertyBool" status="1">
-      <Bool value="false"/>
+      <Bool value="true"/>
     </Property>
     <Property name="ShowHidden" type="App::PropertyBool" status="1">
       <Bool value="false"/>
@@ -84,10 +79,10 @@
     <ObjectDeps Name="Solid001" Count="0"/>
     <ObjectDeps Name="Solid002" Count="0"/>
     <ObjectDeps Name="Part" Count="4">
-      <Dep Name="Solid002"/>
       <Dep Name="Solid"/>
-      <Dep Name="Solid001"/>
       <Dep Name="Origin"/>
+      <Dep Name="Solid001"/>
+      <Dep Name="Solid002"/>
     </ObjectDeps>
     <ObjectDeps Name="Origin" Count="0"/>
     <Object type="Part::Feature" name="Solid" id="3603" revision="1" file="Solid.xml" />
