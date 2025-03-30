@@ -345,19 +345,19 @@ Curves 14
 1 8 22 0 0 -1 0 
 1 8 -2.75 0 0.93515944528985884 -0.35422706260979497 0 
 1 26 -4 0 -1 0 0 
-2 -22 0 0 0 0 1 1 0 0 0 1 0 1.5
-2 22 0 0 0 0 1 1 0 0 0 1 0 1.5
+2 -22 0 0 0 0 1 1 0 -0 -0 1 0 1.5
+2 22 0 0 0 0 1 1 0 -0 -0 1 0 1.5
 Polygon3D 0
 PolygonOnTriangulations 0
 Surfaces 8
-2 -22 0 4 -0 -0 -1 1 0 0 0 1 0 1.5
-2 -22 0 4 -0 -0 -1 1 0 0 0 1 0 1.5
-2 -22 0 4 -0 -0 -1 1 0 0 0 1 0 1.5
-2 -22 0 4 -0 -0 -1 1 0 0 0 1 0 1.5
-2 22 0 4 -0 -0 -1 1 0 0 0 1 0 1.5
-2 22 0 4 -0 -0 -1 1 0 0 0 1 0 1.5
-2 22 0 4 -0 -0 -1 1 0 0 0 1 0 1.5
-2 22 0 4 -0 -0 -1 1 0 0 0 1 0 1.5
+2 -22 0 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 -22 0 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 -22 0 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 -22 0 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 22 0 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 22 0 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 22 0 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 22 0 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
 Triangulations 0
 
 TShapes 33
@@ -697,7 +697,7 @@ EndMap
     <Property name="ValidateShape" type="App::PropertyBool">
       <Bool value="false"/>
     </Property>
-    <Property name="Visibility" type="App::PropertyBool" status="649">
+    <Property name="Visibility" type="App::PropertyBool" status="648">
       <Bool value="false"/>
     </Property>
   </Properties>
