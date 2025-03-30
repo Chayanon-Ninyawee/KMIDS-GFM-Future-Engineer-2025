@@ -55,7 +55,7 @@
       <Link value="Origin"/>
     </Property>
     <Property name="Placement" type="App::PropertyPlacement" status="8388608">
-      <PropertyPlacement Px="0" Py="0" Pz="0" Q0="0" Q1="0" Q2="0" Q3="1" A="0" Ox="0" Oy="0" Oz="1"/>
+      <PropertyPlacement Px="0" Py="0" Pz="0" Q0="0" Q1="0" Q2="0.7071067811865475" Q3="0.7071067811865476" A="1.570796326794897" Ox="0" Oy="0" Oz="1"/>
     </Property>
     <Property name="TreeRank" type="App::PropertyInteger" status="2184">
       <Integer value="10"/>

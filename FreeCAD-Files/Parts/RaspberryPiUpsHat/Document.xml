@@ -3,7 +3,12 @@
  FreeCAD Document, see http://www.freecadweb.org for more information...
 -->
 <Document SchemaVersion="4" ProgramVersion="2024.1006R14555 (Git shallow)" FileVersion="2" Uid="5d49f2cd-cebd-423e-94ab-9093bb117631" StringHasher="1">
-  <StringHasher saveall="0" threshold="0" count="0"></StringHasher>
+  <StringHasher saveall="0" threshold="0" count="0" new="1"/>
+  <StringHasher2  count="1">
+<![CDATA[
+-1.0 0:Shape cache
+]]>
+  </StringHasher2>
   <Properties Count="21" TransientCount="3">
     <_Property name="FileName" type="App::PropertyString" status="50331649"/>
     <_Property name="Tip" type="App::PropertyLink" status="33554433"/>
@@ -33,7 +38,7 @@
       <String value=""/>
     </Property>
     <Property name="LastModifiedDate" type="App::PropertyString" status="16777217">
-      <String value="2025-03-30T19:16:48Z"/>
+      <String value="2025-03-30T19:29:44Z"/>
     </Property>
     <Property name="License" type="App::PropertyString" status="1">
       <String value="All rights reserved"/>
@@ -81,14 +86,14 @@
     <ObjectDeps Name="Part" Count="4">
       <Dep Name="Solid"/>
       <Dep Name="Origin"/>
-      <Dep Name="Solid001"/>
       <Dep Name="Solid002"/>
+      <Dep Name="Solid001"/>
     </ObjectDeps>
     <ObjectDeps Name="Origin" Count="0"/>
     <Object type="Part::Feature" name="Solid" id="3603" revision="1" file="Solid.xml" />
     <Object type="Part::Feature" name="Solid001" id="3604" revision="1" file="Solid001.xml" />
     <Object type="Part::Feature" name="Solid002" id="3605" revision="1" file="Solid002.xml" />
-    <Object type="App::Part" name="Part" id="3606" revision="3" file="Part.xml" />
+    <Object type="App::Part" name="Part" id="3606" revision="4" file="Part.xml" />
     <Object type="App::Origin" name="Origin" id="3607" revision="0" file="Origin.xml" />
   </Objects>
   <ObjectData Count="0">
