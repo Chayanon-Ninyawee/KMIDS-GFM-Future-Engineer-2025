@@ -398,14 +398,14 @@ Polygon3D 0
 PolygonOnTriangulations 0
 Surfaces 9
 1 -16 -181 4 1 0 -0 0 -1 0 0 -0 -1 
-2 -19.5 -185 4 -0 -0 -1 1 0 0 0 1 0 1.5
-2 -19.5 -185 28 -0 -0 -1 1 0 0 0 1 0 1.5
-2 19.5 -185 4 -0 -0 -1 1 0 0 0 1 0 1.5
-2 19.5 -185 28 -0 -0 -1 1 0 0 0 1 0 1.5
-2 -19.5 -218 4 -0 -0 -1 1 0 0 0 1 0 1.5
-2 -19.5 -218 28 -0 -0 -1 1 0 0 0 1 0 1.5
-2 19.5 -218 4 -0 -0 -1 1 0 0 0 1 0 1.5
-2 19.5 -218 28 -0 -0 -1 1 0 0 0 1 0 1.5
+2 -19.5 -185 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 -19.5 -185 28 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 19.5 -185 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 19.5 -185 28 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 -19.5 -218 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 -19.5 -218 28 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 19.5 -218 4 -0 -0 -1 1 0 0 -0 1 -0 1.5
+2 19.5 -218 28 -0 -0 -1 1 0 0 -0 1 -0 1.5
 Triangulations 0
 
 TShapes 39
@@ -786,7 +786,7 @@ EndMap
     <Property name="ValidateShape" type="App::PropertyBool">
       <Bool value="false"/>
     </Property>
-    <Property name="Visibility" type="App::PropertyBool" status="649">
+    <Property name="Visibility" type="App::PropertyBool" status="648">
       <Bool value="false"/>
     </Property>
   </Properties>
