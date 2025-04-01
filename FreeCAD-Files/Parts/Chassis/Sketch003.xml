@@ -90,7 +90,7 @@
             <GeoExtension type="Sketcher::SketchGeometryExtension" id="4" internalGeometryType="0" geometryModeFlags="00000000000000000000000000000010" geometryLayer="0"/>
             <GeoExtension type="Sketcher::ExternalGeometryExtension" Ref="Sketch001.;g27;SKT;:H,E" Flags="1"/>
           </GeoExtensions>
-          <LineSegment StartX="-8" StartY="-2.75" StartZ="0" EndX="-11.3" EndY="-4" EndZ="0"/>
+          <LineSegment StartX="-8" StartY="-2.75" StartZ="0" EndX="-11.3" EndY="-4.000000000000001" EndZ="0"/>
           <Construction value="1"/>
         </Geometry>
         <Geometry type="Part::GeomLineSegment" id="5" ref="Sketch001.;g18;SKT;:H,E" flags="1" migrated="1">
@@ -162,7 +162,7 @@
             <GeoExtension type="Sketcher::SketchGeometryExtension" id="13" internalGeometryType="0" geometryModeFlags="00000000000000000000000000000010" geometryLayer="0"/>
             <GeoExtension type="Sketcher::ExternalGeometryExtension" Ref="Sketch001.;g26;SKT" Flags="1"/>
           </GeoExtensions>
-          <LineSegment StartX="8" StartY="-2.75" StartZ="0" EndX="11.3" EndY="-4" EndZ="0"/>
+          <LineSegment StartX="8" StartY="-2.75" StartZ="0" EndX="11.3" EndY="-4.000000000000001" EndZ="0"/>
           <Construction value="1"/>
         </Geometry>
         <Geometry type="Part::GeomCircle" id="14" ref="Sketch001.;e7;SKT" flags="1" migrated="1">
@@ -247,22 +247,22 @@ TShapes 0
       <Bool value="false"/>
     </Property>
     <Property name="Placement" type="App::PropertyPlacement" status="8388612">
-      <PropertyPlacement Px="0" Py="0" Pz="16" Q0="0" Q1="0" Q2="0" Q3="1" A="0" Ox="0" Oy="0" Oz="1"/>
+      <PropertyPlacement Px="0" Py="0" Pz="12.5" Q0="0" Q1="0" Q2="0" Q3="1" A="0" Ox="0" Oy="0" Oz="1"/>
     </Property>
     <Property name="Shape" type="Part::PropertyPartShape">
       <Part HasherIndex="0" ElementMap="1.15.70200.4" brep="1">
 <![CDATA[
 
 CASCADE Topology V1, (c) Matra-Datavision
-Locations 18
+Locations 6
 1
               1               0               0               0 
               0               1               0               0 
-              0               0               1              16 
+              0               0               1            12.5 
 1
               1               0               0               0 
               0               1               0               0 
-              0               0               1              16 
+              0               0               1            12.5 
 1
               1               0               0               0 
               0               1               0               0 
@@ -271,51 +271,9 @@ Locations 18
 1
               1               0               0               0 
               0               1               0               0 
-              0               0               1              10 
+              0               0               1               7 
 2  5 -1 2 -1 3 -1 0
-1
-              1               0               0               0 
-              0               1               0               0 
-              0               0               1              16 
-2  7 -1 3 -1 0
-1
-              1               0               0               0 
-              0               1               0               0 
-              0               0               1              10 
-2  9 -1 7 -1 3 -1 0
-1
-              1               0               0               0 
-              0               1               0               0 
-              0               0               1              16 
-2  11 -1 3 -1 0
-1
-              1               0               0               0 
-              0               1               0               0 
-              0               0               1               7 
-2  13 -1 11 -1 3 -1 0
-1
-              1               0               0               0 
-              0               1               0               0 
-              0               0               1              16 
-2  15 -1 3 -1 0
-1
-              1               0               0               0 
-              0               1               0               0 
-              0               0               1               7 
-2  17 -1 15 -1 3 -1 0
-Curve2ds 16
-1 0 0 1 0 
-1 0 -10 1 0 
-1 0 0 1 0 
-1 0 -10 1 0 
-1 0 0 1 0 
-1 0 -7 1 0 
-1 0 0 1 0 
-1 0 -7 1 0 
-1 0 0 1 0 
-1 0 -10 1 0 
-1 0 0 1 0 
-1 0 -10 1 0 
+Curve2ds 4
 1 0 0 1 0 
 1 0 -7 1 0 
 1 0 0 1 0 
@@ -327,25 +285,19 @@ Curves 14
 1 -8 -2.75 0 -0.93515944528985884 -0.35422706260979497 0 
 1 -26 -4 0 1 0 0 
 1 -26 -4 0 0 1 0 
-2 -22 0 0 0 0 1 1 0 -0 -0 1 0 1.5
+2 -22 0 0 0 0 1 1 0 0 0 1 0 1.5
 1 8 22 0 0 -1 0 
 1 8 -2.75 0 0.93515944528985884 -0.35422706260979497 0 
 1 26 -4 0 -1 0 0 
 1 26 -4 0 0 1 0 
 1 26 4 0 -0.66436383882991978 0.74740931868365967 0 
 1 10 22 0 -1 0 0 
-2 22 0 0 0 0 1 1 0 -0 -0 1 0 1.5
+2 22 0 0 0 0 1 1 0 0 0 1 0 1.5
 Polygon3D 0
 PolygonOnTriangulations 0
-Surfaces 8
-2 -22 0 16 -0 -0 -1 1 0 0 -0 1 -0 1.5
-2 -22 0 16 -0 -0 -1 1 0 0 -0 1 -0 1.5
-2 -22 0 16 -0 -0 -1 1 0 0 -0 1 -0 1.5
-2 -22 0 16 -0 -0 -1 1 0 0 -0 1 -0 1.5
-2 22 0 16 -0 -0 -1 1 0 0 -0 1 -0 1.5
-2 22 0 16 -0 -0 -1 1 0 0 -0 1 -0 1.5
-2 22 0 16 -0 -0 -1 1 0 0 -0 1 -0 1.5
-2 22 0 16 -0 -0 -1 1 0 0 -0 1 -0 1.5
+Surfaces 2
+2 -22 0 12.500000000000002 -0 -0 -1 1 0 0 0 1 0 1.5
+2 22 0 12.500000000000002 -0 -0 -1 1 0 0 0 1 0 1.5
 Triangulations 0
 
 TShapes 33
@@ -399,7 +351,7 @@ Ed
 0101000
 +30 0 -28 0 *
 Ve
-1e-07
+1.00000000993014e-07
 -11.3 -4 0
 0 0
 
@@ -449,12 +401,6 @@ Ed
 1  7 0 0 6.28318530717959
 2  1 1 4 0 6.28318530717959
 2  2 1 6 0 6.28318530717959
-2  3 2 8 0 6.28318530717959
-2  4 2 10 0 6.28318530717959
-2  5 3 12 0 6.28318530717959
-2  6 3 14 0 6.28318530717959
-2  7 4 16 0 6.28318530717959
-2  8 4 18 0 6.28318530717959
 0
 
 0101100
@@ -485,7 +431,7 @@ Ed
 0101000
 +17 0 -16 0 *
 Ve
-1e-07
+1.00000000993014e-07
 11.3 -4 0
 0 0
 
@@ -561,14 +507,8 @@ Ve
 Ed
  1e-07 1 1 0
 1  14 0 0 6.28318530717959
-2  9 5 4 0 6.28318530717959
-2  10 5 6 0 6.28318530717959
-2  11 6 8 0 6.28318530717959
-2  12 6 10 0 6.28318530717959
-2  13 7 12 0 6.28318530717959
-2  14 7 14 0 6.28318530717959
-2  15 8 16 0 6.28318530717959
-2  16 8 18 0 6.28318530717959
+2  3 2 4 0 6.28318530717959
+2  4 2 6 0 6.28318530717959
 0
 
 0101100
