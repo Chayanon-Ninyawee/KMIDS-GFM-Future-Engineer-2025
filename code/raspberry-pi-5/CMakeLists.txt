@@ -14,10 +14,9 @@ pkg_check_modules(LIBCAMERA REQUIRED libcamera)
 add_subdirectory(external/lccv)
 
 # Directly add all src subfolders here
-add_subdirectory(src/core)
-add_subdirectory(src/controllers)
 add_subdirectory(src/modules)
 # add_subdirectory(src/data) add_subdirectory(src/utils)
 
 # Add apps directory too
+add_subdirectory(apps/test_temp)
 add_subdirectory(apps/test_camera)
