@@ -58,6 +58,7 @@ std::vector<LineSegment> getLines(
 
 std::vector<LineSegment> getWalls(
     const std::vector<LineSegment> &lineSegments,
+    float heading,
     float minLength = 0.30f,
     float angleThresholdDeg = 25.0f,
     float collinearThreshold = 0.22f

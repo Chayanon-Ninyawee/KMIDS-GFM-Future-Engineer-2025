@@ -241,6 +241,7 @@ std::vector<LineSegment> getLines(
 
 std::vector<LineSegment> getWalls(
     const std::vector<LineSegment> &lineSegments,
+    float heading,
     float minLength,
     float angleThresholdDeg,
     float collinearThreshold
@@ -254,7 +255,32 @@ std::vector<LineSegment> getWalls(
         }
     }
 
-    return mergeAlignedSegments(filteredSegments, angleThresholdDeg, collinearThreshold);
+    std::vector<LineSegment> mergedSegments = mergeAlignedSegments(filteredSegments, angleThresholdDeg, collinearThreshold);
+
+    std::vector<LineSegment> verticalSegments;
+    std::vector<LineSegment> horizontalSegments;
+
+    for (const auto &segment : mergedSegments) {
+        float dx = segment.x2 - segment.x1;
+        float dy = segment.y2 - segment.y1;
+        float segmentAngle = std::atan2(dy, dx) * 180.0f / M_PI;  // angle in degrees
+
+        // Normalize angles to [0, 360)
+        if (segmentAngle < 0) segmentAngle += 360.0f;
+        float headingNorm = fmod(heading, 360.0f);
+
+        float angleDiff = std::fabs(segmentAngle - headingNorm);
+        if (angleDiff > 180.0f) angleDiff = 360.0f - angleDiff;
+
+        if (angleDiff <= 45.0f) {
+            // close to heading -> horizontal
+            horizontalSegments.push_back(segment);
+        } else if (angleDiff >= 135.0f) {
+            // perpendicular -> vertical
+            verticalSegments.push_back(segment);
+        }
+        // else ignore (diagonal)
+    }
 }
 
 std::vector<LineSegment> getParkingWalls(const std::vector<LineSegment> &lineSegments, float maxLength) {
