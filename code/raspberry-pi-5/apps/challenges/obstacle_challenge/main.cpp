@@ -3,6 +3,7 @@
 #include "camera_module.h"
 #include "camera_processor.h"
 #include "combined_processor.h"
+#include "direction.h"
 #include "lidar_module.h"
 #include "lidar_processor.h"
 #include "pico2_module.h"
@@ -27,6 +28,7 @@ const uint32_t camHeight = 972;
 const float camHFov = 104.0f;
 
 const float TARGET_OUTER_WALL_DISTANCE = 0.50f;
+const float TARGET_OUTER_WALL_DISTANCE_PARKING = 0.30f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
 const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
@@ -41,7 +43,10 @@ enum Mode
     NORMAL,
     PRE_TURN,
     TURNING,
-    PRE_STOP,
+    FIND_PARKING,
+    PARKING_1,
+    PARKING_2,
+    PARKING_3,
     STOP
 };
 
@@ -50,9 +55,13 @@ struct State {
     PIDController wallPid{180.0f, 0.0, 0.0f};
 
     std::optional<float> initialHeading;
-    std::optional<RotationDirection> robotTurnDirection;
+    // FIXME: Change this back
+    // std::optional<RotationDirection> robotTurnDirection;
+    std::optional<RotationDirection> robotTurnDirection = RotationDirection::COUNTER_CLOCKWISE;
 
-    Mode robotMode = Mode::NORMAL;
+    // FIXME: Change this back
+    // Mode robotMode = Mode::NORMAL;
+    Mode robotMode = Mode::FIND_PARKING;
     int numberOfTurn = 0;
     Direction headingDirection = Direction::NORTH;
 };
@@ -68,15 +77,15 @@ void update(
 ) {
     std::vector<TimedLidarData> timedLidarDatas;
     lidar.getAllTimedLidarData(timedLidarDatas);
-    if (timedLidarDatas.size() <= timedLidarDatas.max_size()) return;
+    if (timedLidarDatas.size() < 10) return;
 
     std::vector<TimedPico2Data> timedPico2Datas;
     pico2.getAllTimedData(timedPico2Datas);
-    if (timedPico2Datas.empty() <= timedPico2Datas.max_size()) return;
+    if (timedPico2Datas.size() < 120) return;
 
     std::vector<TimedFrame> timedFrames;
     camera.getAllTimedFrame(timedFrames);
-    if (timedFrames.empty() <= timedFrames.max_size()) return;
+    if (timedFrames.size() < 30) return;
 
     auto &timedLidarData = timedLidarDatas[timedLidarDatas.size() - 1];
     auto &timedPico2Data = timedPico2Datas[timedPico2Datas.size() - 1];
@@ -130,6 +139,8 @@ void update(
         }
     }
 
+    float targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE;
+
     // TODO: Change this to match with obstacle_challenge
 instant_update:
     switch (state.robotMode) {
@@ -138,82 +149,195 @@ instant_update:
         stop_flag = 1;
         return;
 
-    case Mode::NORMAL: {
-        // std::cout << "[Mode::NORMAL]\n";
+    case Mode::FIND_PARKING: {
+        // FIXME: This is only for test when the parking wall is directly on the side of the robot
+        auto lineSegmentsForParking = lidar_processor::getLines(filteredLidarData, deltaPose, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
+        auto parkingWalls = lidar_processor::getParkingWalls(lineSegmentsForParking, state.headingDirection, heading, 0.30f);
 
-        if (state.numberOfTurn == 12) {
-            state.robotMode = Mode::PRE_STOP;
-            goto instant_update;
-        }
+        outMotorSpeed = 1.0f;
+        targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE_PARKING;
 
-        static auto lastPreTurnTrigger = std::chrono::steady_clock::now() - PRE_TURN_COOLDOWN;
-        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= PRE_TURN_FRONT_WALL_DISTANCE &&
-            (now - lastPreTurnTrigger) >= PRE_TURN_COOLDOWN)
-        {
-            state.robotMode = Mode::PRE_TURN;
-            lastPreTurnTrigger = now;
-            goto instant_update;
-        }
-        outMotorSpeed = 4.5f;
-        break;
-    }
-    case Mode::PRE_TURN: {
-        // std::cout << "[Mode::PRE_TURN]\n";
+        if (parkingWalls.empty()) break;
 
-        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= TURNING_FRONT_WALL_DISTANCE) {
-            Direction nextHeadingDirection;
-            if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
-                float nextHeading = state.headingDirection.toHeading() + 90.0f;
-                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
-                nextHeadingDirection = Direction::fromHeading(nextHeading);
+        lidar_processor::LineSegment backParkingWall;
+        std::vector<lidar_processor::LineSegment> frontWalls;
+        std::vector<lidar_processor::LineSegment> backWalls;
+
+        for (auto &wall : parkingWalls) {
+            if (wall.perpendicularDistance(0.0f, 0.0f) >= 1.00f) continue;
+
+            float dir = wall.perpendicularDirection(0.0f, 0.0f);
+            if (dir >= 0.0f && dir < 180.0f) {
+                frontWalls.push_back(wall);
             } else {
-                float nextHeading = state.headingDirection.toHeading() - 90.0f;
-                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
-                nextHeadingDirection = Direction::fromHeading(nextHeading);
+                backWalls.push_back(wall);
             }
+        }
 
-            state.headingDirection = nextHeadingDirection;
+        if (!frontWalls.empty() && !backWalls.empty()) {
+            // Rule 1: if wall in front exists, pick closest back wall
+            backParkingWall = *std::min_element(backWalls.begin(), backWalls.end(), [](const auto &a, const auto &b) {
+                return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+            });
+        } else if (!frontWalls.empty()) {
+            // Rule 2: only front walls → pick closest front wall
+            backParkingWall = *std::min_element(frontWalls.begin(), frontWalls.end(), [](const auto &a, const auto &b) {
+                return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+            });
+        } else if (!backWalls.empty()) {
+            // Rule 3: only back walls → pick furthest back wall
+            backParkingWall = *std::max_element(backWalls.begin(), backWalls.end(), [](const auto &a, const auto &b) {
+                return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+            });
+        } else {
+            break;
+        }
 
-            state.robotMode = Mode::TURNING;
+        float backParkingWallDir = backParkingWall.perpendicularDirection(0.0f, 0.0f);
+        float backParkingWallDist = -backParkingWall.y2;
+
+        std::cout << "[BackParkingWall] dir=" << backParkingWallDir << "°, dist=" << backParkingWallDist << " m" << std::endl;
+
+        // FIXME: THE 270 AND 330 IS FOR TESTING ONLY
+        bool isBackParkingWallBehind = backParkingWallDir >= 270.0f && backParkingWallDir < 330.0f;
+
+        if (isBackParkingWallBehind && backParkingWallDist >= 0.46f) {
+            state.robotMode = Mode::PARKING_1;
             goto instant_update;
         }
 
-        outMotorSpeed = 4.5f;
         break;
     }
-    case Mode::TURNING: {
-        // std::cout << "[Mode::TURNING]\n";
 
-        if (std::abs(state.headingDirection.toHeading() - heading) <= 20.0f) {
-            state.numberOfTurn++;
-            state.robotMode = Mode::NORMAL;
+    case Mode::PARKING_1: {
+        outMotorSpeed = 0.0f;
+        outSteeringPercent = 0.0f;
+
+        static bool waitTimerActive = false;
+        static auto waitStartTime = std::chrono::steady_clock::now();
+        if (!waitTimerActive) {
+            waitTimerActive = true;
+            waitStartTime = std::chrono::steady_clock::now();
+        }
+
+        auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
+        if (elapsed < std::chrono::milliseconds(300)) return;
+        outSteeringPercent = 100.0f;
+        if (elapsed < std::chrono::milliseconds(600)) return;
+
+        outMotorSpeed = -1.0f;
+
+        static bool encoderStarted = false;
+        static double startEncoderAngle = 0.0;
+
+        if (!encoderStarted) {
+            startEncoderAngle = timedPico2Data.encoderAngle;
+            encoderStarted = true;
+        }
+
+        // FIXME: Investigate why encoderAngle randomly return 0
+        if (timedPico2Data.encoderAngle == 0) return;
+
+        std::cout << "[PARKING_1] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
+                  << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
+
+        if (timedPico2Data.encoderAngle - startEncoderAngle <= -530) {
+            waitTimerActive = false;
+            encoderStarted = false;
+
+            state.robotMode = Mode::PARKING_2;
             goto instant_update;
         }
 
-        outMotorSpeed = 4.5f;
-        break;
+        return;
     }
-    case Mode::PRE_STOP: {
-        // std::cout << "[Mode::PRE_STOP]\n";
 
-        static bool stopTimerActive = false;
-        static auto stopStartTime = std::chrono::steady_clock::now();
-        if (!stopTimerActive) {
-            stopTimerActive = true;
-            stopStartTime = std::chrono::steady_clock::now();
+    case Mode::PARKING_2: {
+        outMotorSpeed = 0.0f;
+        outSteeringPercent = 0.0f;
+
+        static bool waitTimerActive = false;
+        static auto waitStartTime = std::chrono::steady_clock::now();
+        if (!waitTimerActive) {
+            waitTimerActive = true;
+            waitStartTime = std::chrono::steady_clock::now();
         }
 
-        auto elapsed = std::chrono::steady_clock::now() - stopStartTime;
-        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= STOP_FRONT_WALL_DISTANCE && elapsed >= STOP_DELAY) {
-            stopTimerActive = false;
+        auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
+        if (elapsed < std::chrono::milliseconds(300)) return;
+        outSteeringPercent = -100.0f;
+        if (elapsed < std::chrono::milliseconds(600)) return;
+
+        outMotorSpeed = -1.0f;
+
+        static bool encoderStarted = false;
+        static double startEncoderAngle = 0.0;
+
+        if (!encoderStarted) {
+            startEncoderAngle = timedPico2Data.encoderAngle;
+            encoderStarted = true;
+        }
+
+        // FIXME: Investigate why encoderAngle randomly return 0
+        if (timedPico2Data.encoderAngle == 0) return;
+
+        std::cout << "[PARKING_2] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
+                  << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
+
+        if (timedPico2Data.encoderAngle - startEncoderAngle <= -390) {
+            waitTimerActive = false;
+            encoderStarted = false;
+
+            state.robotMode = Mode::PARKING_3;
+            goto instant_update;
+        }
+
+        return;
+    }
+
+    case Mode::PARKING_3: {
+        outMotorSpeed = 0.0f;
+        outSteeringPercent = 0.0f;
+
+        static bool waitTimerActive = false;
+        static auto waitStartTime = std::chrono::steady_clock::now();
+        if (!waitTimerActive) {
+            waitTimerActive = true;
+            waitStartTime = std::chrono::steady_clock::now();
+        }
+
+        auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
+        if (elapsed < std::chrono::milliseconds(300)) return;
+        outSteeringPercent = 100.0f;
+        if (elapsed < std::chrono::milliseconds(600)) return;
+
+        outMotorSpeed = 1.0f;
+
+        static bool encoderStarted = false;
+        static double startEncoderAngle = 0.0;
+
+        if (!encoderStarted) {
+            startEncoderAngle = timedPico2Data.encoderAngle;
+            encoderStarted = true;
+        }
+
+        // FIXME: Investigate why encoderAngle randomly return 0
+        if (timedPico2Data.encoderAngle == 0) return;
+
+        std::cout << "[PARKING_3] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
+                  << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
+
+        if (timedPico2Data.encoderAngle - startEncoderAngle >= 90) {
+            waitTimerActive = false;
+            encoderStarted = false;
 
             state.robotMode = Mode::STOP;
             goto instant_update;
         }
-        outMotorSpeed = 4.5f;
 
-        break;
+        return;
     }
+
     case Mode::STOP: {
         // std::cout << "[Mode::STOP]\n";
         outMotorSpeed = 0.0f;
@@ -229,7 +353,7 @@ instant_update:
 
     float wallError = 0.0f;
     if (outerWall) {
-        wallError = outerWall->perpendicularDistance(0.0f, 0.0f) - TARGET_OUTER_WALL_DISTANCE;
+        wallError = outerWall->perpendicularDistance(0.0f, 0.0f) - targetOuterWallDistance;
     }
     float headingErrorOffset = state.wallPid.update(wallError, dt);
 
