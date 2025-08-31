@@ -321,6 +321,7 @@ int main() {
     lidar.stop();
     lidar.shutdown();
     pico2.shutdown();
+    camera.stop();
 
     std::cout << "[Main] Shutdown complete." << std::endl;
     return 0;
