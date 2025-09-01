@@ -37,8 +37,7 @@ RobotDeltaPose aproximateRobotPose(const TimedLidarData &timedLidarData, const s
 
         // Calculate heading difference
         float dHeading = curr.euler.h - prev.euler.h;
-        dHeading = std::fmod(dHeading, 360.0f);
-        if (dHeading < 0.0f) dHeading += 360.0f;
+        dHeading = std::fmod(dHeading + 180.0f, 360.0f) - 180.0f;
 
         totalDeltaH += dHeading;
         totalDeltaH = std::fmod(totalDeltaH, 360.0f);
