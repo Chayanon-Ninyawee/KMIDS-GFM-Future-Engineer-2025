@@ -194,6 +194,8 @@ instant_update:
     case Mode::PRE_STOP: {
         // std::cout << "[Mode::PRE_STOP]\n";
 
+        outMotorSpeed = 2.5f;
+
         static bool stopTimerActive = false;
         static auto stopStartTime = std::chrono::steady_clock::now();
         if (!stopTimerActive) {
@@ -208,8 +210,6 @@ instant_update:
             state.robotMode = Mode::STOP;
             goto instant_update;
         }
-        outMotorSpeed = 2.5f;
-
         break;
     }
     case Mode::STOP: {
