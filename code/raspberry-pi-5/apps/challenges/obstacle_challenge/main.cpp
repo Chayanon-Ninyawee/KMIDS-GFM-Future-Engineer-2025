@@ -8,6 +8,7 @@
 #include "lidar_processor.h"
 #include "pico2_module.h"
 #include "pid_controller.h"
+#include "robot_pose_struct.h"
 
 #include <atomic>
 #include <chrono>
@@ -35,8 +36,8 @@ const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 
 const float TURNING_FRONT_WALL_DISTANCE = 0.85f;
 
-const float STOP_FRONT_WALL_DISTANCE = 1.80f;
-const auto STOP_DELAY = std::chrono::milliseconds(100);
+const float STOP_FRONT_WALL_DISTANCE = 1.70f;
+const auto STOP_DELAY = std::chrono::milliseconds(200);
 
 enum Mode
 {
@@ -55,15 +56,18 @@ struct State {
     PIDController wallPid{180.0f, 0.0, 0.0f};
 
     std::optional<float> initialHeading;
-    // FIXME: Change this back
-    // std::optional<RotationDirection> robotTurnDirection;
-    std::optional<RotationDirection> robotTurnDirection = RotationDirection::COUNTER_CLOCKWISE;
-
-    // FIXME: Change this back
-    // Mode robotMode = Mode::NORMAL;
-    Mode robotMode = Mode::FIND_PARKING;
+    std::optional<RotationDirection> robotTurnDirection;
+    Mode robotMode = Mode::NORMAL;
     int numberOfTurn = 0;
     Direction headingDirection = Direction::NORTH;
+
+    // NOTE: Parking COUNTER_CLOCKWISE no UTURN test
+    // std::optional<RotationDirection> robotTurnDirection;
+    // std::optional<RotationDirection> robotTurnDirection = RotationDirection::COUNTER_CLOCKWISE;
+    // Mode robotMode = Mode::NORMAL;
+    // Mode robotMode = Mode::FIND_PARKING;
+    // int numberOfTurn = 0;
+    // Direction headingDirection = Direction::NORTH;
 };
 
 void update(
@@ -96,6 +100,7 @@ void update(
     auto filteredLidarData = lidar_processor::filterLidarData(timedLidarData);
 
     auto deltaPose = combined_processor::aproximateRobotPose(filteredLidarData, timedPico2Datas);
+    // RobotDeltaPose deltaPose = {0.0f, 0.0f, 0.0f};
 
     // std::cout << "[DeltaPose] ΔX: " << deltaPose.deltaX << " m, ΔY: " << deltaPose.deltaY << " m, ΔH: " << deltaPose.deltaH << " deg"
     //           << std::endl;
@@ -145,11 +150,79 @@ void update(
 instant_update:
     switch (state.robotMode) {
     default:
-        std::cout << "[OpenChallenge] Invalid Mode!" << std::endl;
+        std::cout << "[ObstacleChallenge] Invalid Mode!" << std::endl;
         stop_flag = 1;
         return;
 
+    case Mode::NORMAL: {
+        // std::cout << "[Mode::NORMAL]\n";
+
+        if (state.numberOfTurn == 12) {
+            state.robotMode = Mode::FIND_PARKING;
+            goto instant_update;
+        }
+
+        static auto lastPreTurnTrigger = std::chrono::steady_clock::now() - PRE_TURN_COOLDOWN;
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= PRE_TURN_FRONT_WALL_DISTANCE &&
+            (now - lastPreTurnTrigger) >= PRE_TURN_COOLDOWN)
+        {
+            state.robotMode = Mode::PRE_TURN;
+            lastPreTurnTrigger = now;
+            goto instant_update;
+        }
+        outMotorSpeed = 4.5f;
+        break;
+    }
+    case Mode::PRE_TURN: {
+        // std::cout << "[Mode::PRE_TURN]\n";
+
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= TURNING_FRONT_WALL_DISTANCE) {
+            Direction nextHeadingDirection;
+            if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
+                float nextHeading = state.headingDirection.toHeading() + 90.0f;
+                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+                nextHeadingDirection = Direction::fromHeading(nextHeading);
+            } else {
+                float nextHeading = state.headingDirection.toHeading() - 90.0f;
+                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+                nextHeadingDirection = Direction::fromHeading(nextHeading);
+            }
+
+            state.headingDirection = nextHeadingDirection;
+
+            state.robotMode = Mode::TURNING;
+            goto instant_update;
+        }
+
+        outMotorSpeed = 4.5f;
+        break;
+    }
+    case Mode::TURNING: {
+        // std::cout << "[Mode::TURNING]\n";
+
+        if (std::abs(state.headingDirection.toHeading() - heading) <= 20.0f) {
+            state.numberOfTurn++;
+            state.robotMode = Mode::NORMAL;
+            goto instant_update;
+        }
+
+        outMotorSpeed = 4.5f;
+        break;
+    }
     case Mode::FIND_PARKING: {
+        outMotorSpeed = 0.0f;
+        outSteeringPercent = 0.0f;
+
+        static bool waitTimerActive = false;
+        static auto waitStartTime = std::chrono::steady_clock::now();
+        if (!waitTimerActive) {
+            waitTimerActive = true;
+            waitStartTime = std::chrono::steady_clock::now();
+        }
+
+        auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
+        if (elapsed < std::chrono::milliseconds(700)) return;
+
         // FIXME: This is only for test when the parking wall is directly on the side of the robot
         auto lineSegmentsForParking = lidar_processor::getLines(filteredLidarData, deltaPose, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
         auto parkingWalls = lidar_processor::getParkingWalls(lineSegmentsForParking, state.headingDirection, heading, 0.30f);
@@ -196,10 +269,9 @@ instant_update:
         float backParkingWallDir = backParkingWall.perpendicularDirection(0.0f, 0.0f);
         float backParkingWallDist = -backParkingWall.y2;
 
-        std::cout << "[BackParkingWall] dir=" << backParkingWallDir << "°, dist=" << backParkingWallDist << " m" << std::endl;
+        // std::cout << "[BackParkingWall] dir=" << backParkingWallDir << "°, dist=" << backParkingWallDist << " m" << std::endl;
 
-        // FIXME: THE 270 AND 330 IS FOR TESTING ONLY
-        bool isBackParkingWallBehind = backParkingWallDir >= 270.0f && backParkingWallDir < 330.0f;
+        bool isBackParkingWallBehind = backParkingWallDir >= 180.0f && backParkingWallDir < 360.0f;
 
         if (isBackParkingWallBehind && backParkingWallDist >= 0.475f) {
             state.robotMode = Mode::PARKING_1;
@@ -208,7 +280,6 @@ instant_update:
 
         break;
     }
-
     case Mode::PARKING_1: {
         outMotorSpeed = 0.0f;
         outSteeringPercent = 0.0f;
@@ -235,8 +306,8 @@ instant_update:
             encoderStarted = true;
         }
 
-        std::cout << "[PARKING_1] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
-                  << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
+        // std::cout << "[PARKING_1] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
+        //           << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
 
         if (timedPico2Data.encoderAngle - startEncoderAngle <= -530) {
             waitTimerActive = false;
@@ -248,7 +319,6 @@ instant_update:
 
         return;
     }
-
     case Mode::PARKING_2: {
         outMotorSpeed = 0.0f;
         outSteeringPercent = 0.0f;
@@ -275,8 +345,8 @@ instant_update:
             encoderStarted = true;
         }
 
-        std::cout << "[PARKING_2] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
-                  << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
+        // std::cout << "[PARKING_2] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
+        //           << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
 
         if (timedPico2Data.encoderAngle - startEncoderAngle <= -380) {
             waitTimerActive = false;
@@ -288,7 +358,6 @@ instant_update:
 
         return;
     }
-
     case Mode::PARKING_3: {
         outMotorSpeed = 0.0f;
         outSteeringPercent = 0.0f;
@@ -315,8 +384,8 @@ instant_update:
             encoderStarted = true;
         }
 
-        std::cout << "[PARKING_3] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
-                  << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
+        // std::cout << "[PARKING_3] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
+        //           << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
 
         if (timedPico2Data.encoderAngle - startEncoderAngle >= 92) {
             waitTimerActive = false;
@@ -328,7 +397,6 @@ instant_update:
 
         return;
     }
-
     case Mode::STOP: {
         // std::cout << "[Mode::STOP]\n";
         outMotorSpeed = 0.0f;
@@ -366,7 +434,7 @@ instant_update:
     //           << "°, Motor Speed: " << outMotorSpeed << "rps, Steering Percent: " << outSteeringPercent << "%\n"
     //           << std::endl;
 
-    auto dir = state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE);
+    // auto dir = state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE);
     // std::cout << "robotTurnDirection: " << (dir == RotationDirection::CLOCKWISE ? "CLOCKWISE" : "COUNTERCLOCKWISE") << "\n";
 }
 
@@ -377,18 +445,22 @@ int main() {
     if (!home) throw std::runtime_error("HOME environment variable not set");
     std::string logFolder = std::string(home) + "/gfm_logs/obstacle_challenge";
 
-    Logger lidarLogger(Logger::generateFilename(logFolder, "lidar"));
-    Logger pico2Logger(Logger::generateFilename(logFolder, "pico2"));
-    Logger cameraLogger(Logger::generateFilename(logFolder, "camera"));
+    Logger *lidarLogger = new Logger(Logger::generateFilename(logFolder, "lidar"));
+    Logger *pico2Logger = new Logger(Logger::generateFilename(logFolder, "pico2"));
+    Logger *cameraLogger = new Logger(Logger::generateFilename(logFolder, "camera"));
+
+    // Logger *lidarLogger = nullptr;
+    // Logger *pico2Logger = nullptr;
+    // Logger *cameraLogger = nullptr;
 
     // Initialize LidarModule
-    LidarModule lidar(&lidarLogger);
+    LidarModule lidar(lidarLogger);
     if (!lidar.initialize()) return -1;
     lidar.printDeviceInfo();
     if (!lidar.start()) return -1;
 
     // Initialize Pico2Module
-    Pico2Module pico2(&pico2Logger);
+    Pico2Module pico2(pico2Logger);
     if (!pico2.initialize()) return -1;
     //
     // Initialize CameraModule
@@ -412,7 +484,7 @@ int main() {
         cam.options->contrast = 1;
         cam.options->gain = 5;
     };
-    CameraModule camera(&cameraLogger, cameraOptionCallback);
+    CameraModule camera(cameraLogger, cameraOptionCallback);
     if (!camera.start()) return -1;
 
     State state;
@@ -420,7 +492,7 @@ int main() {
     std::cout << "Waiting 2 seconds before starting control loop..." << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
-    const auto loopDuration = std::chrono::milliseconds(16);  // ~60 Hz
+    const auto loopDuration = std::chrono::milliseconds(32);  // ~30 Hz
     auto lastTime = std::chrono::steady_clock::now();
 
     while (!stop_flag) {
@@ -434,7 +506,7 @@ int main() {
         update(dt, lidar, pico2, camera, state, motorSpeed, steeringPercent);
         pico2.setMovementInfo(motorSpeed, steeringPercent);
 
-        // Maintain ~60 Hz loop rate
+        // Maintain ~30 Hz loop rate
         auto loopEnd = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(loopEnd - loopStart);
         if (elapsed < loopDuration) {
