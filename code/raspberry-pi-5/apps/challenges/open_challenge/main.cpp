@@ -86,6 +86,8 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
         if (newRobotTurnDirection) state.robotTurnDirection = newRobotTurnDirection;
     }
 
+    bool pidWallErrorActive = true;
+
     auto frontWall = resolveWalls.frontWall;
     auto backWall = resolveWalls.backWall;
 
@@ -112,6 +114,8 @@ instant_update:
     case Mode::NORMAL: {
         // std::cout << "[Mode::NORMAL]\n";
 
+        outMotorSpeed = 4.5f;
+
         if (state.numberOfTurn == 12) {
             state.robotMode = Mode::PRE_STOP;
             goto instant_update;
@@ -125,11 +129,12 @@ instant_update:
             lastPreTurnTrigger = now;
             goto instant_update;
         }
-        outMotorSpeed = 4.5f;
         break;
     }
     case Mode::PRE_TURN: {
         // std::cout << "[Mode::PRE_TURN]\n";
+
+        outMotorSpeed = 4.5f;
 
         if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= TURNING_FRONT_WALL_DISTANCE) {
             Direction nextHeadingDirection;
@@ -148,24 +153,28 @@ instant_update:
             state.robotMode = Mode::TURNING;
             goto instant_update;
         }
-
-        outMotorSpeed = 4.5f;
         break;
     }
     case Mode::TURNING: {
         // std::cout << "[Mode::TURNING]\n";
 
-        if (std::abs(state.headingDirection.toHeading() - heading) <= 20.0f) {
+        outMotorSpeed = 4.5f;
+
+        pidWallErrorActive = false;
+
+        float diff = heading - state.headingDirection.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+        if (std::abs(diff) <= 20.0f) {
             state.numberOfTurn++;
             state.robotMode = Mode::NORMAL;
             goto instant_update;
         }
-
-        outMotorSpeed = 4.5f;
         break;
     }
     case Mode::PRE_STOP: {
         // std::cout << "[Mode::PRE_STOP]\n";
+
+        outMotorSpeed = 4.5f;
 
         static bool stopTimerActive = false;
         static auto stopStartTime = std::chrono::steady_clock::now();
@@ -181,8 +190,6 @@ instant_update:
             state.robotMode = Mode::STOP;
             goto instant_update;
         }
-        outMotorSpeed = 4.5f;
-
         break;
     }
     case Mode::STOP: {
@@ -209,10 +216,12 @@ instant_update:
     if (headingError < 0) headingError += 360.0f;
     headingError -= 180.0f;
 
-    if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
-        headingError -= headingErrorOffset;
-    } else {
-        headingError += headingErrorOffset;
+    if (pidWallErrorActive) {
+        if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
+            headingError -= headingErrorOffset;
+        } else {
+            headingError += headingErrorOffset;
+        }
     }
 
     outSteeringPercent = state.headingPid.update(headingError, dt);
