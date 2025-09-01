@@ -104,10 +104,18 @@ void Pico2Module::pollingLoop() {
         bool imuOk = master_.readImu(accel, euler);
         bool encOk = master_.readEncoder(encoderAngle);
 
+        static double lastValidEncoderAngle = 0.0;
+
         if (imuOk && encOk) {
             // Wrap Euler heading into [0,360)
             euler.h = std::fmod(-euler.h, 360.0f);
             if (euler.h < 0) euler.h += 360.0f;
+
+            // Use previous value if encoderAngle is 0
+            if (encoderAngle == 0.0)
+                encoderAngle = lastValidEncoderAngle;
+            else
+                lastValidEncoderAngle = encoderAngle;
 
             TimedPico2Data sample{steady_clock::now(), accel, euler, encoderAngle};
 
