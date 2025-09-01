@@ -201,7 +201,7 @@ instant_update:
         // FIXME: THE 270 AND 330 IS FOR TESTING ONLY
         bool isBackParkingWallBehind = backParkingWallDir >= 270.0f && backParkingWallDir < 330.0f;
 
-        if (isBackParkingWallBehind && backParkingWallDist >= 0.46f) {
+        if (isBackParkingWallBehind && backParkingWallDist >= 0.475f) {
             state.robotMode = Mode::PARKING_1;
             goto instant_update;
         }
@@ -234,9 +234,6 @@ instant_update:
             startEncoderAngle = timedPico2Data.encoderAngle;
             encoderStarted = true;
         }
-
-        // FIXME: Investigate why encoderAngle randomly return 0
-        if (timedPico2Data.encoderAngle == 0) return;
 
         std::cout << "[PARKING_1] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
                   << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
@@ -278,13 +275,10 @@ instant_update:
             encoderStarted = true;
         }
 
-        // FIXME: Investigate why encoderAngle randomly return 0
-        if (timedPico2Data.encoderAngle == 0) return;
-
         std::cout << "[PARKING_2] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
                   << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
 
-        if (timedPico2Data.encoderAngle - startEncoderAngle <= -390) {
+        if (timedPico2Data.encoderAngle - startEncoderAngle <= -380) {
             waitTimerActive = false;
             encoderStarted = false;
 
@@ -321,13 +315,10 @@ instant_update:
             encoderStarted = true;
         }
 
-        // FIXME: Investigate why encoderAngle randomly return 0
-        if (timedPico2Data.encoderAngle == 0) return;
-
         std::cout << "[PARKING_3] encoderAngle=" << timedPico2Data.encoderAngle << " startEncoderAngle=" << startEncoderAngle
                   << " delta=" << (timedPico2Data.encoderAngle - startEncoderAngle) << std::endl;
 
-        if (timedPico2Data.encoderAngle - startEncoderAngle >= 90) {
+        if (timedPico2Data.encoderAngle - startEncoderAngle >= 92) {
             waitTimerActive = false;
             encoderStarted = false;
 
