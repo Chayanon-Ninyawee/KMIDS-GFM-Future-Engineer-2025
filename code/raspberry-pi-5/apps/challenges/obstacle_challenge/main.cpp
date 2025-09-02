@@ -28,13 +28,18 @@ const uint32_t camWidth = 1296;
 const uint32_t camHeight = 972;
 const float camHFov = 104.0f;
 
-const float TARGET_OUTER_WALL_DISTANCE = 0.50f;
+// const float TARGET_OUTER_WALL_DISTANCE = 0.50;
+const float TARGET_OUTER_WALL_DISTANCE = 0.23;
+const float TARGET_OUTER_WALL_DISTANCE_STARTING_SECTION = 0.40;
+
 const float TARGET_OUTER_WALL_DISTANCE_PARKING = 0.30f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
 const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 
-const float TURNING_FRONT_WALL_DISTANCE = 0.85f;
+// const float TURNING_FRONT_WALL_DISTANCE = 0.85f;
+const float TURNING_FRONT_WALL_DISTANCE = 0.50f;
+const float TURNING_FRONT_WALL_DISTANCE_STARTING_SECTION = 0.70f;
 
 const float STOP_FRONT_WALL_DISTANCE = 1.70f;
 const auto STOP_DELAY = std::chrono::milliseconds(200);
@@ -62,9 +67,8 @@ struct State {
     Direction headingDirection = Direction::NORTH;
 
     // NOTE: Parking COUNTER_CLOCKWISE no UTURN test
-    // std::optional<RotationDirection> robotTurnDirection;
+    // std::optional<float> initialHeading;
     // std::optional<RotationDirection> robotTurnDirection = RotationDirection::COUNTER_CLOCKWISE;
-    // Mode robotMode = Mode::NORMAL;
     // Mode robotMode = Mode::FIND_PARKING;
     // int numberOfTurn = 0;
     // Direction headingDirection = Direction::NORTH;
@@ -144,7 +148,14 @@ void update(
         }
     }
 
-    float targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE;
+    bool pidWallErrorActive = true;
+
+    float targetOuterWallDistance;
+    if (state.numberOfTurn % 4 == 0) {
+        targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE_STARTING_SECTION;
+    } else {
+        targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE;
+    }
 
     // TODO: Change this to match with obstacle_challenge
 instant_update:
@@ -156,6 +167,8 @@ instant_update:
 
     case Mode::NORMAL: {
         // std::cout << "[Mode::NORMAL]\n";
+
+        outMotorSpeed = 2.5f;
 
         if (state.numberOfTurn == 12) {
             state.robotMode = Mode::FIND_PARKING;
@@ -170,13 +183,21 @@ instant_update:
             lastPreTurnTrigger = now;
             goto instant_update;
         }
-        outMotorSpeed = 4.5f;
         break;
     }
     case Mode::PRE_TURN: {
         // std::cout << "[Mode::PRE_TURN]\n";
 
-        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= TURNING_FRONT_WALL_DISTANCE) {
+        outMotorSpeed = 2.5f;
+
+        float turningFrontWallDistance;
+        if (state.numberOfTurn % 4 == 3) {
+            turningFrontWallDistance = TURNING_FRONT_WALL_DISTANCE_STARTING_SECTION;
+        } else {
+            turningFrontWallDistance = TURNING_FRONT_WALL_DISTANCE;
+        }
+
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= turningFrontWallDistance) {
             Direction nextHeadingDirection;
             if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
                 float nextHeading = state.headingDirection.toHeading() + 90.0f;
@@ -193,20 +214,22 @@ instant_update:
             state.robotMode = Mode::TURNING;
             goto instant_update;
         }
-
-        outMotorSpeed = 4.5f;
         break;
     }
     case Mode::TURNING: {
         // std::cout << "[Mode::TURNING]\n";
 
-        if (std::abs(state.headingDirection.toHeading() - heading) <= 20.0f) {
+        outMotorSpeed = 2.5f;
+
+        pidWallErrorActive = false;
+
+        float diff = heading - state.headingDirection.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+        if (std::abs(diff) <= 20.0f) {
             state.numberOfTurn++;
             state.robotMode = Mode::NORMAL;
             goto instant_update;
         }
-
-        outMotorSpeed = 4.5f;
         break;
     }
     case Mode::FIND_PARKING: {
@@ -222,6 +245,8 @@ instant_update:
 
         auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
         if (elapsed < std::chrono::milliseconds(700)) return;
+        outMotorSpeed = 2.0f;
+        if (elapsed < std::chrono::milliseconds(2200)) break;
 
         // FIXME: This is only for test when the parking wall is directly on the side of the robot
         auto lineSegmentsForParking = lidar_processor::getLines(filteredLidarData, deltaPose, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
@@ -421,10 +446,12 @@ instant_update:
     if (headingError < 0) headingError += 360.0f;
     headingError -= 180.0f;
 
-    if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
-        headingError -= headingErrorOffset;
-    } else {
-        headingError += headingErrorOffset;
+    if (pidWallErrorActive) {
+        if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
+            headingError -= headingErrorOffset;
+        } else {
+            headingError += headingErrorOffset;
+        }
     }
 
     outSteeringPercent = state.headingPid.update(headingError, dt);
@@ -501,6 +528,8 @@ int main() {
         std::chrono::duration<float> delta = loopStart - lastTime;
         float dt = delta.count();
         lastTime = loopStart;
+
+        std::cout << "dt: " << dt * 1000.0f << " ms" << std::endl;  // print in milliseconds
 
         float motorSpeed, steeringPercent;
         update(dt, lidar, pico2, camera, state, motorSpeed, steeringPercent);
