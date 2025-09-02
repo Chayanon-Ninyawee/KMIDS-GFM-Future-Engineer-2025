@@ -104,10 +104,16 @@ void Pico2Module::pollingLoop() {
         bool imuOk = master_.readImu(accel, euler);
         bool encOk = master_.readEncoder(encoderAngle);
 
+        static float lastValidEulerH = 0.0f;
         static double lastValidEncoderAngle = 0.0;
 
         if (imuOk && encOk) {
             // Wrap Euler heading into [0,360)
+            if (euler.h == 0.0f)
+                euler.h = lastValidEulerH;
+            else
+                lastValidEulerH = euler.h;
+
             euler.h = std::fmod(-euler.h, 360.0f);
             if (euler.h < 0) euler.h += 360.0f;
 
