@@ -114,7 +114,15 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
 
             float angleDiff = std::abs(90.0f - block.angle - lidarAngleDeg);
 
-            if (angleDiff <= maxAngleDiff) {
+            // Distance of LiDAR point from origin (0,0)
+            float originDistance = std::sqrt(lp.x * lp.x + lp.y * lp.y);
+
+            // Scale tolerance: closer points allow bigger angleDiff, farther ones stricter
+            // Example: tolerance shrinks like 1/originDistance
+            float dynamicMaxAngleDiff = maxAngleDiff / (1.0f + originDistance * 2.0f);
+
+            // If angle difference within distance-scaled tolerance
+            if (angleDiff <= dynamicMaxAngleDiff) {
                 float distanceAlongRay = std::sqrt(dx * dx + dy * dy);  // distance from camera to LiDAR point
 
                 // Pick the closest along the ray (smallest distance)
