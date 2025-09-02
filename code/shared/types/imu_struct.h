@@ -9,9 +9,3 @@ struct ImuAccel {
 struct ImuEuler {
     float h, r, p;
 };
-
-struct TimedImuData {
-    ImuAccel accel;
-    ImuEuler euler;
-    std::chrono::steady_clock::time_point timestamp;
-};
