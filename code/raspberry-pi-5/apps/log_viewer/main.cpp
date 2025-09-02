@@ -17,6 +17,73 @@ const uint32_t camWidth = 1296;
 const uint32_t camHeight = 972;
 const float camHFov = 104.0f;
 
+std::vector<cv::Point> polygonPoints;
+bool selectMode = false;
+
+// Mouse callback
+void mouseCallback(int event, int x, int y, int, void *) {
+    if (!selectMode) return;
+    if (event == cv::EVENT_LBUTTONDOWN) {
+        polygonPoints.emplace_back(x, y);
+    }
+}
+
+// Compute two HSV bounds for pixels inside polygon
+void computeHSVBounds(const cv::Mat &frame, cv::Scalar &lower1, cv::Scalar &upper1, cv::Scalar &lower2, cv::Scalar &upper2) {
+    if (polygonPoints.empty()) return;
+
+    cv::Mat hsv;
+    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+
+    // Polygon mask
+    cv::Mat mask = cv::Mat::zeros(frame.size(), CV_8UC1);
+    std::vector<std::vector<cv::Point>> pts{polygonPoints};
+    cv::fillPoly(mask, pts, cv::Scalar(255));
+
+    std::vector<int> Hs, Ss, Vs;
+    for (int y = 0; y < frame.rows; ++y) {
+        for (int x = 0; x < frame.cols; ++x) {
+            if (mask.at<uchar>(y, x)) {
+                cv::Vec3b pixel = hsv.at<cv::Vec3b>(y, x);
+                if (pixel[2] <= 1) continue;
+
+                Hs.push_back(pixel[0]);
+                Ss.push_back(pixel[1]);
+                Vs.push_back(pixel[2]);
+            }
+        }
+    }
+
+    if (Hs.empty()) return;
+
+    // Saturation and Value
+    int minS = *std::min_element(Ss.begin(), Ss.end());
+    int maxS = *std::max_element(Ss.begin(), Ss.end());
+    int minV = *std::min_element(Vs.begin(), Vs.end());
+    int maxV = *std::max_element(Vs.begin(), Vs.end());
+
+    // Hue wrap-around
+    int minH = *std::min_element(Hs.begin(), Hs.end());
+    int maxH = *std::max_element(Hs.begin(), Hs.end());
+
+    int directSpan = maxH - minH;
+    int wrapSpan = (minH + 180) - maxH;
+
+    if (wrapSpan < directSpan) {
+        // Wrap-around case → two ranges
+        lower1 = cv::Scalar(0, minS, minV);
+        upper1 = cv::Scalar(minH, maxS, maxV);
+        lower2 = cv::Scalar(maxH, minS, minV);
+        upper2 = cv::Scalar(180, maxS, maxV);
+    } else {
+        // Normal case → single range, second unused
+        lower1 = cv::Scalar(minH, minS, minV);
+        upper1 = cv::Scalar(maxH, maxS, maxV);
+        lower2 = cv::Scalar(maxH, maxS, maxV);
+        upper2 = cv::Scalar(maxH, maxS, maxV);
+    }
+}
+
 TimedLidarData reconstructTimedLidar(const LogEntry &entry) {
     std::vector<RawLidarNode> nodes(entry.data.size() / sizeof(RawLidarNode));
     if (!entry.data.empty()) {
@@ -56,7 +123,7 @@ TimedPico2Data reconstructTimedPico2(const LogEntry &entry) {
 std::vector<TimedPico2Data> reconstructPico2RingBufferVector(
     const std::vector<LogEntry> &pico2Entries,
     size_t currentIdx,
-    size_t windowSize = 120
+    size_t windowSize = 30
 ) {
     std::vector<TimedPico2Data> result;
     if (pico2Entries.empty() || currentIdx >= pico2Entries.size()) {
@@ -156,6 +223,7 @@ int main(int argc, char **argv) {
     cv::namedWindow("Lidar View", cv::WINDOW_FULLSCREEN);
     if (hasCamera) {
         cv::namedWindow("Camera View", cv::WINDOW_FULLSCREEN);
+        cv::setMouseCallback("Camera View", mouseCallback);
     }
 
     std::optional<float> initialHeading;
@@ -193,13 +261,13 @@ int main(int argc, char **argv) {
 
     while (true) {
         int key = cv::waitKey(0);
-        if (key == 27) break;  // ESC
+        if (key == 'q') break;  // ESC
 
-        if (key == 81) {  // left arrow
+        if (key == 'a') {  // left arrow
             if (currentTime > stepNs) currentTime -= stepNs;
-        } else if (key == 83) {  // right arrow
+        } else if (key == 'd') {  // right arrow
             currentTime += stepNs;
-        } else {
+        } else if (not(key == 'i' or key == 'c')) {
             continue;
         }
 
@@ -233,7 +301,23 @@ int main(int argc, char **argv) {
                 colorMasks = camera_processor::filterColors(timedFrame);
                 blockAngles = camera_processor::computeBlockAngles(colorMasks, camWidth, camHFov);
 
-                // use blockAngles here...
+                if (key == 'i') {
+                    selectMode = true;
+                    polygonPoints.clear();
+                    std::cout << "Click points to define polygon, then press 'c' to confirm.\n";
+
+                    continue;
+                } else if (key == 'c') {
+                    selectMode = false;
+                    cv::Scalar lower1, upper1, lower2, upper2;
+                    computeHSVBounds(timedFrame.frame, lower1, upper1, lower2, upper2);
+                    std::cout << "Lower1 HSV: " << lower1 << "\n";
+                    std::cout << "Upper1 HSV: " << upper1 << "\n";
+                    std::cout << "Lower2 HSV: " << lower2 << "\n";
+                    std::cout << "Upper2 HSV: " << upper2 << "\n";
+
+                    continue;
+                }
             }
         }
 
@@ -242,10 +326,10 @@ int main(int argc, char **argv) {
 
         auto deltaPose = combined_processor::aproximateRobotPose(filteredLidarData, timedPico2Datas);
 
-        std::cout << "Encoder: " << timedPico2Data.encoderAngle << std::endl;
+        // std::cout << "Encoder: " << timedPico2Data.encoderAngle << std::endl;
 
-        std::cout << "[DeltaPose] ΔX: " << deltaPose.deltaX << " m, ΔY: " << deltaPose.deltaY << " m, ΔH: " << deltaPose.deltaH << " deg"
-                  << std::endl;
+        // std::cout << "[DeltaPose] ΔX: " << deltaPose.deltaX << " m, ΔY: " << deltaPose.deltaY << " m, ΔH: " << deltaPose.deltaH << " deg"
+        //           << std::endl;
 
         auto lineSegments = lidar_processor::getLines(filteredLidarData, deltaPose, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
         auto relativeWalls = lidar_processor::getRelativeWalls(lineSegments, Direction::fromHeading(heading), heading, 0.30f, 25.0f, 0.22f);
@@ -257,7 +341,7 @@ int main(int argc, char **argv) {
         auto parkingWalls = lidar_processor::getParkingWalls(lineSegments, Direction::fromHeading(heading), heading, 0.25f);
         auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, robotTurnDirection);
 
-        auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints);
+        auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints, deltaPose);
 
         const float SCALE = 6.0f;
 
@@ -297,7 +381,7 @@ int main(int argc, char **argv) {
             std::cout << "N/A" << std::endl;
         }
 
-        std::cout << "Heading: " << heading << std::endl;
+        // std::cout << "Heading: " << heading << std::endl;
 
         cv::imshow("Lidar View", lidarMat);
 
