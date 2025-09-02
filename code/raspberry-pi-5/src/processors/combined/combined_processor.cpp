@@ -160,6 +160,84 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
     return trafficLightInfos;
 }
 
+std::vector<ClassifiedTrafficLight> classifyTrafficLights(
+    const std::vector<TrafficLightInfo> &trafficLights,
+    const lidar_processor::ResolvedWalls &resolvedWalls,
+    RotationDirection turnDirection,
+    Segment currentSegment
+
+) {
+    std::vector<ClassifiedTrafficLight> results;
+    results.reserve(trafficLights.size());
+
+    // Pick outer/inner walls
+    std::optional<lidar_processor::LineSegment> outerWall, innerWall;
+    if (turnDirection == RotationDirection::CLOCKWISE) {
+        outerWall = resolvedWalls.leftWall;
+        innerWall = resolvedWalls.rightWall;
+    } else {
+        outerWall = resolvedWalls.rightWall;
+        innerWall = resolvedWalls.leftWall;
+    }
+
+    for (const auto &tl : trafficLights) {
+        const cv::Point2f &p = tl.lidarPosition;
+
+        // --- Distances ---
+        float frontDist = 0.0f;
+        if (resolvedWalls.frontWall) {
+            frontDist = resolvedWalls.frontWall->perpendicularDistance(p.x, p.y);
+        } else if (resolvedWalls.backWall) {
+            frontDist = 3.0f - resolvedWalls.backWall->perpendicularDistance(p.x, p.y);
+        }
+
+        float outerDist = 0.0f;
+        if (outerWall) {
+            outerDist = outerWall->perpendicularDistance(p.x, p.y);
+        } else if (innerWall) {
+            outerDist = 1.0f - innerWall->perpendicularDistance(p.x, p.y);
+        }
+
+        Segment seg = currentSegment;
+
+        // --- SegmentLocation: A/B/C depending on rotation ---
+        SegmentLocation loc;
+        if (turnDirection == RotationDirection::CLOCKWISE) {
+            if (frontDist > 0.80 && frontDist < 1.15f)
+                loc = SegmentLocation::A;  // front
+            else if (frontDist > 1.35 && frontDist < 1.65f)
+                loc = SegmentLocation::B;  // mid
+            else if (frontDist > 1.85 && frontDist < 2.15)
+                loc = SegmentLocation::C;  // back
+            else
+                continue;
+        } else {
+            if (frontDist > 0.80 && frontDist < 1.15f)
+                loc = SegmentLocation::C;  // front (reverse)
+            else if (frontDist > 1.35 && frontDist < 1.65f)
+                loc = SegmentLocation::B;  // mid
+            else if (frontDist > 1.85 && frontDist < 2.15)
+                loc = SegmentLocation::A;  // back
+            else
+                continue;
+        }
+
+        // --- WallSide: choose closer wall ---
+        WallSide side;
+        if (outerDist < 0.480)
+            side = WallSide::OUTER;
+        else if (outerDist > 0.520)
+            side = WallSide::INNER;
+        else
+            continue;
+
+        // --- Pack result ---
+        results.push_back(ClassifiedTrafficLight{tl, TrafficLightLocation{seg, loc, side}});
+    }
+
+    return results;
+}
+
 void drawTrafficLightInfo(cv::Mat &img, const TrafficLightInfo &info, float scale, int radius) {
     CV_Assert(!img.empty());
     CV_Assert(img.type() == CV_8UC3);
