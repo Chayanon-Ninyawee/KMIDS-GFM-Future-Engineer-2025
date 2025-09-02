@@ -204,20 +204,20 @@ std::vector<ClassifiedTrafficLight> classifyTrafficLights(
         SegmentLocation loc;
         if (turnDirection == RotationDirection::CLOCKWISE) {
             if (frontDist > 0.80 && frontDist < 1.15f)
-                loc = SegmentLocation::A;  // front
-            else if (frontDist > 1.35 && frontDist < 1.65f)
-                loc = SegmentLocation::B;  // mid
-            else if (frontDist > 1.85 && frontDist < 2.15)
-                loc = SegmentLocation::C;  // back
-            else
-                continue;
-        } else {
-            if (frontDist > 0.80 && frontDist < 1.15f)
-                loc = SegmentLocation::C;  // front (reverse)
+                loc = SegmentLocation::C;  // front
             else if (frontDist > 1.35 && frontDist < 1.65f)
                 loc = SegmentLocation::B;  // mid
             else if (frontDist > 1.85 && frontDist < 2.15)
                 loc = SegmentLocation::A;  // back
+            else
+                continue;
+        } else {
+            if (frontDist > 0.80 && frontDist < 1.15f)
+                loc = SegmentLocation::A;  // front (reverse)
+            else if (frontDist > 1.35 && frontDist < 1.65f)
+                loc = SegmentLocation::B;  // mid
+            else if (frontDist > 1.85 && frontDist < 2.15)
+                loc = SegmentLocation::C;  // back
             else
                 continue;
         }
