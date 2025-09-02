@@ -343,6 +343,22 @@ int main(int argc, char **argv) {
 
         auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints, deltaPose);
 
+        if (robotTurnDirection) {
+            auto classifiedLights = combined_processor::classifyTrafficLights(
+                trafficLightInfos,
+                resolveWalls,
+                *robotTurnDirection,
+                Segment::fromHeading(heading)
+            );
+
+            for (const auto &ct : classifiedLights) {
+                std::cout << "Traffic Light at LiDAR position (" << ct.info.lidarPosition.x << ", " << ct.info.lidarPosition.y << ")"
+                          << " mapped to Segment " << static_cast<int>(ct.location.segment) << ", Location "
+                          << static_cast<int>(ct.location.location) << ", WallSide "
+                          << (ct.location.side == WallSide::INNER ? "INNER" : "OUTER") << std::endl;
+            }
+        }
+
         const float SCALE = 6.0f;
 
         cv::Mat lidarMat(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
