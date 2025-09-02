@@ -92,11 +92,28 @@ std::optional<SyncedLidarCamera> syncLidarCamera(
 std::vector<TrafficLightInfo> combineTrafficLightInfo(
     const std::vector<camera_processor::BlockAngle> &blockAngles,
     const std::vector<cv::Point2f> &lidarPoints,
+    const RobotDeltaPose &robotDeltaPose,
     cv::Point2f cameraOffset,
     float maxAngleDiff
 ) {
-    std::vector<TrafficLightInfo> results;
-    std::vector<cv::Point2f> availableLidar = lidarPoints;
+    std::vector<TrafficLightInfo> trafficLightInfos;
+    std::vector<cv::Point2f> avaliableLidarPoints = lidarPoints;
+
+    // Apply delta transform: translate (-deltaX, -deltaY) and rotate (-deltaH)
+    float radH = robotDeltaPose.deltaH * static_cast<float>(M_PI) / 180.0f;
+    float cosH = std::cos(radH);
+    float sinH = std::sin(radH);
+
+    avaliableLidarPoints.reserve(lidarPoints.size());
+    for (const auto &p : lidarPoints) {
+        // Translate
+        float xt = p.x - robotDeltaPose.deltaX;
+        float yt = p.y - robotDeltaPose.deltaY;
+
+        // Rotate around (0,0)
+        cv::Point2f transformed{xt * cosH - yt * sinH, xt * sinH + yt * cosH};
+        avaliableLidarPoints.push_back(transformed);
+    }
 
     for (const auto &block : blockAngles) {
         size_t bestIndex = std::numeric_limits<size_t>::max();
@@ -104,8 +121,8 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
         float closestDistance = std::numeric_limits<float>::max();
 
         // Loop over all available LiDAR points
-        for (size_t i = 0; i < availableLidar.size(); ++i) {
-            const auto &lp = availableLidar[i];
+        for (size_t i = 0; i < avaliableLidarPoints.size(); ++i) {
+            const auto &lp = avaliableLidarPoints[i];
             float dx = lp.x - cameraOffset.x;
             float dy = lp.y - cameraOffset.y;
 
@@ -135,12 +152,12 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
         }
 
         if (bestIndex != std::numeric_limits<size_t>::max()) {
-            results.push_back(TrafficLightInfo{availableLidar[bestIndex], block});
-            availableLidar.erase(availableLidar.begin() + bestIndex);  // consume
+            trafficLightInfos.push_back(TrafficLightInfo{avaliableLidarPoints[bestIndex], block});
+            avaliableLidarPoints.erase(avaliableLidarPoints.begin() + bestIndex);  // consume
         }
     }
 
-    return results;
+    return trafficLightInfos;
 }
 
 void drawTrafficLightInfo(cv::Mat &img, const TrafficLightInfo &info, float scale, int radius) {
