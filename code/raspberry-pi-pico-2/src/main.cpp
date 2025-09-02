@@ -110,12 +110,20 @@ int main() {
             }
 
             if (imu.update(accel, euler)) {
+                if (accel.x == 0.0f) accel.x = 0.0001f;
+                if (accel.y == 0.0f) accel.y = 0.0001f;
+                if (accel.z == 0.0f) accel.z = 0.0001f;
+
+                if (euler.h == 0.0f) euler.h = 0.0001f;
+                if (euler.p == 0.0f) euler.p = 0.0001f;
+                if (euler.r == 0.0f) euler.r = 0.0001f;
+
                 i2c_slave::setImuData(accel, euler);
                 // printf("Euler angles: H: %.2f°, P: %.2f°, R: %.2f°\n", euler.h, euler.p, euler.r);
             }
 
             double encoderAngleToSend = encoder.getAngle();
-            if (encoderAngleToSend == 0.0) encoderAngleToSend = 0.01;
+            if (encoderAngleToSend == 0.0) encoderAngleToSend = 0.0001;
             i2c_slave::setEncoderAngle(encoderAngleToSend);
 
             i2c_slave::getMovementInfo(motorSpeed, steeringPercent);
