@@ -121,9 +121,14 @@ void Pico2Module::pollingLoop() {
 
             if (logger_) {
                 uint64_t ts = std::chrono::duration_cast<std::chrono::nanoseconds>(sample.timestamp.time_since_epoch()).count();
-                logger_->writeData(ts, &sample.accel, sizeof(sample.accel));
-                logger_->writeData(ts, &sample.euler, sizeof(sample.euler));
-                logger_->writeData(ts, &sample.encoderAngle, sizeof(sample.encoderAngle));
+
+                struct {
+                    ImuAccel accel;
+                    ImuEuler euler;
+                    double encoderAngle;
+                } payload{sample.accel, sample.euler, sample.encoderAngle};
+
+                logger_->writeData(ts, &payload, sizeof(payload));
             }
 
             {

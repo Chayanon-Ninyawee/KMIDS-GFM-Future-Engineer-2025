@@ -30,51 +30,24 @@ TimedLidarData reconstructTimedLidar(const LogEntry &entry) {
     return TimedLidarData{std::move(nodes), timestamp};
 }
 
-// FIXME: Temp code
-std::vector<TimedPico2Data> mergePico2Entries(const std::vector<LogEntry> &pico2Entries) {
-    std::vector<TimedPico2Data> timedPico2Datas;
-
-    if (pico2Entries.size() % 3 != 0) {
-        throw std::runtime_error("Pico2 log size is not a multiple of 3");
-    }
-
-    for (size_t i = 0; i + 2 < pico2Entries.size(); i += 3) {
-        const auto &accelEntry = pico2Entries[i];
-        const auto &eulerEntry = pico2Entries[i + 1];
-        const auto &encoderEntry = pico2Entries[i + 2];
-
-        // Check that timestamps match
-        if (accelEntry.timestamp != eulerEntry.timestamp || accelEntry.timestamp != encoderEntry.timestamp) {
-            throw std::runtime_error("Mismatched timestamps in Pico2 log");
-        }
-
-        TimedPico2Data sample{};
-        std::memcpy(&sample.accel, accelEntry.data.data(), sizeof(ImuAccel));
-        std::memcpy(&sample.euler, eulerEntry.data.data(), sizeof(ImuEuler));
-        std::memcpy(&sample.encoderAngle, encoderEntry.data.data(), sizeof(double));
-        sample.timestamp = std::chrono::steady_clock::time_point(std::chrono::nanoseconds(accelEntry.timestamp));
-
-        timedPico2Datas.push_back(sample);
-    }
-
-    return timedPico2Datas;
-}
-
-// FIXME: This work for this log since i wrote the code in the pico2_module incorrectly
-TimedPico2Data reconstructTimedPico2(const LogEntry &entry1, const LogEntry &entry2, const LogEntry &entry3) {
+TimedPico2Data reconstructTimedPico2(const LogEntry &entry) {
     TimedPico2Data pico2Data{};
 
-    // Accel
-    std::memcpy(&pico2Data.accel, entry1.data.data(), sizeof(ImuAccel));
+    struct {
+        ImuAccel accel;
+        ImuEuler euler;
+        double encoderAngle;
+    } payload;
 
-    // Euler
-    std::memcpy(&pico2Data.euler, entry2.data.data(), sizeof(ImuEuler));
+    std::memcpy(&payload, entry.data.data(), sizeof(payload));
 
-    // Encoder angle
-    std::memcpy(&pico2Data.encoderAngle, entry3.data.data(), sizeof(double));
+    // Assign fields
+    pico2Data.accel = payload.accel;
+    pico2Data.euler = payload.euler;
+    pico2Data.encoderAngle = payload.encoderAngle;
 
-    // Timestamp
-    auto ts = std::chrono::nanoseconds(entry1.timestamp);
+    // Reconstruct timestamp
+    auto ts = std::chrono::nanoseconds(entry.timestamp);
     pico2Data.timestamp = std::chrono::steady_clock::time_point(ts);
 
     return pico2Data;
@@ -178,30 +151,6 @@ int main(int argc, char **argv) {
         return idx;
     };
 
-    // FIXME: Temp
-    std::vector<TimedPico2Data> timedPico2Datas = mergePico2Entries(pico2Entries);
-    auto findClosestIndexPico2 = [](const std::vector<TimedPico2Data> &entries, size_t startIdx, uint64_t targetTs) -> size_t {
-        size_t idx = startIdx;
-
-        auto toNs = [](const std::chrono::steady_clock::time_point &tp) -> uint64_t {
-            return std::chrono::duration_cast<std::chrono::nanoseconds>(tp.time_since_epoch()).count();
-        };
-
-        while (idx + 1 < entries.size() && std::abs(static_cast<int64_t>(toNs(entries[idx + 1].timestamp) - targetTs)) <
-                                               std::abs(static_cast<int64_t>(toNs(entries[idx].timestamp) - targetTs)))
-        {
-            idx++;
-        }
-
-        while (idx > 0 && std::abs(static_cast<int64_t>(toNs(entries[idx - 1].timestamp) - targetTs)) <
-                              std::abs(static_cast<int64_t>(toNs(entries[idx].timestamp) - targetTs)))
-        {
-            idx--;
-        }
-
-        return idx;
-    };
-
     while (true) {
         int key = cv::waitKey(0);
         if (key == 27) break;  // ESC
@@ -219,9 +168,9 @@ int main(int argc, char **argv) {
         uint64_t lidarTime = lidarEntry.timestamp;
 
         // Synchronize Pico2
-        // FIXME:
-        pico2Idx = findClosestIndexPico2(timedPico2Datas, pico2Idx, lidarTime);
-        const auto &timedPico2Data = timedPico2Datas[pico2Idx];
+        pico2Idx = findClosestIndex(pico2Entries, pico2Idx, lidarTime);
+        const auto &pico2Entry = pico2Entries[pico2Idx];
+        TimedPico2Data timedPico2Data = reconstructTimedPico2(pico2Entry);
 
         if (not initialHeading) initialHeading = timedPico2Data.euler.h;
 
