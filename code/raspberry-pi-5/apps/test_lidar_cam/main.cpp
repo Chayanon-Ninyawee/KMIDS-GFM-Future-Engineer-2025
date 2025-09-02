@@ -122,7 +122,7 @@ int main() {
             auto colorMasks = camera_processor::filterColors(timedFrame);
             auto blockAngles = camera_processor::computeBlockAngles(colorMasks, camWidth, camHFov);
 
-            auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints);
+            auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints, {0.0f, 0.0f, 0.0f});
 
             const float SCALE = 6.0f;
 

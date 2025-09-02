@@ -130,7 +130,7 @@ void update(
     auto colorMasks = camera_processor::filterColors(timedFrame);
     auto blockAngles = camera_processor::computeBlockAngles(colorMasks, camWidth, camHFov);
 
-    auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints);
+    auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints, deltaPose);
 
     auto frontWall = resolveWalls.frontWall;
     auto backWall = resolveWalls.backWall;
