@@ -13,6 +13,10 @@
 
 namespace fs = std::filesystem;
 
+const uint32_t camWidth = 1296;
+const uint32_t camHeight = 972;
+const float camHFov = 104.0f;
+
 TimedLidarData reconstructTimedLidar(const LogEntry &entry) {
     std::vector<RawLidarNode> nodes(entry.data.size() / sizeof(RawLidarNode));
     if (!entry.data.empty()) {
@@ -228,11 +232,13 @@ int main(int argc, char **argv) {
         // Synchronize Camera (if available)
         TimedFrame timedFrame;
         camera_processor::ColorMasks colorMasks;
+        std::vector<camera_processor::BlockAngle> blockAngles;
         if (hasCamera) {
             cameraIdx = findClosestIndex(cameraEntries, cameraIdx, lidarTime);
             if (cameraIdx < cameraEntries.size()) {
                 timedFrame = reconstructTimedFrame(cameraEntries[cameraIdx]);
                 colorMasks = camera_processor::filterColors(timedFrame);
+                blockAngles = camera_processor::computeBlockAngles(colorMasks, camWidth, camHFov);
             }
         }
         // ---- Lidar processing ----
@@ -250,6 +256,8 @@ int main(int argc, char **argv) {
         auto resolveWalls = lidar_processor::resolveWalls(relativeWalls);
         auto parkingWalls = lidar_processor::getParkingWalls(lineSegments, Direction::fromHeading(heading), heading, 0.25f);
         auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, robotTurnDirection);
+
+        auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints);
 
         const float SCALE = 6.0f;
 
@@ -270,6 +278,9 @@ int main(int argc, char **argv) {
         for (auto &trafficLightPoint : trafficLightPoints)
             lidar_processor::drawTrafficLightPoint(lidarMat, trafficLightPoint, SCALE);
 
+        for (auto &trafficLightInfo : trafficLightInfos)
+            combined_processor::drawTrafficLightInfo(lidarMat, trafficLightInfo, SCALE);
+
         if (robotTurnDirection) {
             if (*robotTurnDirection == RotationDirection::CLOCKWISE)
                 std::cout << "CLOCKWISE" << std::endl;
@@ -280,7 +291,6 @@ int main(int argc, char **argv) {
         }
 
         std::cout << "Heading: " << heading << std::endl;
-        std::cout << "Test: " << timedPico2Datas[12].euler.h << std::endl;
 
         cv::imshow("Lidar View", lidarMat);
 
