@@ -53,6 +53,28 @@ TimedPico2Data reconstructTimedPico2(const LogEntry &entry) {
     return pico2Data;
 }
 
+std::vector<TimedPico2Data> reconstructPico2RingBufferVector(
+    const std::vector<LogEntry> &pico2Entries,
+    size_t currentIdx,
+    size_t windowSize = 120
+) {
+    std::vector<TimedPico2Data> result;
+    if (pico2Entries.empty() || currentIdx >= pico2Entries.size()) {
+        return result;
+    }
+
+    // Compute start index (clamp to 0)
+    size_t startIdx = (currentIdx >= windowSize - 1) ? currentIdx - (windowSize - 1) : 0;
+
+    result.reserve(currentIdx - startIdx + 1);
+
+    for (size_t i = startIdx; i <= currentIdx; ++i) {
+        result.push_back(reconstructTimedPico2(pico2Entries[i]));
+    }
+
+    return result;
+}
+
 TimedFrame reconstructTimedFrame(const LogEntry &entry) {
     if (entry.data.empty()) {
         throw std::runtime_error("Empty image entry data");
@@ -151,26 +173,36 @@ int main(int argc, char **argv) {
         return idx;
     };
 
+    // 1/30 s in nanoseconds
+    constexpr uint64_t stepNs = static_cast<uint64_t>(1e9 / 30.0);
+
+    // Current playback time starts at first lidar timestamp
+    uint64_t currentTime = lidarEntries.front().timestamp;
+
     while (true) {
         int key = cv::waitKey(0);
         if (key == 27) break;  // ESC
 
-        if (key == 81) {  // left
-            if (lidarIdx > 0) lidarIdx--;
-        } else if (key == 83) {  // right
-            if (lidarIdx + 1 < lidarEntries.size()) lidarIdx++;
+        if (key == 81) {  // left arrow
+            if (currentTime > stepNs) currentTime -= stepNs;
+        } else if (key == 83) {  // right arrow
+            currentTime += stepNs;
         } else {
             continue;
         }
 
+        // ---- LIDAR ----
+        lidarIdx = findClosestIndex(lidarEntries, lidarIdx, currentTime);
+        if (lidarIdx >= lidarEntries.size()) continue;
         const auto &lidarEntry = lidarEntries[lidarIdx];
         TimedLidarData timedLidarData = reconstructTimedLidar(lidarEntry);
-        uint64_t lidarTime = lidarEntry.timestamp;
 
-        // Synchronize Pico2
-        pico2Idx = findClosestIndex(pico2Entries, pico2Idx, lidarTime);
+        // ---- Pico2 ----
+        pico2Idx = findClosestIndex(pico2Entries, pico2Idx, currentTime);
+        if (pico2Idx >= pico2Entries.size()) continue;
         const auto &pico2Entry = pico2Entries[pico2Idx];
         TimedPico2Data timedPico2Data = reconstructTimedPico2(pico2Entry);
+        auto timedPico2Datas = reconstructPico2RingBufferVector(pico2Entries, pico2Idx);
 
         if (not initialHeading) initialHeading = timedPico2Data.euler.h;
 
@@ -178,25 +210,32 @@ int main(int argc, char **argv) {
         heading = std::fmod(heading, 360.0f);
         if (heading < 0.0f) heading += 360.0f;
 
-        // Synchronize Camera (if available)
+        // ---- Camera ----
         TimedFrame timedFrame;
         camera_processor::ColorMasks colorMasks;
         std::vector<camera_processor::BlockAngle> blockAngles;
         if (hasCamera) {
-            cameraIdx = findClosestIndex(cameraEntries, cameraIdx, lidarTime);
+            cameraIdx = findClosestIndex(cameraEntries, cameraIdx, currentTime);
             if (cameraIdx < cameraEntries.size()) {
                 timedFrame = reconstructTimedFrame(cameraEntries[cameraIdx]);
                 colorMasks = camera_processor::filterColors(timedFrame);
                 blockAngles = camera_processor::computeBlockAngles(colorMasks, camWidth, camHFov);
+
+                // use blockAngles here...
             }
         }
-        // ---- Lidar processing ----
 
+        // ---- Lidar processing ----
         auto filteredLidarData = lidar_processor::filterLidarData(timedLidarData);
 
-        // auto deltaPose = combined_processor::aproximateRobotPose(filteredLidarData, timedPico2Datas);
+        auto deltaPose = combined_processor::aproximateRobotPose(filteredLidarData, timedPico2Datas);
 
-        auto lineSegments = lidar_processor::getLines(filteredLidarData, {0.0f, 0.0f, 0.0f}, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
+        std::cout << "Encoder: " << timedPico2Data.encoderAngle << std::endl;
+
+        std::cout << "[DeltaPose] ΔX: " << deltaPose.deltaX << " m, ΔY: " << deltaPose.deltaY << " m, ΔH: " << deltaPose.deltaH << " deg"
+                  << std::endl;
+
+        auto lineSegments = lidar_processor::getLines(filteredLidarData, deltaPose, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
         auto relativeWalls = lidar_processor::getRelativeWalls(lineSegments, Direction::fromHeading(heading), heading, 0.30f, 25.0f, 0.22f);
 
         auto newRobotTurnDirecton = lidar_processor::getTurnDirection(relativeWalls);
