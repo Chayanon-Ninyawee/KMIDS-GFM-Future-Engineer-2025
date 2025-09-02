@@ -93,6 +93,18 @@ TimedFrame reconstructTimedFrame(const LogEntry &entry) {
     return TimedFrame{std::move(frame), timestamp};
 }
 
+void drawLineFromAngle(cv::Mat &img, int cx, int cy, float angle, const cv::Scalar &color, int thickness = 2) {
+    // Extend line length far beyond image size
+    float length = std::max(img.cols, img.rows) * 2.0f;
+
+    // Compute end point
+    int x2 = static_cast<int>(cx + length * std::sin(angle * M_PI / 180.0f));
+    int y2 = static_cast<int>(cy - length * std::cos(angle * M_PI / 180.0f));  // y-axis inverted in images
+
+    // Draw line
+    cv::line(img, cv::Point(cx, cy), cv::Point(x2, y2), color, thickness);
+}
+
 int main(int argc, char **argv) {
     if (argc < 2) {
         std::cerr << "Usage: " << argv[0] << " <log_folder>" << std::endl;
@@ -268,6 +280,13 @@ int main(int argc, char **argv) {
 
         for (auto &trafficLightInfo : trafficLightInfos)
             combined_processor::drawTrafficLightInfo(lidarMat, trafficLightInfo, SCALE);
+
+        for (const auto &block : blockAngles) {
+            // Choose color for drawing
+            cv::Scalar lineColor = (block.color == camera_processor::Color::Red) ? cv::Scalar(0, 0, 255)   // Red in BGR
+                                                                                 : cv::Scalar(0, 255, 0);  // Green in BGR
+            drawLineFromAngle(lidarMat, 400, 400 - (800 / 6.0f * 0.15), block.angle, lineColor, 2);
+        }
 
         if (robotTurnDirection) {
             if (*robotTurnDirection == RotationDirection::CLOCKWISE)
