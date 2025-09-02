@@ -202,34 +202,70 @@ std::vector<ClassifiedTrafficLight> classifyTrafficLights(
 
         // --- SegmentLocation: A/B/C depending on rotation ---
         SegmentLocation loc;
-        if (turnDirection == RotationDirection::CLOCKWISE) {
-            if (frontDist > 0.80 && frontDist < 1.15f)
-                loc = SegmentLocation::C;  // front
-            else if (frontDist > 1.35 && frontDist < 1.65f)
-                loc = SegmentLocation::B;  // mid
-            else if (frontDist > 1.85 && frontDist < 2.15)
-                loc = SegmentLocation::A;  // back
+        WallSide side;
+        if (outerDist < 0.900) {
+            if (turnDirection == RotationDirection::CLOCKWISE) {
+                if (frontDist > 0.80 && frontDist < 1.15f)
+                    loc = SegmentLocation::C;  // front
+                else if (frontDist > 1.35 && frontDist < 1.65f)
+                    loc = SegmentLocation::B;  // mid
+                else if (frontDist > 1.85 && frontDist < 2.15)
+                    loc = SegmentLocation::A;  // back
+                else
+                    continue;
+            } else {
+                if (frontDist > 0.80 && frontDist < 1.15f)
+                    loc = SegmentLocation::A;  // front (reverse)
+                else if (frontDist > 1.35 && frontDist < 1.65f)
+                    loc = SegmentLocation::B;  // mid
+                else if (frontDist > 1.85 && frontDist < 2.15)
+                    loc = SegmentLocation::C;  // back
+                else
+                    continue;
+            }
+
+            if (outerDist < 0.480)
+                side = WallSide::OUTER;
+            else if (outerDist > 0.520)
+                side = WallSide::INNER;
             else
                 continue;
         } else {
-            if (frontDist > 0.80 && frontDist < 1.15f)
-                loc = SegmentLocation::A;  // front (reverse)
-            else if (frontDist > 1.35 && frontDist < 1.65f)
-                loc = SegmentLocation::B;  // mid
-            else if (frontDist > 1.85 && frontDist < 2.15)
-                loc = SegmentLocation::C;  // back
+            if (turnDirection == RotationDirection::CLOCKWISE) {
+                float nextHeading = currentSegment.toHeading() + 90.0f;
+                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+                seg = Segment::fromHeading(nextHeading);
+
+                if (outerDist > 0.900 && outerDist < 1.15f)
+                    loc = SegmentLocation::A;  // front
+                else if (outerDist > 1.35 && outerDist < 1.65f)
+                    loc = SegmentLocation::B;  // mid
+                else if (outerDist > 1.85 && outerDist < 2.15)
+                    loc = SegmentLocation::C;  // back
+                else
+                    continue;
+            } else {
+                float nextHeading = currentSegment.toHeading() - 90.0f;
+                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+                seg = Segment::fromHeading(nextHeading);
+
+                if (outerDist >= 0.900 && outerDist < 1.15f)
+                    loc = SegmentLocation::C;  // front
+                else if (outerDist > 1.35 && outerDist < 1.65f)
+                    loc = SegmentLocation::B;  // mid
+                else if (outerDist > 1.85 && outerDist < 2.15)
+                    loc = SegmentLocation::A;  // back
+                else
+                    continue;
+            }
+
+            if (frontDist < 0.480)
+                side = WallSide::OUTER;
+            else if (frontDist > 0.520)
+                side = WallSide::INNER;
             else
                 continue;
         }
-
-        // --- WallSide: choose closer wall ---
-        WallSide side;
-        if (outerDist < 0.480)
-            side = WallSide::OUTER;
-        else if (outerDist > 0.520)
-            side = WallSide::INNER;
-        else
-            continue;
 
         // --- Pack result ---
         results.push_back(ClassifiedTrafficLight{tl, TrafficLightLocation{seg, loc, side}});
