@@ -1,13 +1,17 @@
 #include <cstring>
+#include <filesystem>
 #include <iostream>
 #include <vector>
 
 #include "camera_processor.h"
 #include "camera_struct.h"
-#include "imu_struct.h"
+#include "combined_processor.h"
 #include "lidar_processor.h"
 #include "lidar_struct.h"
 #include "log_reader.h"
+#include "pico2_struct.h"
+
+namespace fs = std::filesystem;
 
 TimedLidarData reconstructTimedLidar(const LogEntry &entry) {
     std::vector<RawLidarNode> nodes(entry.data.size() / sizeof(RawLidarNode));
@@ -22,28 +26,54 @@ TimedLidarData reconstructTimedLidar(const LogEntry &entry) {
     return TimedLidarData{std::move(nodes), timestamp};
 }
 
-TimedImuData reconstructTimedImu(const LogEntry &entry) {
-    TimedImuData imuData{};
+// FIXME: Temp code
+std::vector<TimedPico2Data> mergePico2Entries(const std::vector<LogEntry> &pico2Entries) {
+    std::vector<TimedPico2Data> timedPico2Datas;
 
-    if (entry.data.size() < sizeof(ImuAccel) + sizeof(ImuEuler)) {
-        throw std::runtime_error("Invalid IMU entry data size");
+    if (pico2Entries.size() % 3 != 0) {
+        throw std::runtime_error("Pico2 log size is not a multiple of 3");
     }
 
-    std::memcpy(&imuData.accel, entry.data.data(), sizeof(ImuAccel));
-    std::memcpy(&imuData.euler, entry.data.data() + sizeof(ImuAccel), sizeof(ImuEuler));
+    for (size_t i = 0; i + 2 < pico2Entries.size(); i += 3) {
+        const auto &accelEntry = pico2Entries[i];
+        const auto &eulerEntry = pico2Entries[i + 1];
+        const auto &encoderEntry = pico2Entries[i + 2];
 
-    // Convert timestamp in nanoseconds back to steady_clock::time_point
-    auto ts = std::chrono::nanoseconds(entry.timestamp);
-    imuData.timestamp = std::chrono::steady_clock::time_point(ts);
+        // Check that timestamps match
+        if (accelEntry.timestamp != eulerEntry.timestamp || accelEntry.timestamp != encoderEntry.timestamp) {
+            throw std::runtime_error("Mismatched timestamps in Pico2 log");
+        }
 
-    return imuData;
+        TimedPico2Data sample{};
+        std::memcpy(&sample.accel, accelEntry.data.data(), sizeof(ImuAccel));
+        std::memcpy(&sample.euler, eulerEntry.data.data(), sizeof(ImuEuler));
+        std::memcpy(&sample.encoderAngle, encoderEntry.data.data(), sizeof(double));
+        sample.timestamp = std::chrono::steady_clock::time_point(std::chrono::nanoseconds(accelEntry.timestamp));
+
+        timedPico2Datas.push_back(sample);
+    }
+
+    return timedPico2Datas;
 }
-float wrapHeading(float heading) {
-    heading = std::fmod(heading, 360.0f);  // remainder after division
-    if (heading < 0) {
-        heading += 360.0f;  // keep it positive
-    }
-    return heading;
+
+// FIXME: This work for this log since i wrote the code in the pico2_module incorrectly
+TimedPico2Data reconstructTimedPico2(const LogEntry &entry1, const LogEntry &entry2, const LogEntry &entry3) {
+    TimedPico2Data pico2Data{};
+
+    // Accel
+    std::memcpy(&pico2Data.accel, entry1.data.data(), sizeof(ImuAccel));
+
+    // Euler
+    std::memcpy(&pico2Data.euler, entry2.data.data(), sizeof(ImuEuler));
+
+    // Encoder angle
+    std::memcpy(&pico2Data.encoderAngle, entry3.data.data(), sizeof(double));
+
+    // Timestamp
+    auto ts = std::chrono::nanoseconds(entry1.timestamp);
+    pico2Data.timestamp = std::chrono::steady_clock::time_point(ts);
+
+    return pico2Data;
 }
 
 TimedFrame reconstructTimedFrame(const LogEntry &entry) {
@@ -65,84 +95,151 @@ TimedFrame reconstructTimedFrame(const LogEntry &entry) {
 }
 
 int main(int argc, char **argv) {
-    if (argc < 4) {
-        std::cerr << "Usage: " << argv[0] << " <lidar_log_file> <imu_log_file> <camera_file>" << std::endl;
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " <log_folder>" << std::endl;
         return 1;
     }
 
-    std::string lidarLogFile = argv[1];
+    std::string folderPath = argv[1];
+
+    // Build file paths
+    std::string lidarLogFile = (fs::path(folderPath) / "lidar.bin").string();
+    std::string pico2File = (fs::path(folderPath) / "pico2.bin").string();
+    std::string cameraLogFile = (fs::path(folderPath) / "camera.bin").string();
+
+    // ---- Lidar ----
     LogReader lidarReader(lidarLogFile);
     std::vector<LogEntry> lidarEntries;
-
     if (!lidarReader.readAll(lidarEntries)) {
-        std::cerr << "Failed to read log file." << std::endl;
+        std::cerr << "Failed to read Lidar log file: " << lidarLogFile << std::endl;
         return 1;
     }
-
     std::cout << "Loaded " << lidarEntries.size() << " Lidar log entries." << std::endl;
 
-    std::string imuLogFile = argv[2];
-    LogReader imuReader(imuLogFile);
-    std::vector<LogEntry> imuEntries;
-
-    if (!imuReader.readAll(imuEntries)) {
-        std::cerr << "Failed to read IMU log file." << std::endl;
+    // ---- Pico2 ----
+    LogReader pico2Reader(pico2File);
+    std::vector<LogEntry> pico2Entries;
+    if (!pico2Reader.readAll(pico2Entries)) {
+        std::cerr << "Failed to read Pico2 log file: " << pico2File << std::endl;
         return 1;
     }
+    std::cout << "Loaded " << pico2Entries.size() << " Pico2 log entries." << std::endl;
 
-    std::cout << "Loaded " << imuEntries.size() << " IMU log entries." << std::endl;
+    std::vector<LogEntry> cameraEntries;  // declare here, always in scope
+    bool hasCamera = false;
 
-    const auto &intialImuEntry = imuEntries[0];
-    TimedImuData intialTimedImuData = reconstructTimedImu(intialImuEntry);
-
-    std::string cameraLogFile = argv[3];
-    LogReader cameraReader(cameraLogFile);
-    std::vector<LogEntry> cameraEntries;
-
-    if (!cameraReader.readAll(cameraEntries)) {
-        std::cerr << "Failed to read log file." << std::endl;
-        return 1;
+    // ---- Camera (optional) ----
+    if (fs::exists(cameraLogFile)) {
+        LogReader cameraReader(cameraLogFile);
+        if (!cameraReader.readAll(cameraEntries)) {
+            std::cerr << "Failed to read Camera log file: " << cameraLogFile << std::endl;
+            return 1;
+        }
+        std::cout << "Loaded " << cameraEntries.size() << " Camera log entries." << std::endl;
+        hasCamera = true;
+    } else {
+        std::cout << "No camera log file found, skipping." << std::endl;
     }
 
-    std::cout << "Loaded " << cameraEntries.size() << " Camera log entries." << std::endl;
-
+    // Windows: only open Camera View if we have camera data
     cv::namedWindow("Lidar View", cv::WINDOW_FULLSCREEN);
-    cv::namedWindow("Camera View", cv::WINDOW_FULLSCREEN);
+    if (hasCamera) {
+        cv::namedWindow("Camera View", cv::WINDOW_FULLSCREEN);
+    }
 
+    std::optional<float> initialHeading;
     std::optional<RotationDirection> robotTurnDirection;
 
-    size_t i = 0;
+    size_t lidarIdx = 0;
+    size_t pico2Idx = 0;
+    size_t cameraIdx = 0;
+
+    auto findClosestIndex = [](const std::vector<LogEntry> &entries, size_t startIdx, uint64_t targetTs) -> size_t {
+        size_t idx = startIdx;
+
+        // Move forward if next entry is closer
+        while (idx + 1 < entries.size() && std::abs(static_cast<int64_t>(entries[idx + 1].timestamp - targetTs)) <
+                                               std::abs(static_cast<int64_t>(entries[idx].timestamp - targetTs)))
+        {
+            idx++;
+        }
+
+        // Move backward if previous entry is closer
+        while (idx > 0 && std::abs(static_cast<int64_t>(entries[idx - 1].timestamp - targetTs)) <
+                              std::abs(static_cast<int64_t>(entries[idx].timestamp - targetTs)))
+        {
+            idx--;
+        }
+
+        return idx;
+    };
+
+    // FIXME: Temp
+    std::vector<TimedPico2Data> timedPico2Datas = mergePico2Entries(pico2Entries);
+    auto findClosestIndexPico2 = [](const std::vector<TimedPico2Data> &entries, size_t startIdx, uint64_t targetTs) -> size_t {
+        size_t idx = startIdx;
+
+        auto toNs = [](const std::chrono::steady_clock::time_point &tp) -> uint64_t {
+            return std::chrono::duration_cast<std::chrono::nanoseconds>(tp.time_since_epoch()).count();
+        };
+
+        while (idx + 1 < entries.size() && std::abs(static_cast<int64_t>(toNs(entries[idx + 1].timestamp) - targetTs)) <
+                                               std::abs(static_cast<int64_t>(toNs(entries[idx].timestamp) - targetTs)))
+        {
+            idx++;
+        }
+
+        while (idx > 0 && std::abs(static_cast<int64_t>(toNs(entries[idx - 1].timestamp) - targetTs)) <
+                              std::abs(static_cast<int64_t>(toNs(entries[idx].timestamp) - targetTs)))
+        {
+            idx--;
+        }
+
+        return idx;
+    };
+
     while (true) {
-        int key = cv::waitKey(0);  // waits for key press
+        int key = cv::waitKey(0);
+        if (key == 27) break;  // ESC
 
-        if (key == 27) break;  // ESC to exit
-
-        if (key == 81) {  // left arrow
-            if (i > 0) i--;
-        } else if (key == 83) {  // right arrow
-            if (i < lidarEntries.size() - 1) i++;
+        if (key == 81) {  // left
+            if (lidarIdx > 0) lidarIdx--;
+        } else if (key == 83) {  // right
+            if (lidarIdx + 1 < lidarEntries.size()) lidarIdx++;
         } else {
             continue;
         }
 
-        const auto &lidarEntry = lidarEntries[i];
+        const auto &lidarEntry = lidarEntries[lidarIdx];
         TimedLidarData timedLidarData = reconstructTimedLidar(lidarEntry);
+        uint64_t lidarTime = lidarEntry.timestamp;
+
+        // Synchronize Pico2
+        // FIXME:
+        pico2Idx = findClosestIndexPico2(timedPico2Datas, pico2Idx, lidarTime);
+        const auto &timedPico2Data = timedPico2Datas[pico2Idx];
+
+        if (not initialHeading) initialHeading = timedPico2Data.euler.h;
+
+        float heading = timedPico2Data.euler.h - initialHeading.value_or(0.0f);
+        heading = std::fmod(heading, 360.0f);
+        if (heading < 0.0f) heading += 360.0f;
+
+        // Synchronize Camera (if available)
+        TimedFrame timedFrame;
+        camera_processor::ColorMasks colorMasks;
+        if (hasCamera) {
+            cameraIdx = findClosestIndex(cameraEntries, cameraIdx, lidarTime);
+            if (cameraIdx < cameraEntries.size()) {
+                timedFrame = reconstructTimedFrame(cameraEntries[cameraIdx]);
+                colorMasks = camera_processor::filterColors(timedFrame);
+            }
+        }
+        // ---- Lidar processing ----
 
         auto filteredLidarData = lidar_processor::filterLidarData(timedLidarData);
 
-        const auto &imuEntry = imuEntries[i];
-        TimedImuData timedImuData = reconstructTimedImu(imuEntry);
-        timedImuData.euler.h -= intialTimedImuData.euler.h;
-        timedImuData.euler.h = wrapHeading(timedImuData.euler.h);
-        timedImuData.euler.r -= intialTimedImuData.euler.r;
-        timedImuData.euler.r = wrapHeading(timedImuData.euler.h);
-        timedImuData.euler.p -= intialTimedImuData.euler.p;
-        timedImuData.euler.p = wrapHeading(timedImuData.euler.h);
-
-        float heading = timedImuData.euler.h;
-
-        const auto &cameraEntry = cameraEntries[i];
-        TimedFrame timedFrame = reconstructTimedFrame(cameraEntry);
+        // auto deltaPose = combined_processor::aproximateRobotPose(filteredLidarData, timedPico2Datas);
 
         auto lineSegments = lidar_processor::getLines(filteredLidarData, {0.0f, 0.0f, 0.0f}, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
         auto relativeWalls = lidar_processor::getRelativeWalls(lineSegments, Direction::fromHeading(heading), heading, 0.30f, 25.0f, 0.22f);
@@ -154,74 +251,45 @@ int main(int argc, char **argv) {
         auto parkingWalls = lidar_processor::getParkingWalls(lineSegments, Direction::fromHeading(heading), heading, 0.25f);
         auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, robotTurnDirection);
 
-        auto colorMasks = camera_processor::filterColors(timedFrame);
-
         const float SCALE = 6.0f;
 
         cv::Mat lidarMat(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
         lidar_processor::drawLidarData(lidarMat, timedLidarData, SCALE);
 
-        // for (size_t i = 0; i < lineSegments.size(); ++i) {
-        //     const auto &lineSegment = lineSegments[i];
+        // Draw walls, parking, traffic lights as before
+        if (resolveWalls.leftWall) lidar_processor::drawLineSegment(lidarMat, *resolveWalls.leftWall, SCALE, {0, 0, 255});
+        if (resolveWalls.rightWall) lidar_processor::drawLineSegment(lidarMat, *resolveWalls.rightWall, SCALE, {0, 255, 255});
+        if (resolveWalls.frontWall) lidar_processor::drawLineSegment(lidarMat, *resolveWalls.frontWall, SCALE, {0, 255, 0});
+        if (resolveWalls.backWall) lidar_processor::drawLineSegment(lidarMat, *resolveWalls.backWall, SCALE, {255, 255, 0});
+        if (resolveWalls.farLeftWall) lidar_processor::drawLineSegment(lidarMat, *resolveWalls.farLeftWall, SCALE, {0, 0, 100});
+        if (resolveWalls.farRightWall) lidar_processor::drawLineSegment(lidarMat, *resolveWalls.farRightWall, SCALE, {0, 100, 100});
 
-        //     std::srand(static_cast<unsigned int>(i));
-        //     cv::Scalar color(rand() % 256, rand() % 256, rand() % 256);
+        for (auto &parkingWall : parkingWalls)
+            lidar_processor::drawLineSegment(lidarMat, parkingWall, SCALE, {146, 22, 199});
 
-        //     // lidar_processor::drawLineSegment(lidarMat, lineSegment, SCALE);
-        //     lidar_processor::drawLineSegment(lidarMat, lineSegment, SCALE, color);
-        // }
-
-        if (resolveWalls.leftWall) {
-            cv::Scalar color(0, 0, 255);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.leftWall, SCALE, color);
-        }
-        if (resolveWalls.rightWall) {
-            cv::Scalar color(0, 255, 255);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.rightWall, SCALE, color);
-        }
-        if (resolveWalls.frontWall) {
-            cv::Scalar color(0, 255, 0);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.frontWall, SCALE, color);
-        }
-        if (resolveWalls.backWall) {
-            cv::Scalar color(255, 255, 0);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.backWall, SCALE, color);
-        }
-
-        if (resolveWalls.farLeftWall) {
-            cv::Scalar color(0, 0, 100);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.farLeftWall, SCALE, color);
-        }
-        if (resolveWalls.farRightWall) {
-            cv::Scalar color(0, 100, 100);
-            lidar_processor::drawLineSegment(lidarMat, *resolveWalls.farRightWall, SCALE, color);
-        }
-
-        for (auto &parkingWall : parkingWalls) {
-            cv::Scalar color(146, 22, 199);
-            lidar_processor::drawLineSegment(lidarMat, parkingWall, SCALE, color);
-        }
-
-        for (auto &trafficLightPoint : trafficLightPoints) {
+        for (auto &trafficLightPoint : trafficLightPoints)
             lidar_processor::drawTrafficLightPoint(lidarMat, trafficLightPoint, SCALE);
-        }
 
         if (robotTurnDirection) {
-            if (*robotTurnDirection == RotationDirection::CLOCKWISE) {
+            if (*robotTurnDirection == RotationDirection::CLOCKWISE)
                 std::cout << "CLOCKWISE" << std::endl;
-            } else if (*robotTurnDirection == RotationDirection::COUNTER_CLOCKWISE) {
+            else if (*robotTurnDirection == RotationDirection::COUNTER_CLOCKWISE)
                 std::cout << "COUNTER_CLOCKWISE" << std::endl;
-            }
         } else {
             std::cout << "N/A" << std::endl;
         }
 
+        std::cout << "Heading: " << heading << std::endl;
+        std::cout << "Test: " << timedPico2Datas[12].euler.h << std::endl;
+
         cv::imshow("Lidar View", lidarMat);
 
-        cv::Mat cameraMat = timedFrame.frame.clone();
-        camera_processor::drawColorMasks(cameraMat, colorMasks);
-
-        cv::imshow("Camera View", cameraMat);
+        // Only show camera view if available
+        if (hasCamera && !timedFrame.frame.empty()) {
+            cv::Mat cameraMat = timedFrame.frame.clone();
+            camera_processor::drawColorMasks(cameraMat, colorMasks);
+            cv::imshow("Camera View", cameraMat);
+        }
     }
 
     cv::destroyAllWindows();
