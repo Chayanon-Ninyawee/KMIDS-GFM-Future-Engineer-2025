@@ -1,5 +1,3 @@
-// FIXME: UNTESTED
-
 #include "camera_module.h"
 #include "combined_processor.h"
 #include "lidar_module.h"
