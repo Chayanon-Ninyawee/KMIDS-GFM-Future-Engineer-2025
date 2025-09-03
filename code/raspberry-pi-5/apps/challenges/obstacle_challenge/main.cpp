@@ -39,7 +39,6 @@ const float TARGET_OUTER_WALL_DISTANCE_PARKING = 0.30f;
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
 const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 
-// FIXME: TUNE THE VALUE
 const float TURNING_FRONT_WALL_DISTANCE = 0.80f;
 const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.70f;
 const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.50f;
@@ -47,10 +46,12 @@ const float TURNING_FRONT_WALL_INNER1_DISTANCE = 1.05f;
 const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.13f;
 const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.64f;
 
+// Will just go and park EZ
 const float RIGHT_PRE_PARKING_FRONT_WALL_DISTANCE = 1.80f;
 const auto CCW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(500);
-const float LEFT_PRE_PARKING_FRONT_WALL_DISTANCE = 2.20f;
-const auto CW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(400);
+// Will go over then long reverse to park
+const float LEFT_PRE_PARKING_FRONT_WALL_DISTANCE = 1.40f;
+const auto CW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
 
 enum Mode
 {
@@ -61,7 +62,8 @@ enum Mode
     CW_PRE_FIND_PARKING,
     CCW_PRE_FIND_PARKING,
     CCW_PRE_UTURN_FIND_PARKING,
-    FIND_PARKING,
+    CCW_FIND_PARKING,
+    CW_FIND_PARKING,
     PARKING_1,
     PARKING_2,
     PARKING_3,
@@ -485,7 +487,7 @@ instant_update:
         {
             waitTimerActive = false;
 
-            state.robotMode = Mode::FIND_PARKING;
+            state.robotMode = Mode::CCW_FIND_PARKING;
             goto instant_update;
         }
         break;
@@ -507,12 +509,12 @@ instant_update:
         {
             waitTimerActive = false;
 
-            state.robotMode = Mode::FIND_PARKING;
+            state.robotMode = Mode::CW_FIND_PARKING;
             goto instant_update;
         }
         break;
     }
-    case Mode::FIND_PARKING: {
+    case Mode::CCW_FIND_PARKING: {
         outMotorSpeed = 1.0f;
 
         auto lineSegmentsForParking = lidar_processor::getLines(filteredLidarData, deltaPose, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
@@ -561,21 +563,71 @@ instant_update:
 
         // std::cout << "[BackParkingWall] dir=" << backParkingWallDir << "°, dist=" << backParkingWallDist << " m" << std::endl;
 
-        if (state.robotTurnDirection) {
-            float targetParkingWallDistance;
-            bool isBackParkingWallBehind;
-            if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
-                targetParkingWallDistance = 0.455f;
-                isBackParkingWallBehind = backParkingWallDir >= 180.0f && backParkingWallDir < 300.0f;
-            } else {
-                targetParkingWallDistance = 0.475f;
-                isBackParkingWallBehind = backParkingWallDir >= 240.0f && backParkingWallDir < 360.0f;
-            }
+        float targetParkingWallDistance = 0.475f;
+        bool isBackParkingWallBehind = backParkingWallDir >= 240.0f && backParkingWallDir < 360.0f;
 
-            if (isBackParkingWallBehind && backParkingWallDist >= targetParkingWallDistance) {
-                state.robotMode = Mode::PARKING_1;
-                goto instant_update;
+        if (isBackParkingWallBehind && backParkingWallDist >= targetParkingWallDistance) {
+            state.robotMode = Mode::PARKING_1;
+            goto instant_update;
+        }
+
+        break;
+    }
+    case Mode::CW_FIND_PARKING: {
+        outMotorSpeed = -1.0f;
+
+        auto lineSegmentsForParking = lidar_processor::getLines(filteredLidarData, deltaPose, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
+        auto parkingWalls = lidar_processor::getParkingWalls(lineSegmentsForParking, state.headingDirection, heading, 0.30f);
+
+        targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE_PARKING;
+
+        if (parkingWalls.empty()) break;
+
+        lidar_processor::LineSegment backParkingWall;
+        std::vector<lidar_processor::LineSegment> frontWalls;
+        std::vector<lidar_processor::LineSegment> backWalls;
+
+        for (auto &wall : parkingWalls) {
+            if (wall.perpendicularDistance(0.0f, 0.0f) >= 1.00f) continue;
+
+            float dir = wall.perpendicularDirection(0.0f, 0.0f);
+            if (dir >= 0.0f && dir < 180.0f) {
+                frontWalls.push_back(wall);
+            } else {
+                backWalls.push_back(wall);
             }
+        }
+
+        if (!frontWalls.empty() && !backWalls.empty()) {
+            // Rule 1: if wall in front exists, pick closest back wall
+            backParkingWall = *std::min_element(backWalls.begin(), backWalls.end(), [](const auto &a, const auto &b) {
+                return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+            });
+        } else if (!frontWalls.empty()) {
+            // Rule 2: only front walls → pick closest front wall
+            backParkingWall = *std::min_element(frontWalls.begin(), frontWalls.end(), [](const auto &a, const auto &b) {
+                return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+            });
+        } else if (!backWalls.empty()) {
+            // Rule 3: only back walls → pick furthest back wall
+            backParkingWall = *std::max_element(backWalls.begin(), backWalls.end(), [](const auto &a, const auto &b) {
+                return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+            });
+        } else {
+            break;
+        }
+
+        float backParkingWallDir = backParkingWall.perpendicularDirection(0.0f, 0.0f);
+        float backParkingWallDist = -backParkingWall.y2;
+
+        // std::cout << "[BackParkingWall] dir=" << backParkingWallDir << "°, dist=" << backParkingWallDist << " m" << std::endl;
+
+        float targetParkingWallDistance = 0.455f;
+        bool isBackParkingWallBehind = backParkingWallDir >= 180.0f && backParkingWallDir < 300.0f;
+
+        if (isBackParkingWallBehind && backParkingWallDist >= targetParkingWallDistance) {
+            state.robotMode = Mode::PARKING_1;
+            goto instant_update;
         }
 
         break;
@@ -756,6 +808,10 @@ instant_update:
     }
 
     outSteeringPercent = state.headingPid.update(headingError, dt);
+
+    if (outMotorSpeed < 0) {
+        outSteeringPercent = -outSteeringPercent;
+    }
 
     // std::cout << "Heading: " << heading << "°, Heading Direction: " << state.headingDirection.toHeading()
     //           << "°, Heading Error: " << headingError << "°, Heading Error Offset: " << headingErrorOffset
