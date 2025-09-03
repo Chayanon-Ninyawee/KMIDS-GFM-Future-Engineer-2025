@@ -36,9 +36,12 @@ const float TARGET_OUTER_WALL_DISTANCE_PARKING = 0.30f;
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
 const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 
-// const float TURNING_FRONT_WALL_DISTANCE = 0.85f;
-const float TURNING_FRONT_WALL_DISTANCE = 0.50f;
-const float TURNING_FRONT_WALL_DISTANCE_STARTING_SECTION = 0.70f;
+// FIXME: TUNE THE VALUE
+const float TURNING_FRONT_WALL_DISTANCE = 0.80f;
+const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.70f;
+const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.60f;
+const float TURNING_FRONT_WALL_INNER1_DISTANCE = 0.90f;
+const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.00f;
 
 const float STOP_FRONT_WALL_DISTANCE = 1.70f;
 const auto STOP_DELAY = std::chrono::milliseconds(200);
@@ -288,6 +291,67 @@ instant_update:
         // std::cout << "[Mode::PRE_TURN]\n";
 
         outMotorSpeed = 2.5f;
+
+        // FIXME: UNTESTED
+
+        std::optional<combined_processor::ClassifiedTrafficLight> nextTargetedTrafficLight;
+        if (state.robotTurnDirection) {
+            // --- Compute next segment ---
+            Segment nextSegment;
+            if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+                float nextHeading = state.headingDirection.toHeading() + 90.0f;
+                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+                nextSegment = Segment::fromHeading(nextHeading);
+            } else {
+                float nextHeading = state.headingDirection.toHeading() - 90.0f;
+                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+                nextSegment = Segment::fromHeading(nextHeading);
+            }
+
+            // --- Only pick first traffic light for the next segment ---
+            std::optional<combined_processor::ClassifiedTrafficLight> nextFirstTrafficLight;
+            if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+                if (auto it = state.trafficLightMap.find({nextSegment, SegmentLocation::A}); it != state.trafficLightMap.end()) {
+                    nextFirstTrafficLight = it->second;
+                }
+            } else {  // COUNTER_CLOCKWISE
+                if (auto it = state.trafficLightMap.find({nextSegment, SegmentLocation::C}); it != state.trafficLightMap.end()) {
+                    nextFirstTrafficLight = it->second;
+                }
+            }
+        }
+
+        if (nextTargetedTrafficLight) {
+            const auto &tl = *nextTargetedTrafficLight;
+            bool isGreen = (tl.info.cameraBlock.color == camera_processor::Color::GREEN);
+            bool isInner = (tl.location.side == WallSide::INNER);
+
+            if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+                if (isGreen) {
+                    if (isInner)
+                        turningFrontWallDistance = TURNING_FRONT_WALL_OUTER1_DISTANCE;
+                    else
+                        turningFrontWallDistance = TURNING_FRONT_WALL_OUTER2_DISTANCE;
+                } else {  // RED
+                    if (isInner)
+                        turningFrontWallDistance = TURNING_FRONT_WALL_INNER2_DISTANCE;
+                    else
+                        turningFrontWallDistance = TURNING_FRONT_WALL_INNER1_DISTANCE;
+                }
+            } else {  // COUNTER_CLOCKWISE
+                if (isGreen) {
+                    if (isInner)
+                        turningFrontWallDistance = TURNING_FRONT_WALL_INNER2_DISTANCE;
+                    else
+                        turningFrontWallDistance = TURNING_FRONT_WALL_INNER1_DISTANCE;
+                } else {  // RED
+                    if (isInner)
+                        turningFrontWallDistance = TURNING_FRONT_WALL_OUTER1_DISTANCE;
+                    else
+                        turningFrontWallDistance = TURNING_FRONT_WALL_OUTER2_DISTANCE;
+                }
+            }
+        }
 
         if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= turningFrontWallDistance) {
             Direction nextHeadingDirection;

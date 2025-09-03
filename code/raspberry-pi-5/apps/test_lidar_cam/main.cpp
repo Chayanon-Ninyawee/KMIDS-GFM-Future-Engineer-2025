@@ -183,7 +183,7 @@ int main() {
 
             for (const auto &block : blockAngles) {
                 // Choose color for drawing
-                cv::Scalar lineColor = (block.color == camera_processor::Color::Red) ? cv::Scalar(0, 0, 255)   // Red in BGR
+                cv::Scalar lineColor = (block.color == camera_processor::Color::RED) ? cv::Scalar(0, 0, 255)   // Red in BGR
                                                                                      : cv::Scalar(0, 255, 0);  // Green in BGR
 
                 // Draw a line from the centroid along the angle
