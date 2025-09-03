@@ -14,6 +14,7 @@
 #include <iostream>
 #include <optional>
 #include <thread>
+#include <wiringPi.h>
 
 volatile std::sig_atomic_t stop_flag = 0;
 
@@ -21,6 +22,8 @@ void signalHandler(int signum) {
     std::cout << "\nInterrupt signal (" << signum << ") received.\n";
     stop_flag = 1;
 }
+
+const int BUTTON_PIN = 16;
 
 const uint32_t camWidth = 1296;
 const uint32_t camHeight = 972;
@@ -813,6 +816,20 @@ int main() {
     if (!camera.start()) return -1;
 
     State state;
+
+    if (wiringPiSetupGpio() == -1) {  // Use GPIO numbering
+        printf("WiringPi setup failed.\n");
+        return -1;
+    }
+
+    pinMode(BUTTON_PIN, INPUT);
+    pullUpDnControl(BUTTON_PIN, PUD_UP);  // Enable pull-up resistor
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    while (digitalRead(BUTTON_PIN) == HIGH) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
 
     std::cout << "Waiting 2 seconds before starting control loop..." << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(2));
