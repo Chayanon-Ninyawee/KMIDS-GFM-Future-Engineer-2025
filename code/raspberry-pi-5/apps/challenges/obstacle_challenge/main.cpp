@@ -389,26 +389,11 @@ instant_update:
         break;
     }
     case Mode::FIND_PARKING: {
-        outMotorSpeed = 0.0f;
-        outSteeringPercent = 0.0f;
+        outMotorSpeed = 1.0f;
 
-        static bool waitTimerActive = false;
-        static auto waitStartTime = std::chrono::steady_clock::now();
-        if (!waitTimerActive) {
-            waitTimerActive = true;
-            waitStartTime = std::chrono::steady_clock::now();
-        }
-
-        auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
-        if (elapsed < std::chrono::milliseconds(700)) return;
-        outMotorSpeed = 2.0f;
-        if (elapsed < std::chrono::milliseconds(2200)) break;
-
-        // FIXME: This is only for test when the parking wall is directly on the side of the robot
         auto lineSegmentsForParking = lidar_processor::getLines(filteredLidarData, deltaPose, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
         auto parkingWalls = lidar_processor::getParkingWalls(lineSegmentsForParking, state.headingDirection, heading, 0.30f);
 
-        outMotorSpeed = 1.0f;
         targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE_PARKING;
 
         if (parkingWalls.empty()) break;
@@ -452,11 +437,18 @@ instant_update:
 
         // std::cout << "[BackParkingWall] dir=" << backParkingWallDir << "°, dist=" << backParkingWallDist << " m" << std::endl;
 
-        bool isBackParkingWallBehind = backParkingWallDir >= 180.0f && backParkingWallDir < 360.0f;
+        if (state.robotTurnDirection) {
+            bool isBackParkingWallBehind;
+            if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+                isBackParkingWallBehind = backParkingWallDir >= 180.0f && backParkingWallDir < 270.0f;
+            } else {
+                isBackParkingWallBehind = backParkingWallDir >= 270.0f && backParkingWallDir < 360.0f;
+            }
 
-        if (isBackParkingWallBehind && backParkingWallDist >= 0.475f) {
-            state.robotMode = Mode::PARKING_1;
-            goto instant_update;
+            if (isBackParkingWallBehind && backParkingWallDist >= 0.475f) {
+                state.robotMode = Mode::PARKING_1;
+                goto instant_update;
+            }
         }
 
         break;
@@ -464,6 +456,8 @@ instant_update:
     case Mode::PARKING_1: {
         outMotorSpeed = 0.0f;
         outSteeringPercent = 0.0f;
+
+        if (not state.robotTurnDirection) return;
 
         static bool waitTimerActive = false;
         static auto waitStartTime = std::chrono::steady_clock::now();
@@ -474,7 +468,13 @@ instant_update:
 
         auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
         if (elapsed < std::chrono::milliseconds(300)) return;
-        outSteeringPercent = 100.0f;
+
+        if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+            outSteeringPercent = -100.0f;
+        } else {
+            outSteeringPercent = 100.0f;
+        }
+
         if (elapsed < std::chrono::milliseconds(600)) return;
 
         outMotorSpeed = -1.0f;
@@ -504,6 +504,8 @@ instant_update:
         outMotorSpeed = 0.0f;
         outSteeringPercent = 0.0f;
 
+        if (not state.robotTurnDirection) return;
+
         static bool waitTimerActive = false;
         static auto waitStartTime = std::chrono::steady_clock::now();
         if (!waitTimerActive) {
@@ -513,7 +515,13 @@ instant_update:
 
         auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
         if (elapsed < std::chrono::milliseconds(300)) return;
-        outSteeringPercent = -100.0f;
+
+        if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+            outSteeringPercent = 100.0f;
+        } else {
+            outSteeringPercent = -100.0f;
+        }
+
         if (elapsed < std::chrono::milliseconds(600)) return;
 
         outMotorSpeed = -1.0f;
@@ -543,6 +551,8 @@ instant_update:
         outMotorSpeed = 0.0f;
         outSteeringPercent = 0.0f;
 
+        if (not state.robotTurnDirection) return;
+
         static bool waitTimerActive = false;
         static auto waitStartTime = std::chrono::steady_clock::now();
         if (!waitTimerActive) {
@@ -552,7 +562,13 @@ instant_update:
 
         auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
         if (elapsed < std::chrono::milliseconds(300)) return;
-        outSteeringPercent = 100.0f;
+
+        if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+            outSteeringPercent = -100.0f;
+        } else {
+            outSteeringPercent = 100.0f;
+        }
+
         if (elapsed < std::chrono::milliseconds(600)) return;
 
         outMotorSpeed = 1.0f;
