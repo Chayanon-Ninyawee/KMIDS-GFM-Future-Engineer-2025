@@ -12,6 +12,8 @@
 
 We are a team of dedicated students with a passion for robotics and innovation. This repository documents our full engineering process, including design, components used, development, testing, and coding of our robot.
 
+---
+
 ## Table of Contents
 
 <!-- toc -->
@@ -34,7 +36,6 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [5.1 Robot Images](#51-robot-images)
   - [5.2 Chassis Design](#52-chassis-design)
 - [6. Performance Video](#6-performance-video)
-  \+ [| The video shows both the open and obstacle challenge](#-the-video-shows-both-the-open-and-obstacle-challenge)
 - [7. Source Code](#7-source-code)
   - [7.1 Code Structure](#71-code-structure)
   - [7.2 Compilation / Upload Instructions](#72-compilation--upload-instructions)
@@ -48,6 +49,7 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [9.3 Wheel & Axle Components](#93-wheel--axle-components)
   - [9.4 Steering Linkages](#94-steering-linkages)
   - [9.5 Miscellaneous](#95-miscellaneous)
+- [10. Extra Documentation](#10-extra-documentation)
 
 <!-- tocstop -->
 
@@ -59,7 +61,7 @@ This project focuses on designing, building, and programming an autonomous robot
 
 Team KMIDS-GFM was inspired by the challenge of applying engineering principles and problem-solving skills to creatively and efficiently solve complex problems. Pushing forward with our passion for innovation and hands-on learning.
 
-Our goal is to design and build a reliable and efficient system that demonstrates our technical and collaborative skills while serving as a learning experience. We followed a systematic process, including brainstorming, researching, prototyping, testing, and iterating. We maintained detailed documentation for ease of knowledge sharing and a smoother workflow throughout the project.
+Our goal is to design and build a reliable and efficient system that demonstrates our technical and collaborative skills while serving as a learning experience. We followed a systematic process, including brainstorming, researching, prototyping, testing, and iterating. We maintained detailed documentation to facilitate knowledge sharing and ensure a smoother workflow throughout the project.
 
 Our robot is engineered using a custom modular chassis in a rear-wheel drive configuration, controlled using a Raspberry Pi 5 and a Raspberry Pi Pico 2. It utilises a combination of an LIDAR sensor and a fish-eye lens camera to provide an advanced system for obstacle detection and navigation.
 
@@ -105,8 +107,10 @@ The integration of encoders with the N20 motors provides real-time feedback for 
 
 **Mounting:**
 
-- Installed using 3D-printed motor clamps screwed to a detachable motor plate that is placed above the differential gear compartment. This will allow for future changes to accommodate bigger motors and gears. (./FreeCAD-Files/Assembly/mesh_export/MotorPlate_1x.stl)
-  <img src="docs/resources/diffgear.jpg" alt="diff gear" width=300>
+- Installed using 3D-printed motor clamps screwed to a detachable motor plate that is placed above the differential gear compartment. This will allow for future changes to accommodate bigger motors and gears. [Motor Clamp](./FreeCAD-Files/Assembly/mesh_export/MotorHolder_1x.stl) [Motor Plate](./FreeCAD-Files/Assembly/mesh_export/MotorPlate_1x.stl)
+ 
+<img src="docs/resources/diffgear.jpg" alt="diff gear" width=300>
+
 - Wires connected to Raspberry Pi Pico 2.
 - Rubber wheels are screwed onto the motor shaft.
 
@@ -123,7 +127,7 @@ The fundamental principle of Ackermann geometry involves positioning the steerin
 
 While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking, where precise control and minimized turning radius are essential. It enables smoother manoeuvring and accurate alignment in narrower spaces.
 
-Our implementation involves designing a custom 3D-printed Ackermann steering mechanism. Using CAD to design the mechanism gives us the flexibility to experiment with pivot points and steering angles. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behavior iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes if it doesn't suit our desired behavior.
+Our implementation comes in the form of a custom 3D-printed Ackermann steering mechanism. Using CAD allowed us to experiment with different pivot points and steering angles iteratively. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behavior iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes until it suits our desired behavior.
 
 **Calibration and Implementation**
 
@@ -164,7 +168,7 @@ To make sure the steering angle performed correctly, we carried out an iterative
 
 **Mounting:**
 
-- Screwed directly into a platform plate in front of the chassis into the platform plate.
+- Screwed directly into a platform plate in front of the chassis, connected to the steering mechanism.
 
 <img src="docs/resources/servomount.jpg" alt="Servo Mounting" width=400>
 
@@ -196,7 +200,7 @@ ______________________________________________________________________
   </tr>
 </table>
 
-The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, the vehicle is powered by a [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply) in our vehicle, with 2x 18650 Lithium-Ion as the energy source. The UPS maintains a stable 5V output to the Raspberry Pi 5 even though there are fluctuations. It also has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected.
+The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, our vehicle is powered by an [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply), with 2x 18650 Lithium-Ion as the energy source. The UPS maintains a stable 5V output to the Raspberry Pi 5 even during fluctuations. It also has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected.
 The batteries are connected in series to provide a nominal voltage of 7.4V and a combined capacity of around 4000 mAh, depending on the cells used. This setup is capable of delivering a continuous current of around 20 Amps, which is sufficient to supply to the robot for various tasks. This setup ensures that the Raspberry Pi won't shut down unexpectedly, allowing uninterrupted data processing and decision-making throughout the run.
 
 The motors, however, require a higher voltage — at least 6V, and to ensure reliable performance, the N20 motor power is supplied through a step-up converter that increases 5V to 12V. Because the motor power is separate from the Raspberry Pi, the standard on/off switch could not fully control the system. To solve this, a MOSFET and a 4.4 kΩ resistor were added between the gate and source, with the drain connected to the negative side of the step-up converter. This allows the robot to be safely powered on and off while supplying sufficient power to both the Raspberry Pi and the motors.
@@ -240,7 +244,15 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 - **Compact size and lightweightness** allow easy fitting on our robot.
 - **Fast sampling rate** allows real-time mapping and obstacle avoidance.
 
-<!--FIXME: Add LIDAR_mount.png-->
+ **The LIDAR sensor is used mainly for the following tasks:**
+
+- Wall following and collision Avoidance
+
+- Obstacle detection
+
+- Identify parking space and assist in the parallel parking manoeuvre
+
+- Mapping and determining initial orientation
 
 [Fish Eye Lens Raspberry Pi 5MP IR Camera](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822)
 
@@ -264,12 +276,14 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 
 **Reason for Selection:**
 
-- **130° wide field of view** captures a large area for tracking.
+- **130° wide field of view** from the fish-eye lens captures a large area for tracking compared to a regular lens.
 - **Infrared compatibility** enables low-light vision.
 - **High-resolution (5MP)** provides a clear image for the robot.
-- **Compact size** fits well on our robot.
+- **Compact size** fits well on our robot and is lightweight.
 
 This setup allows for a wide-angle view, enhancing environmental awareness during both the Open Challenge and Obstacle Challenge. The camera identifies course elements such as walls, pillars, colored markers, parking spaces, and lane lines.
+
+**The camera is used mainly for the following tasks:**
 
 - Detect and differentiate wall positions.
 
@@ -325,7 +339,7 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 **Wiring Diagram:**
 
-<img src="./docs/resources/wiring-diagram.png" alt="Wiring diagram pic" >
+<img src="./docs/resources/Wiring Diagram Revised.png" alt="Wiring diagram pic" >
 
 ______________________________________________________________________
 
@@ -334,7 +348,7 @@ ______________________________________________________________________
 There are two challenges in this competition:
 
 - The **open challenge** involves the robot completing three full laps around the field without touching the wall. The size of each side of the field and the direction in which the car drives are randomised.
-- The **obstacle challenge** requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomised. After the third lap, the car must find the parking area and park in the area without touching the surroundings barriers around it.
+- The **obstacle challenge** requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomised. After the third lap, the car must find the parking area and park in the area without touching the surrounding barriers around it.
 
 Our implementation relies heavily on the RPLIDAR C1 sensor and the fish-eye lens camera for continuous environment scanning, which helps the algorithm decide the movement of the robot.
 
@@ -768,11 +782,11 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
 
 ### 4.3 Parallel Parking
 
-TBA. <!--TODO:-->
+<img src=docs/resources/parkingvid.gif> <!--TODO:-->
 
-### 4.4 Extra: Converting Raw Lidar Data to Useful Data
+<!--### 4.4 Advanced Use: Converting Raw Lidar Data to Useful Data
 
-TBA. <!--TODO:-->
+TBA. TODO:-->
 
 ______________________________________________________________________
 
@@ -815,18 +829,18 @@ ______________________________________________________________________
 
 **Design Overview**
 
-Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry.
+Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry while also allowing components to remain centred on the chassis.
 
 **Layout**
 The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring.
 
-Our robot chassis was completely custom-designed and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture while being lightweight and durable. The chassis was also designed with modularity in mind for additional future components and fixes, with reduced overhangs for printing ease. Apart from the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that can be fine-tuned during testing, other components, such as motor clamps, sensor brackets, are designed as independent printable components.
+Our robot chassis was completely custom-designed in FreeCAD and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture and less warping compared to ABS, while also being lightweight and durable. Alongside the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that were fine-tuned during testing to achieve the correct alignment with other components. Other components, such as motor clamps, sensor brackets, are designed as independent printable components. The chassis was also designed with modularity in mind for replacements and upgrades, with reduced overhangs for printing ease.
 
 ______________________________________________________________________
 
 ## 6. Performance Video
 
-[Watch on YouTube](youtube.com/watch?v=7SNfU2ATe68&feature=youtu.be)
+[Watch on YouTube](https://youtu.be/hUqdMjxhbqM)
 
 #### | The video shows both the open and obstacle challenge
 
@@ -837,8 +851,6 @@ ______________________________________________________________________
 ### 7.1 Code Structure
 
 All the code used in the robot can be found [here](code)
-
-<!--TODO: Add link to the code-->
 
 The project codebase is organised to separate different components, challenges, and hardware targets. The main folders are `raspberry-pi-5`, `raspberry-pi-pico-2`, and `shared`. The `shared` folder contains code used by both hardware targets.
 
@@ -946,8 +958,8 @@ git submodule update --init --recursive
 - **RPLIDAR SDK** – For LIDAR functionality.
 - **LCCV** – Custom computer vision library that depends on **libcamera**.
 - **System libraries (install separately):**
-  - **OpenCV** – For camera image processing. The installation guide can be found [here](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html) <!--TODO: Add guide on how to install-->
-  - **libcamera** – Required by LCCV for camera capture. The installation guide can be found [here](https://libcamera.org/getting-started.html)<!--TODO: Add guide on how to install-->
+  - **OpenCV** – For camera image processing. The installation guide can be found [here](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html) 
+  - **libcamera** – Required by LCCV for camera capture. The installation guide can be found [here](https://libcamera.org/getting-started.html)
 
 **Raspberry Pi Pico 2 specific:**
 
@@ -1036,9 +1048,13 @@ ______________________________________________________________________
 | Wires                         | A lot    | N/A             |
 | eSUN PLA+ Spool               | 1-3      | eSUN            |
 
-______________________________________________________________________
+**Printers Used:** [Bambu Lab P1S](https://asia.store.bambulab.com/products/p1s?p=W3sicHJvcGVydHlLZXkiOiJWYXJpYW50IiwicHJvcGVydHlWYWx1ZSI6IlAxUyBDb21ibyJ9LHsicHJvcGVydHlLZXkiOiJTaGlwIHRvIiwicHJvcGVydHlWYWx1ZSI6IiJ9LHsicHJvcGVydHlLZXkiOiJPcHRpb24iLCJwcm9wZXJ0eVZhbHVlIjoiQ29tYm8gd2l0aCBIdWIoU2hpcCBTZXBhcmF0ZWx5KSJ9XQ%3D%3D) and [Creality Ender 3 V3 KE](https://store.creality.com/products/ender-3-v3-ke-3d-printer) 
 
-<!--TODO:-->
+Slicer files for both printers can be found [here](./Slicer-Files)
+
+
+
+______________________________________________________________________
 
 ## 9. 3D Printed Parts
 
@@ -1080,5 +1096,9 @@ ______________________________________________________________________
 
 <!--TODO:-->
 
-<!--
+### 10. Extra Documentation
+
+[Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](docs/image-drive-linux.md)
+
+[How to Image Drive in Linux](docs/dhcp-server-on-ethernet-port.md)
 ______________________________________________________________________
