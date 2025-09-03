@@ -493,7 +493,7 @@ instant_update:
         break;
     }
     case Mode::CW_PRE_FIND_PARKING: {
-        outMotorSpeed = 1.0f;
+        outMotorSpeed = 2.5f;
         targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE_PARKING;
 
         static bool waitTimerActive = false;
@@ -574,6 +574,19 @@ instant_update:
         break;
     }
     case Mode::CW_FIND_PARKING: {
+        outMotorSpeed = 0.0f;
+        outSteeringPercent = 0.0f;
+
+        static bool waitTimerActive = false;
+        static auto waitStartTime = std::chrono::steady_clock::now();
+        if (!waitTimerActive) {
+            waitTimerActive = true;
+            waitStartTime = std::chrono::steady_clock::now();
+        }
+
+        auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
+        if (elapsed < std::chrono::milliseconds(700)) return;
+
         outMotorSpeed = -1.0f;
 
         auto lineSegmentsForParking = lidar_processor::getLines(filteredLidarData, deltaPose, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
@@ -626,6 +639,8 @@ instant_update:
         bool isBackParkingWallBehind = backParkingWallDir >= 180.0f && backParkingWallDir < 300.0f;
 
         if (isBackParkingWallBehind && backParkingWallDist >= targetParkingWallDistance) {
+            waitTimerActive = false;
+
             state.robotMode = Mode::PARKING_1;
             goto instant_update;
         }
