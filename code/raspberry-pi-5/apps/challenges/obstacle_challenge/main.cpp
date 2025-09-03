@@ -40,8 +40,8 @@ const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 const float TURNING_FRONT_WALL_DISTANCE = 0.80f;
 const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.70f;
 const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.60f;
-const float TURNING_FRONT_WALL_INNER1_DISTANCE = 0.90f;
-const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.00f;
+const float TURNING_FRONT_WALL_INNER1_DISTANCE = 1.00f;
+const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.10f;
 
 const float RIGHT_PRE_PARKING_FRONT_WALL_DISTANCE = 1.40f;
 const auto CCW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(200);
@@ -170,12 +170,12 @@ void update(
             }
         }
 
-        for (const auto &ct : classifiedLights) {
-            std::cout << "Traffic Light at LiDAR position (" << ct.info.lidarPosition.x << ", " << ct.info.lidarPosition.y << ")"
-                      << " mapped to Segment " << static_cast<int>(ct.location.segment) << ", Location "
-                      << static_cast<int>(ct.location.location) << ", WallSide "
-                      << (ct.location.side == WallSide::INNER ? "INNER" : "OUTER") << std::endl;
-        }
+        // for (const auto &ct : classifiedLights) {
+        //     std::cout << "Traffic Light at LiDAR position (" << ct.info.lidarPosition.x << ", " << ct.info.lidarPosition.y << ")"
+        //               << " mapped to Segment " << static_cast<int>(ct.location.segment) << ", Location "
+        //               << static_cast<int>(ct.location.location) << ", WallSide "
+        //               << (ct.location.side == WallSide::INNER ? "INNER" : "OUTER") << std::endl;
+        // }
     }
 
     bool pidWallErrorActive = true;
@@ -223,7 +223,7 @@ instant_update:
 
             if (state.numberOfTurn == 12) {
                 if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
-                    if (firstTrafficLight && firstTrafficLight->info.cameraBlock.color == camera_processor::BlockColor::RED) {
+                    if (firstTrafficLight && firstTrafficLight->info.cameraBlock.color == camera_processor::Color::RED) {
                         state.robotMode = Mode::CW_UTURN_PRE_FIND_PARKING;
                         goto instant_update;
                     } else {
@@ -235,18 +235,21 @@ instant_update:
                     bool foundGreen = false;
 
                     if (firstTrafficLight) {
-                        if (firstTrafficLight->info.cameraBlock.color == camera_processor::BlockColor::RED) foundRed = true;
-                        if (firstTrafficLight->info.cameraBlock.color == camera_processor::BlockColor::GREEN) foundGreen = true;
+                        if (firstTrafficLight->info.cameraBlock.color == camera_processor::Color::RED) foundRed = true;
+                        if (firstTrafficLight->info.cameraBlock.color == camera_processor::Color::GREEN) foundGreen = true;
                     }
                     if (secondTrafficLight) {
-                        if (secondTrafficLight->info.cameraBlock.color == camera_processor::BlockColor::RED) foundRed = true;
-                        if (secondTrafficLight->info.cameraBlock.color == camera_processor::BlockColor::GREEN) foundGreen = true;
+                        if (secondTrafficLight->info.cameraBlock.color == camera_processor::Color::RED) foundRed = true;
+                        if (secondTrafficLight->info.cameraBlock.color == camera_processor::Color::GREEN) foundGreen = true;
                     }
 
-                    if (foundRed) state.robotMode = Mode::CCW_PRE_FIND_PARKING;
-                    goto instant_update;
-                    else if (foundGreen) state.robotMode = Mode::CCW_PRE_UTURN_FIND_PARKING;
-                    goto instant_update;
+                    if (foundRed) {
+                        state.robotMode = Mode::CCW_PRE_FIND_PARKING;
+                        goto instant_update;
+                    } else if (foundGreen) {
+                        state.robotMode = Mode::CCW_PRE_UTURN_FIND_PARKING;
+                        goto instant_update;
+                    }
                 }
             }
         }
@@ -380,6 +383,8 @@ instant_update:
                 }
             }
         }
+
+        std::cout << "turningFrontWallDistance: " << turningFrontWallDistance << std::endl;
 
         if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= turningFrontWallDistance) {
             Direction nextHeadingDirection;
@@ -654,6 +659,8 @@ instant_update:
 
     // NOTE: Use break and it will run the pid
     // If don't want to run the pid then use return
+
+    std::cout << "targetOuterWallDistance" << targetOuterWallDistance << std::endl;
 
     float wallError = 0.0f;
     if (outerWall) {
