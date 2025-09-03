@@ -1,5 +1,3 @@
-// FIXME: UNTESTED
-
 #include "camera_module.h"
 #include "camera_processor.h"
 #include "combined_processor.h"
@@ -59,6 +57,8 @@ enum Mode
 struct State {
     PIDController headingPid{3.0f, 0.0, 0.0f};
     PIDController wallPid{180.0f, 0.0, 0.0f};
+
+    std::map<std::pair<Segment, SegmentLocation>, combined_processor::ClassifiedTrafficLight> trafficLightMap;
 
     std::optional<float> initialHeading;
     std::optional<RotationDirection> robotTurnDirection;
@@ -146,16 +146,34 @@ void update(
             outerWall = resolveWalls.rightWall;
             innerWall = resolveWalls.leftWall;
         }
+
+        auto classifiedLights = combined_processor::classifyTrafficLights(
+            trafficLightInfos,
+            resolveWalls,
+            *state.robotTurnDirection,
+            Segment::fromHeading(heading)
+        );
+
+        for (const auto &cl : classifiedLights) {
+            std::pair<Segment, SegmentLocation> key = {cl.location.segment, cl.location.location};
+
+            if (state.trafficLightMap.find(key) == state.trafficLightMap.end()) {
+                state.trafficLightMap[key] = cl;
+            }
+        }
+
+        for (const auto &ct : classifiedLights) {
+            std::cout << "Traffic Light at LiDAR position (" << ct.info.lidarPosition.x << ", " << ct.info.lidarPosition.y << ")"
+                      << " mapped to Segment " << static_cast<int>(ct.location.segment) << ", Location "
+                      << static_cast<int>(ct.location.location) << ", WallSide "
+                      << (ct.location.side == WallSide::INNER ? "INNER" : "OUTER") << std::endl;
+        }
     }
 
     bool pidWallErrorActive = true;
 
-    float targetOuterWallDistance;
-    if (state.numberOfTurn % 4 == 0) {
-        targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE_STARTING_SECTION;
-    } else {
-        targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE;
-    }
+    float targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE;
+    float turningFrontWallDistance = TURNING_FRONT_WALL_DISTANCE;
 
     // TODO: Change this to match with obstacle_challenge
 instant_update:
@@ -189,13 +207,6 @@ instant_update:
         // std::cout << "[Mode::PRE_TURN]\n";
 
         outMotorSpeed = 2.5f;
-
-        float turningFrontWallDistance;
-        if (state.numberOfTurn % 4 == 3) {
-            turningFrontWallDistance = TURNING_FRONT_WALL_DISTANCE_STARTING_SECTION;
-        } else {
-            turningFrontWallDistance = TURNING_FRONT_WALL_DISTANCE;
-        }
 
         if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= turningFrontWallDistance) {
             Direction nextHeadingDirection;
