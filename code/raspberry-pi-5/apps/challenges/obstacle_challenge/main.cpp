@@ -55,18 +55,23 @@ const auto CCW_UTURN_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
 // Will go over then long reverse to park
 const float CW_PRE_PARKING_FRONT_WALL_DISTANCE = 1.40f;
 const auto CW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
+// Will just go to uturn then go and use CCW_PRE_PARKING
+const float CW_UTURN_PRE_PARKING_FRONT_WALL_DISTANCE = 0.60f;
+const auto CW_UTURN_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
 
 enum Mode
 {
     NORMAL,
     PRE_TURN,
     TURNING,
-    CW_UTURN_PRE_FIND_PARKING,
     CW_PRE_FIND_PARKING,
+    CW_UTURN_PRE_FIND_PARKING_1,
+    CW_UTURN_PRE_FIND_PARKING_2,
+    CW_UTURN_PRE_FIND_PARKING_3,
     CCW_PRE_FIND_PARKING,
-    CCW_PRE_UTURN_FIND_PARKING_1,
-    CCW_PRE_UTURN_FIND_PARKING_2,
-    CCW_PRE_UTURN_FIND_PARKING_3,
+    CCW_UTURN_PRE_FIND_PARKING_1,
+    CCW_UTURN_PRE_FIND_PARKING_2,
+    CCW_UTURN_PRE_FIND_PARKING_3,
     CCW_FIND_PARKING,
     CW_FIND_PARKING,
     PARKING_1,
@@ -273,7 +278,7 @@ instant_update:
             if (state.numberOfTurn == 12) {
                 if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
                     if (firstTrafficLight && firstTrafficLight->info.cameraBlock.color == camera_processor::Color::RED) {
-                        state.robotMode = Mode::CW_UTURN_PRE_FIND_PARKING;
+                        state.robotMode = Mode::CW_UTURN_PRE_FIND_PARKING_1;
                         goto instant_update;
                     } else {
                         state.robotMode = Mode::CW_PRE_FIND_PARKING;
@@ -296,7 +301,7 @@ instant_update:
                         state.robotMode = Mode::CCW_PRE_FIND_PARKING;
                         goto instant_update;
                     } else if (foundGreen) {
-                        state.robotMode = Mode::CCW_PRE_UTURN_FIND_PARKING_1;
+                        state.robotMode = Mode::CCW_UTURN_PRE_FIND_PARKING_1;
                         goto instant_update;
                     }
                 }
@@ -498,7 +503,7 @@ instant_update:
         break;
     }
     // FIXME: NOT TESTED
-    case Mode::CCW_PRE_UTURN_FIND_PARKING_1: {
+    case Mode::CCW_UTURN_PRE_FIND_PARKING_1: {
         outMotorSpeed = 2.5f;
         targetOuterWallDistance = TARGET_OUTER_WALL_INNER2_DISTANCE;
 
@@ -518,13 +523,13 @@ instant_update:
             float nextHeading = state.headingDirection.toHeading() + 90.0f;
             nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
             state.headingDirection = Direction::fromHeading(nextHeading);
-            state.robotMode = Mode::CCW_PRE_UTURN_FIND_PARKING_2;
+            state.robotMode = Mode::CCW_UTURN_PRE_FIND_PARKING_2;
             goto instant_update;
         }
         break;
     }
     // FIXME: NOT TESTED
-    case Mode::CCW_PRE_UTURN_FIND_PARKING_2: {
+    case Mode::CCW_UTURN_PRE_FIND_PARKING_2: {
         outMotorSpeed = 2.5f;
         pidWallErrorActive = false;
 
@@ -534,13 +539,13 @@ instant_update:
             float nextHeading = state.headingDirection.toHeading() + 90.0f;
             nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
             state.headingDirection = Direction::fromHeading(nextHeading);
-            state.robotMode = Mode::CCW_PRE_UTURN_FIND_PARKING_3;
+            state.robotMode = Mode::CCW_UTURN_PRE_FIND_PARKING_3;
             goto instant_update;
         }
         break;
     }
     // FIXME: NOT TESTED
-    case Mode::CCW_PRE_UTURN_FIND_PARKING_3: {
+    case Mode::CCW_UTURN_PRE_FIND_PARKING_3: {
         outMotorSpeed = 2.5f;
         pidWallErrorActive = false;
 
@@ -572,6 +577,62 @@ instant_update:
             waitTimerActive = false;
 
             state.robotMode = Mode::CW_FIND_PARKING;
+            goto instant_update;
+        }
+        break;
+    }
+    // FIXME: NOT TESTED
+    case Mode::CW_UTURN_PRE_FIND_PARKING_1: {
+        outMotorSpeed = 2.5f;
+        targetOuterWallDistance = TARGET_OUTER_WALL_INNER2_DISTANCE;
+
+        static bool waitTimerActive = false;
+        static auto waitStartTime = std::chrono::steady_clock::now();
+        if (!waitTimerActive) {
+            waitTimerActive = true;
+            waitStartTime = std::chrono::steady_clock::now();
+        }
+
+        auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= CW_UTURN_PRE_PARKING_FRONT_WALL_DISTANCE &&
+            elapsed >= CW_UTURN_PRE_FIND_PARKING_DELAY)
+        {
+            waitTimerActive = false;
+
+            float nextHeading = state.headingDirection.toHeading() - 90.0f;
+            nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+            state.headingDirection = Direction::fromHeading(nextHeading);
+            state.robotMode = Mode::CW_UTURN_PRE_FIND_PARKING_2;
+            goto instant_update;
+        }
+        break;
+    }
+    // FIXME: NOT TESTED
+    case Mode::CW_UTURN_PRE_FIND_PARKING_2: {
+        outMotorSpeed = 2.5f;
+        pidWallErrorActive = false;
+
+        float diff = heading - state.headingDirection.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+        if (std::abs(diff) <= 20.0f) {
+            float nextHeading = state.headingDirection.toHeading() - 90.0f;
+            nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+            state.headingDirection = Direction::fromHeading(nextHeading);
+            state.robotMode = Mode::CW_UTURN_PRE_FIND_PARKING_3;
+            goto instant_update;
+        }
+        break;
+    }
+    // FIXME: NOT TESTED
+    case Mode::CW_UTURN_PRE_FIND_PARKING_3: {
+        outMotorSpeed = 2.5f;
+        pidWallErrorActive = false;
+
+        float diff = heading - state.headingDirection.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+        if (std::abs(diff) <= 20.0f) {
+            state.robotTurnDirection = RotationDirection::CLOCKWISE;
+            state.robotMode = Mode::CCW_PRE_FIND_PARKING;
             goto instant_update;
         }
         break;
