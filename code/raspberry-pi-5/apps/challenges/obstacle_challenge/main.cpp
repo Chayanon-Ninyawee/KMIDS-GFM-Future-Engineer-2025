@@ -43,14 +43,18 @@ const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.60f;
 const float TURNING_FRONT_WALL_INNER1_DISTANCE = 0.90f;
 const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.00f;
 
-const float STOP_FRONT_WALL_DISTANCE = 1.70f;
-const auto STOP_DELAY = std::chrono::milliseconds(200);
+const float RIGHT_PRE_PARKING_FRONT_WALL_DISTANCE = 1.40f;
+const auto CCW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(200);
 
 enum Mode
 {
     NORMAL,
     PRE_TURN,
     TURNING,
+    CW_UTURN_PRE_FIND_PARKING,
+    CW_PRE_FIND_PARKING,
+    CCW_PRE_FIND_PARKING,
+    CCW_PRE_UTURN_FIND_PARKING,
     FIND_PARKING,
     PARKING_1,
     PARKING_2,
@@ -192,11 +196,6 @@ instant_update:
 
         outMotorSpeed = 2.5f;
 
-        if (state.numberOfTurn == 12) {
-            state.robotMode = Mode::FIND_PARKING;
-            goto instant_update;
-        }
-
         // FIXME: UNTESTED
 
         Segment currentSegment = Segment::fromDirection(state.headingDirection);
@@ -220,6 +219,35 @@ instant_update:
                     secondTrafficLight = it->second;
                 if (auto it = state.trafficLightMap.find({currentSegment, SegmentLocation::A}); it != state.trafficLightMap.end())
                     thirdTrafficLight = it->second;
+            }
+
+            if (state.numberOfTurn == 12) {
+                if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+                    if (firstTrafficLight && firstTrafficLight->info.cameraBlock.color == camera_processor::BlockColor::RED) {
+                        state.robotMode = Mode::CW_UTURN_PRE_FIND_PARKING;
+                        goto instant_update;
+                    } else {
+                        state.robotMode = Mode::CW_PRE_FIND_PARKING;
+                        goto instant_update;
+                    }
+                } else {  // COUNTER_CLOCKWISE
+                    bool foundRed = false;
+                    bool foundGreen = false;
+
+                    if (firstTrafficLight) {
+                        if (firstTrafficLight->info.cameraBlock.color == camera_processor::BlockColor::RED) foundRed = true;
+                        if (firstTrafficLight->info.cameraBlock.color == camera_processor::BlockColor::GREEN) foundGreen = true;
+                    }
+                    if (secondTrafficLight) {
+                        if (secondTrafficLight->info.cameraBlock.color == camera_processor::BlockColor::RED) foundRed = true;
+                        if (secondTrafficLight->info.cameraBlock.color == camera_processor::BlockColor::GREEN) foundGreen = true;
+                    }
+
+                    if (foundRed) state.robotMode = Mode::CCW_PRE_FIND_PARKING;
+                    goto instant_update;
+                    else if (foundGreen) state.robotMode = Mode::CCW_PRE_UTURN_FIND_PARKING;
+                    goto instant_update;
+                }
             }
         }
 
@@ -387,6 +415,26 @@ instant_update:
             goto instant_update;
         }
         break;
+    }
+    case Mode::CCW_PRE_FIND_PARKING: {
+        outMotorSpeed = 2.0f;
+
+        static bool waitTimerActive = false;
+        static auto waitStartTime = std::chrono::steady_clock::now();
+        if (!waitTimerActive) {
+            waitTimerActive = true;
+            waitStartTime = std::chrono::steady_clock::now();
+        }
+
+        auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= RIGHT_PRE_PARKING_FRONT_WALL_DISTANCE &&
+            elapsed >= CCW_PRE_FIND_PARKING_DELAY)
+        {
+            waitTimerActive = false;
+
+            state.robotMode = Mode::FIND_PARKING;
+            goto instant_update;
+        }
     }
     case Mode::FIND_PARKING: {
         outMotorSpeed = 1.0f;
