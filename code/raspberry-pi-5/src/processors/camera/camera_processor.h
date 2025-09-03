@@ -108,8 +108,8 @@ float pixelToAngle(int pixelX, int imageWidth, float hfov);
  */
 enum class Color
 {
-    Red,
-    Green
+    RED,
+    GREEN
 };
 
 /**

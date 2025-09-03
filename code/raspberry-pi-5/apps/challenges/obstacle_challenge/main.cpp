@@ -26,10 +26,11 @@ const uint32_t camWidth = 1296;
 const uint32_t camHeight = 972;
 const float camHFov = 104.0f;
 
-// const float TARGET_OUTER_WALL_DISTANCE = 0.50;
-const float TARGET_OUTER_WALL_DISTANCE = 0.23;
-const float TARGET_OUTER_WALL_DISTANCE_STARTING_SECTION = 0.40;
-
+const float TARGET_OUTER_WALL_DISTANCE = 0.50;
+const float TARGET_OUTER_WALL_OUTER1_DISTANCE = 0.38;
+const float TARGET_OUTER_WALL_OUTER2_DISTANCE = 0.22;
+const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62;
+const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.78;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING = 0.30f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
@@ -191,6 +192,86 @@ instant_update:
         if (state.numberOfTurn == 12) {
             state.robotMode = Mode::FIND_PARKING;
             goto instant_update;
+        }
+
+        // FIXME: UNTESTED
+
+        Segment currentSegment = Segment::fromDirection(state.headingDirection);
+
+        std::optional<combined_processor::ClassifiedTrafficLight> firstTrafficLight;
+        std::optional<combined_processor::ClassifiedTrafficLight> secondTrafficLight;
+        std::optional<combined_processor::ClassifiedTrafficLight> thirdTrafficLight;
+
+        if (state.robotTurnDirection) {
+            if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+                if (auto it = state.trafficLightMap.find({currentSegment, SegmentLocation::A}); it != state.trafficLightMap.end())
+                    firstTrafficLight = it->second;
+                if (auto it = state.trafficLightMap.find({currentSegment, SegmentLocation::B}); it != state.trafficLightMap.end())
+                    secondTrafficLight = it->second;
+                if (auto it = state.trafficLightMap.find({currentSegment, SegmentLocation::C}); it != state.trafficLightMap.end())
+                    thirdTrafficLight = it->second;
+            } else {  // COUNTER_CLOCKWISE
+                if (auto it = state.trafficLightMap.find({currentSegment, SegmentLocation::C}); it != state.trafficLightMap.end())
+                    firstTrafficLight = it->second;
+                if (auto it = state.trafficLightMap.find({currentSegment, SegmentLocation::B}); it != state.trafficLightMap.end())
+                    secondTrafficLight = it->second;
+                if (auto it = state.trafficLightMap.find({currentSegment, SegmentLocation::A}); it != state.trafficLightMap.end())
+                    thirdTrafficLight = it->second;
+            }
+        }
+
+        float frontWallDistance = 0.0f;
+        if (frontWall) {
+            frontWallDistance = frontWall->perpendicularDistance(0.0f, 0.0f);
+        } else if (backWall) {
+            frontWallDistance = 3.0f - backWall->perpendicularDistance(0.0f, 0.0f);
+        } else {
+            frontWallDistance = 0.0f;
+        }
+
+        std::optional<combined_processor::ClassifiedTrafficLight> targetedTrafficLight;
+        if (frontWallDistance > 2.00f && frontWallDistance <= 2.90f) {
+            targetedTrafficLight = firstTrafficLight;
+        }
+        if (frontWallDistance > 1.50f && frontWallDistance <= 2.40f) {
+            targetedTrafficLight = secondTrafficLight;
+        }
+        if (frontWallDistance > 1.00f && frontWallDistance <= 1.90f) {
+            targetedTrafficLight = thirdTrafficLight;
+        }
+
+        if (targetedTrafficLight) {
+            const auto &tl = *targetedTrafficLight;
+
+            if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+                if (tl.info.cameraBlock.color == camera_processor::Color::GREEN) {
+                    if (tl.location.side == WallSide::INNER) {
+                        targetOuterWallDistance = TARGET_OUTER_WALL_OUTER1_DISTANCE;
+                    } else {
+                        targetOuterWallDistance = TARGET_OUTER_WALL_OUTER2_DISTANCE;
+                    }
+                } else if (tl.info.cameraBlock.color == camera_processor::Color::RED) {
+                    if (tl.location.side == WallSide::INNER) {
+                        targetOuterWallDistance = TARGET_OUTER_WALL_INNER2_DISTANCE;
+                    } else {
+                        targetOuterWallDistance = TARGET_OUTER_WALL_INNER1_DISTANCE;
+                    }
+                }
+            } else {  // COUNTER_CLOCKWISE
+                if (tl.info.cameraBlock.color == camera_processor::Color::GREEN) {
+                    if (tl.location.side == WallSide::INNER) {
+                        targetOuterWallDistance = TARGET_OUTER_WALL_INNER2_DISTANCE;
+                    } else {
+                        targetOuterWallDistance = TARGET_OUTER_WALL_INNER1_DISTANCE;
+                    }
+                } else if (tl.info.cameraBlock.color == camera_processor::Color::RED) {
+                    if (tl.location.side == WallSide::INNER) {
+                        targetOuterWallDistance = TARGET_OUTER_WALL_OUTER1_DISTANCE;
+                    } else {
+                        targetOuterWallDistance = TARGET_OUTER_WALL_OUTER2_DISTANCE;
+                    }
+                }
+            }
         }
 
         static auto lastPreTurnTrigger = std::chrono::steady_clock::now() - PRE_TURN_COOLDOWN;

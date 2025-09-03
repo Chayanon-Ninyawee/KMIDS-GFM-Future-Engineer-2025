@@ -286,10 +286,10 @@ void drawTrafficLightInfo(cv::Mat &img, const TrafficLightInfo &info, float scal
     // Choose color based on camera block
     cv::Scalar color;
     switch (info.cameraBlock.color) {
-    case camera_processor::Color::Red:
+    case camera_processor::Color::RED:
         color = cv::Scalar(0, 0, 255);  // BGR
         break;
-    case camera_processor::Color::Green:
+    case camera_processor::Color::GREEN:
         color = cv::Scalar(0, 255, 0);
         break;
     default:

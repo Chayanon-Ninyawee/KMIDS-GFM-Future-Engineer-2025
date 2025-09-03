@@ -119,13 +119,13 @@ std::vector<BlockAngle> computeBlockAngles(const ColorMasks &masks, int imageWid
     // Red blocks
     for (const auto &contour : masks.red.contours) {
         float angle = pixelToAngle(static_cast<int>(contour.centroid.x), imageWidth, hfov);
-        results.push_back(BlockAngle{angle, contour.area, contour.centroid, Color::Red});
+        results.push_back(BlockAngle{angle, contour.area, contour.centroid, Color::RED});
     }
 
     // Green blocks
     for (const auto &contour : masks.green.contours) {
         float angle = pixelToAngle(static_cast<int>(contour.centroid.x), imageWidth, hfov);
-        results.push_back(BlockAngle{angle, contour.area, contour.centroid, Color::Green});
+        results.push_back(BlockAngle{angle, contour.area, contour.centroid, Color::GREEN});
     }
 
     return results;

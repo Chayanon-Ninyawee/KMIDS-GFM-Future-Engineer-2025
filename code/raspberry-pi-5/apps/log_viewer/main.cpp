@@ -383,7 +383,7 @@ int main(int argc, char **argv) {
 
         for (const auto &block : blockAngles) {
             // Choose color for drawing
-            cv::Scalar lineColor = (block.color == camera_processor::Color::Red) ? cv::Scalar(0, 0, 255)   // Red in BGR
+            cv::Scalar lineColor = (block.color == camera_processor::Color::RED) ? cv::Scalar(0, 0, 255)   // Red in BGR
                                                                                  : cv::Scalar(0, 255, 0);  // Green in BGR
             drawLineFromAngle(lidarMat, 400, 400 - (800 / 6.0f * 0.15), block.angle, lineColor, 2);
         }
