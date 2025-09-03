@@ -827,12 +827,11 @@ int main() {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-    while (digitalRead(BUTTON_PIN) == HIGH) {
+    while (digitalRead(BUTTON_PIN) == HIGH and !stop_flag) {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    std::cout << "Waiting 2 seconds before starting control loop..." << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     const auto loopDuration = std::chrono::milliseconds(32);  // ~30 Hz
     auto lastTime = std::chrono::steady_clock::now();
