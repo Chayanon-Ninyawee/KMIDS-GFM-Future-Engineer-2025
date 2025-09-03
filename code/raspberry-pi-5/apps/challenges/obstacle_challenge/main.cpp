@@ -27,7 +27,7 @@ const uint32_t camHeight = 972;
 const float camHFov = 104.0f;
 
 const float TARGET_OUTER_WALL_DISTANCE = 0.50;
-const float TARGET_OUTER_WALL_OUTER1_DISTANCE = 0.38;
+const float TARGET_OUTER_WALL_OUTER1_DISTANCE = 0.40;
 const float TARGET_OUTER_WALL_OUTER2_DISTANCE = 0.22;
 const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62;
 const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.78;
@@ -38,13 +38,16 @@ const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 
 // FIXME: TUNE THE VALUE
 const float TURNING_FRONT_WALL_DISTANCE = 0.80f;
-const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.65f;
+const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.70f;
 const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.50f;
 const float TURNING_FRONT_WALL_INNER1_DISTANCE = 1.05f;
 const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.13f;
+const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.64f;
 
-const float RIGHT_PRE_PARKING_FRONT_WALL_DISTANCE = 1.40f;
-const auto CCW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(200);
+const float RIGHT_PRE_PARKING_FRONT_WALL_DISTANCE = 1.80f;
+const auto CCW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(500);
+const float LEFT_PRE_PARKING_FRONT_WALL_DISTANCE = 2.20f;
+const auto CW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(400);
 
 enum Mode
 {
@@ -391,7 +394,9 @@ instant_update:
 
                 if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
                     if (isGreen) {
-                        if (isInner) {
+                        if (state.numberOfTurn == 11) {
+                            turningFrontWallDistance = TURNING_FRONT_WALL_CW_PARKING_DISTANCE;
+                        } else if (isInner) {
                             turningFrontWallDistance = TURNING_FRONT_WALL_OUTER1_DISTANCE;
                         } else {
                             turningFrontWallDistance = TURNING_FRONT_WALL_OUTER2_DISTANCE;
@@ -461,7 +466,8 @@ instant_update:
         break;
     }
     case Mode::CCW_PRE_FIND_PARKING: {
-        outMotorSpeed = 2.0f;
+        outMotorSpeed = 2.5f;
+        targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE_PARKING;
 
         static bool waitTimerActive = false;
         static auto waitStartTime = std::chrono::steady_clock::now();
@@ -479,6 +485,29 @@ instant_update:
             state.robotMode = Mode::FIND_PARKING;
             goto instant_update;
         }
+        break;
+    }
+    case Mode::CW_PRE_FIND_PARKING: {
+        outMotorSpeed = 1.0f;
+        targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE_PARKING;
+
+        static bool waitTimerActive = false;
+        static auto waitStartTime = std::chrono::steady_clock::now();
+        if (!waitTimerActive) {
+            waitTimerActive = true;
+            waitStartTime = std::chrono::steady_clock::now();
+        }
+
+        auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= LEFT_PRE_PARKING_FRONT_WALL_DISTANCE &&
+            elapsed >= CW_PRE_FIND_PARKING_DELAY)
+        {
+            waitTimerActive = false;
+
+            state.robotMode = Mode::FIND_PARKING;
+            goto instant_update;
+        }
+        break;
     }
     case Mode::FIND_PARKING: {
         outMotorSpeed = 1.0f;
@@ -530,14 +559,17 @@ instant_update:
         // std::cout << "[BackParkingWall] dir=" << backParkingWallDir << "°, dist=" << backParkingWallDist << " m" << std::endl;
 
         if (state.robotTurnDirection) {
+            float targetParkingWallDistance;
             bool isBackParkingWallBehind;
             if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
-                isBackParkingWallBehind = backParkingWallDir >= 180.0f && backParkingWallDir < 270.0f;
+                targetParkingWallDistance = 0.455f;
+                isBackParkingWallBehind = backParkingWallDir >= 180.0f && backParkingWallDir < 300.0f;
             } else {
-                isBackParkingWallBehind = backParkingWallDir >= 270.0f && backParkingWallDir < 360.0f;
+                targetParkingWallDistance = 0.475f;
+                isBackParkingWallBehind = backParkingWallDir >= 240.0f && backParkingWallDir < 360.0f;
             }
 
-            if (isBackParkingWallBehind && backParkingWallDist >= 0.475f) {
+            if (isBackParkingWallBehind && backParkingWallDist >= targetParkingWallDistance) {
                 state.robotMode = Mode::PARKING_1;
                 goto instant_update;
             }
