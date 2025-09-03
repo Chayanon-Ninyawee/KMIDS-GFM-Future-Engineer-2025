@@ -84,6 +84,7 @@ struct State {
     PIDController headingPid{3.0f, 0.0, 0.0f};
     PIDController wallPid{180.0f, 0.0, 0.0f};
 
+    std::map<std::pair<Segment, SegmentLocation>, std::vector<combined_processor::ClassifiedTrafficLight>> detectionHistory;
     std::map<std::pair<Segment, SegmentLocation>, combined_processor::ClassifiedTrafficLight> trafficLightMap;
 
     std::optional<float> initialHeading;
@@ -184,31 +185,53 @@ void update(
             for (const auto &cl : classifiedLights) {
                 std::pair<Segment, SegmentLocation> key = {cl.location.segment, cl.location.location};
 
-                if (state.trafficLightMap.find(key) == state.trafficLightMap.end()) {
-                    state.trafficLightMap[key] = cl;
+                // Append to detection history
+                auto &history = state.detectionHistory[key];
+                history.push_back(cl);
 
-                    std::string colorStr;
-                    switch (cl.info.cameraBlock.color) {
-                    case camera_processor::Color::RED:
-                        colorStr = "RED";
-                        break;
-                    case camera_processor::Color::GREEN:
-                        colorStr = "GREEN";
-                        break;
-                    default:
-                        colorStr = "UNKNOWN";
-                        break;
+                // Keep history limited (avoid unbounded growth)
+                if (history.size() > 3) {
+                    history.erase(history.begin());
+                }
+
+                // Check if we have 3 consecutive same wallSide and color
+                if (history.size() == 3) {
+                    bool allSame = true;
+                    for (size_t i = 1; i < history.size(); ++i) {
+                        if (history[i].location.side != history[0].location.side ||
+                            history[i].info.cameraBlock.color != history[0].info.cameraBlock.color)
+                        {
+                            allSame = false;
+                            break;
+                        }
                     }
 
-                    std::cout << "Traffic Light (" << colorStr << ") at LiDAR position (" << cl.info.lidarPosition.x << ", "
-                              << cl.info.lidarPosition.y << ")"
-                              << " mapped to Segment " << static_cast<int>(cl.location.segment) << ", Location "
-                              << static_cast<int>(cl.location.location) << ", WallSide "
-                              << (cl.location.side == WallSide::INNER ? "INNER" : "OUTER") << std::endl;
+                    if (allSame && state.trafficLightMap.find(key) == state.trafficLightMap.end()) {
+                        state.trafficLightMap[key] = history[0];  // Commit once
+
+                        std::string colorStr;
+                        switch (history[0].info.cameraBlock.color) {
+                        case camera_processor::Color::RED:
+                            colorStr = "RED";
+                            break;
+                        case camera_processor::Color::GREEN:
+                            colorStr = "GREEN";
+                            break;
+                        default:
+                            colorStr = "UNKNOWN";
+                            break;
+                        }
+
+                        std::cout << "Traffic Light (" << colorStr << ") at LiDAR position (" << history[0].info.lidarPosition.x << ", "
+                                  << history[0].info.lidarPosition.y << ")"
+                                  << " mapped to Segment " << static_cast<int>(history[0].location.segment) << ", Location "
+                                  << static_cast<int>(history[0].location.location) << ", WallSide "
+                                  << (history[0].location.side == WallSide::INNER ? "INNER" : "OUTER")
+                                  << " [3 consecutive matches confirmed]" << std::endl;
+                    }
                 }
             }
         }
-
         // std::cout << "Traffic Light Map contents:\n";
         // for (const auto &entry : state.trafficLightMap) {
         //     const auto &cl = entry.second;
