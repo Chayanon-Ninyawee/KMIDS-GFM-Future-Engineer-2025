@@ -47,10 +47,13 @@ const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.13f;
 const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.64f;
 
 // Will just go and park EZ
-const float RIGHT_PRE_PARKING_FRONT_WALL_DISTANCE = 1.80f;
+const float CCW_PRE_PARKING_FRONT_WALL_DISTANCE = 1.80f;
 const auto CCW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(500);
+// Will just go to uturn then go and use CW_PRE_PARKING
+const float CCW_UTURN_PRE_PARKING_FRONT_WALL_DISTANCE = 0.60f;
+const auto CCW_UTURN_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
 // Will go over then long reverse to park
-const float LEFT_PRE_PARKING_FRONT_WALL_DISTANCE = 1.40f;
+const float CW_PRE_PARKING_FRONT_WALL_DISTANCE = 1.40f;
 const auto CW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
 
 enum Mode
@@ -61,7 +64,9 @@ enum Mode
     CW_UTURN_PRE_FIND_PARKING,
     CW_PRE_FIND_PARKING,
     CCW_PRE_FIND_PARKING,
-    CCW_PRE_UTURN_FIND_PARKING,
+    CCW_PRE_UTURN_FIND_PARKING_1,
+    CCW_PRE_UTURN_FIND_PARKING_2,
+    CCW_PRE_UTURN_FIND_PARKING_3,
     CCW_FIND_PARKING,
     CW_FIND_PARKING,
     PARKING_1,
@@ -291,7 +296,7 @@ instant_update:
                         state.robotMode = Mode::CCW_PRE_FIND_PARKING;
                         goto instant_update;
                     } else if (foundGreen) {
-                        state.robotMode = Mode::CCW_PRE_UTURN_FIND_PARKING;
+                        state.robotMode = Mode::CCW_PRE_UTURN_FIND_PARKING_1;
                         goto instant_update;
                     }
                 }
@@ -482,7 +487,7 @@ instant_update:
         }
 
         auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
-        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= RIGHT_PRE_PARKING_FRONT_WALL_DISTANCE &&
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= CCW_PRE_PARKING_FRONT_WALL_DISTANCE &&
             elapsed >= CCW_PRE_FIND_PARKING_DELAY)
         {
             waitTimerActive = false;
@@ -492,6 +497,63 @@ instant_update:
         }
         break;
     }
+    // FIXME: NOT TESTED
+    case Mode::CCW_PRE_UTURN_FIND_PARKING_1: {
+        outMotorSpeed = 2.5f;
+        targetOuterWallDistance = TARGET_OUTER_WALL_INNER2_DISTANCE;
+
+        static bool waitTimerActive = false;
+        static auto waitStartTime = std::chrono::steady_clock::now();
+        if (!waitTimerActive) {
+            waitTimerActive = true;
+            waitStartTime = std::chrono::steady_clock::now();
+        }
+
+        auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= CCW_UTURN_PRE_PARKING_FRONT_WALL_DISTANCE &&
+            elapsed >= CCW_UTURN_PRE_FIND_PARKING_DELAY)
+        {
+            waitTimerActive = false;
+
+            float nextHeading = state.headingDirection.toHeading() + 90.0f;
+            nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+            state.headingDirection = Direction::fromHeading(nextHeading);
+            state.robotMode = Mode::CCW_PRE_UTURN_FIND_PARKING_2;
+            goto instant_update;
+        }
+        break;
+    }
+    // FIXME: NOT TESTED
+    case Mode::CCW_PRE_UTURN_FIND_PARKING_2: {
+        outMotorSpeed = 2.5f;
+        pidWallErrorActive = false;
+
+        float diff = heading - state.headingDirection.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+        if (std::abs(diff) <= 20.0f) {
+            float nextHeading = state.headingDirection.toHeading() + 90.0f;
+            nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+            state.headingDirection = Direction::fromHeading(nextHeading);
+            state.robotMode = Mode::CCW_PRE_UTURN_FIND_PARKING_3;
+            goto instant_update;
+        }
+        break;
+    }
+    // FIXME: NOT TESTED
+    case Mode::CCW_PRE_UTURN_FIND_PARKING_3: {
+        outMotorSpeed = 2.5f;
+        pidWallErrorActive = false;
+
+        float diff = heading - state.headingDirection.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+        if (std::abs(diff) <= 20.0f) {
+            state.robotTurnDirection = RotationDirection::CLOCKWISE;
+            state.robotMode = Mode::CW_PRE_FIND_PARKING;
+            goto instant_update;
+        }
+        break;
+    }
+    // FIXME: NOT TESTED
     case Mode::CW_PRE_FIND_PARKING: {
         outMotorSpeed = 2.5f;
         targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE_PARKING;
@@ -504,7 +566,7 @@ instant_update:
         }
 
         auto elapsed = std::chrono::steady_clock::now() - waitStartTime;
-        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= LEFT_PRE_PARKING_FRONT_WALL_DISTANCE &&
+        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= CW_PRE_PARKING_FRONT_WALL_DISTANCE &&
             elapsed >= CW_PRE_FIND_PARKING_DELAY)
         {
             waitTimerActive = false;
@@ -573,6 +635,7 @@ instant_update:
 
         break;
     }
+    // FIXME: NOT TESTED
     case Mode::CW_FIND_PARKING: {
         outMotorSpeed = 0.0f;
         outSteeringPercent = 0.0f;
