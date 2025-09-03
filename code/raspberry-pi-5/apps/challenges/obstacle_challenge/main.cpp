@@ -38,10 +38,10 @@ const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 
 // FIXME: TUNE THE VALUE
 const float TURNING_FRONT_WALL_DISTANCE = 0.80f;
-const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.70f;
-const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.60f;
-const float TURNING_FRONT_WALL_INNER1_DISTANCE = 1.00f;
-const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.10f;
+const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.65f;
+const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.50f;
+const float TURNING_FRONT_WALL_INNER1_DISTANCE = 1.05f;
+const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.13f;
 
 const float RIGHT_PRE_PARKING_FRONT_WALL_DISTANCE = 1.40f;
 const auto CCW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(200);
@@ -155,32 +155,70 @@ void update(
             innerWall = resolveWalls.leftWall;
         }
 
-        auto classifiedLights = combined_processor::classifyTrafficLights(
-            trafficLightInfos,
-            resolveWalls,
-            *state.robotTurnDirection,
-            Segment::fromHeading(heading)
-        );
+        if (state.robotMode != Mode::TURNING) {
+            auto classifiedLights = combined_processor::classifyTrafficLights(
+                trafficLightInfos,
+                resolveWalls,
+                *state.robotTurnDirection,
+                Segment::fromDirection(state.headingDirection)
+            );
 
-        for (const auto &cl : classifiedLights) {
-            std::pair<Segment, SegmentLocation> key = {cl.location.segment, cl.location.location};
+            for (const auto &cl : classifiedLights) {
+                std::pair<Segment, SegmentLocation> key = {cl.location.segment, cl.location.location};
 
-            if (state.trafficLightMap.find(key) == state.trafficLightMap.end()) {
-                state.trafficLightMap[key] = cl;
+                if (state.trafficLightMap.find(key) == state.trafficLightMap.end()) {
+                    state.trafficLightMap[key] = cl;
+
+                    std::string colorStr;
+                    switch (cl.info.cameraBlock.color) {
+                    case camera_processor::Color::RED:
+                        colorStr = "RED";
+                        break;
+                    case camera_processor::Color::GREEN:
+                        colorStr = "GREEN";
+                        break;
+                    default:
+                        colorStr = "UNKNOWN";
+                        break;
+                    }
+
+                    std::cout << "Traffic Light (" << colorStr << ") at LiDAR position (" << cl.info.lidarPosition.x << ", "
+                              << cl.info.lidarPosition.y << ")"
+                              << " mapped to Segment " << static_cast<int>(cl.location.segment) << ", Location "
+                              << static_cast<int>(cl.location.location) << ", WallSide "
+                              << (cl.location.side == WallSide::INNER ? "INNER" : "OUTER") << std::endl;
+                }
             }
         }
 
-        // for (const auto &ct : classifiedLights) {
-        //     std::cout << "Traffic Light at LiDAR position (" << ct.info.lidarPosition.x << ", " << ct.info.lidarPosition.y << ")"
-        //               << " mapped to Segment " << static_cast<int>(ct.location.segment) << ", Location "
-        //               << static_cast<int>(ct.location.location) << ", WallSide "
-        //               << (ct.location.side == WallSide::INNER ? "INNER" : "OUTER") << std::endl;
+        // std::cout << "Traffic Light Map contents:\n";
+        // for (const auto &entry : state.trafficLightMap) {
+        //     const auto &cl = entry.second;
+
+        //     std::string colorStr;
+        //     switch (cl.info.cameraBlock.color) {
+        //     case camera_processor::Color::RED:
+        //         colorStr = "RED";
+        //         break;
+        //     case camera_processor::Color::GREEN:
+        //         colorStr = "GREEN";
+        //         break;
+        //     default:
+        //         colorStr = "UNKNOWN";
+        //         break;
+        //     }
+
+        //     std::cout << "Traffic Light (" << colorStr << ") at LiDAR position (" << cl.info.lidarPosition.x << ", "
+        //               << cl.info.lidarPosition.y << ")"
+        //               << " mapped to Segment " << static_cast<int>(cl.location.segment) << ", Location "
+        //               << static_cast<int>(cl.location.location) << ", WallSide "
+        //               << (cl.location.side == WallSide::INNER ? "INNER" : "OUTER") << std::endl;
         // }
     }
 
     bool pidWallErrorActive = true;
 
-    float targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE;
+    static float targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE;
     float turningFrontWallDistance = TURNING_FRONT_WALL_DISTANCE;
 
     // TODO: Change this to match with obstacle_challenge
@@ -195,8 +233,6 @@ instant_update:
         // std::cout << "[Mode::NORMAL]\n";
 
         outMotorSpeed = 2.5f;
-
-        // FIXME: UNTESTED
 
         Segment currentSegment = Segment::fromDirection(state.headingDirection);
 
@@ -264,13 +300,13 @@ instant_update:
         }
 
         std::optional<combined_processor::ClassifiedTrafficLight> targetedTrafficLight;
-        if (frontWallDistance > 2.00f && frontWallDistance <= 2.90f) {
+        if (frontWallDistance > 2.00f && frontWallDistance <= 2.90f && firstTrafficLight) {
             targetedTrafficLight = firstTrafficLight;
         }
-        if (frontWallDistance > 1.50f && frontWallDistance <= 2.40f) {
+        if (frontWallDistance > 1.50f && frontWallDistance <= 2.40f && secondTrafficLight) {
             targetedTrafficLight = secondTrafficLight;
         }
-        if (frontWallDistance > 1.00f && frontWallDistance <= 1.90f) {
+        if (frontWallDistance > 1.00f && frontWallDistance <= 1.90f && thirdTrafficLight) {
             targetedTrafficLight = thirdTrafficLight;
         }
 
@@ -323,9 +359,6 @@ instant_update:
 
         outMotorSpeed = 2.5f;
 
-        // FIXME: UNTESTED
-
-        std::optional<combined_processor::ClassifiedTrafficLight> nextTargetedTrafficLight;
         if (state.robotTurnDirection) {
             // --- Compute next segment ---
             Segment nextSegment;
@@ -350,41 +383,45 @@ instant_update:
                     nextFirstTrafficLight = it->second;
                 }
             }
-        }
 
-        if (nextTargetedTrafficLight) {
-            const auto &tl = *nextTargetedTrafficLight;
-            bool isGreen = (tl.info.cameraBlock.color == camera_processor::Color::GREEN);
-            bool isInner = (tl.location.side == WallSide::INNER);
+            if (nextFirstTrafficLight) {
+                const auto &tl = *nextFirstTrafficLight;
+                bool isGreen = (tl.info.cameraBlock.color == camera_processor::Color::GREEN);
+                bool isInner = (tl.location.side == WallSide::INNER);
 
-            if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
-                if (isGreen) {
-                    if (isInner)
-                        turningFrontWallDistance = TURNING_FRONT_WALL_OUTER1_DISTANCE;
-                    else
-                        turningFrontWallDistance = TURNING_FRONT_WALL_OUTER2_DISTANCE;
-                } else {  // RED
-                    if (isInner)
-                        turningFrontWallDistance = TURNING_FRONT_WALL_INNER2_DISTANCE;
-                    else
-                        turningFrontWallDistance = TURNING_FRONT_WALL_INNER1_DISTANCE;
-                }
-            } else {  // COUNTER_CLOCKWISE
-                if (isGreen) {
-                    if (isInner)
-                        turningFrontWallDistance = TURNING_FRONT_WALL_INNER2_DISTANCE;
-                    else
-                        turningFrontWallDistance = TURNING_FRONT_WALL_INNER1_DISTANCE;
-                } else {  // RED
-                    if (isInner)
-                        turningFrontWallDistance = TURNING_FRONT_WALL_OUTER1_DISTANCE;
-                    else
-                        turningFrontWallDistance = TURNING_FRONT_WALL_OUTER2_DISTANCE;
+                if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
+                    if (isGreen) {
+                        if (isInner) {
+                            turningFrontWallDistance = TURNING_FRONT_WALL_OUTER1_DISTANCE;
+                        } else {
+                            turningFrontWallDistance = TURNING_FRONT_WALL_OUTER2_DISTANCE;
+                        }
+                    } else {  // RED
+                        if (isInner) {
+                            turningFrontWallDistance = TURNING_FRONT_WALL_INNER2_DISTANCE;
+                        } else {
+                            turningFrontWallDistance = TURNING_FRONT_WALL_INNER1_DISTANCE;
+                        }
+                    }
+                } else {  // COUNTER_CLOCKWISE
+                    if (isGreen) {
+                        if (isInner) {
+                            turningFrontWallDistance = TURNING_FRONT_WALL_INNER2_DISTANCE;
+                        } else {
+                            turningFrontWallDistance = TURNING_FRONT_WALL_INNER1_DISTANCE;
+                        }
+                    } else {  // RED
+                        if (isInner) {
+                            turningFrontWallDistance = TURNING_FRONT_WALL_OUTER1_DISTANCE;
+                        } else {
+                            turningFrontWallDistance = TURNING_FRONT_WALL_OUTER2_DISTANCE;
+                        }
+                    }
                 }
             }
         }
 
-        std::cout << "turningFrontWallDistance: " << turningFrontWallDistance << std::endl;
+        // std::cout << "turningFrontWallDistance: " << turningFrontWallDistance << std::endl;
 
         if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= turningFrontWallDistance) {
             Direction nextHeadingDirection;
@@ -409,6 +446,8 @@ instant_update:
         // std::cout << "[Mode::TURNING]\n";
 
         outMotorSpeed = 2.5f;
+
+        targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE;
 
         pidWallErrorActive = false;
 
@@ -660,7 +699,7 @@ instant_update:
     // NOTE: Use break and it will run the pid
     // If don't want to run the pid then use return
 
-    std::cout << "targetOuterWallDistance" << targetOuterWallDistance << std::endl;
+    // std::cout << "targetOuterWallDistance" << targetOuterWallDistance << std::endl;
 
     float wallError = 0.0f;
     if (outerWall) {
@@ -756,7 +795,7 @@ int main() {
         float dt = delta.count();
         lastTime = loopStart;
 
-        std::cout << "dt: " << dt * 1000.0f << " ms" << std::endl;  // print in milliseconds
+        // std::cout << "dt: " << dt * 1000.0f << " ms" << std::endl;  // print in milliseconds
 
         float motorSpeed, steeringPercent;
         update(dt, lidar, pico2, camera, state, motorSpeed, steeringPercent);

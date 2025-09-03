@@ -198,13 +198,14 @@ std::vector<ClassifiedTrafficLight> classifyTrafficLights(
             outerDist = 1.0f - innerWall->perpendicularDistance(p.x, p.y);
         }
 
-        Segment seg = currentSegment;
-
         // --- SegmentLocation: A/B/C depending on rotation ---
+        Segment seg;
         SegmentLocation loc;
         WallSide side;
         if (outerDist < 0.900) {
             if (turnDirection == RotationDirection::CLOCKWISE) {
+                seg = currentSegment;
+
                 if (frontDist > 0.80 && frontDist < 1.15f)
                     loc = SegmentLocation::C;  // front
                 else if (frontDist > 1.35 && frontDist < 1.65f)
@@ -214,6 +215,8 @@ std::vector<ClassifiedTrafficLight> classifyTrafficLights(
                 else
                     continue;
             } else {
+                seg = currentSegment;
+
                 if (frontDist > 0.80 && frontDist < 1.15f)
                     loc = SegmentLocation::A;  // front (reverse)
                 else if (frontDist > 1.35 && frontDist < 1.65f)
