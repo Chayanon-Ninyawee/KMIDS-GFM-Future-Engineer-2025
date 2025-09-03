@@ -10,6 +10,7 @@
 #include <iostream>
 #include <optional>
 #include <thread>
+#include <wiringPi.h>
 
 volatile std::sig_atomic_t stop_flag = 0;
 
@@ -17,6 +18,8 @@ void signalHandler(int signum) {
     std::cout << "\nInterrupt signal (" << signum << ") received.\n";
     stop_flag = 1;
 }
+
+const int BUTTON_PIN = 16;
 
 const float TARGET_OUTER_WALL_DISTANCE = 0.50f;
 
@@ -257,8 +260,21 @@ int main() {
 
     State state;
 
-    std::cout << "Waiting 2 seconds before starting control loop..." << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    if (wiringPiSetupGpio() == -1) {  // Use GPIO numbering
+        printf("WiringPi setup failed.\n");
+        return -1;
+    }
+
+    pinMode(BUTTON_PIN, INPUT);
+    pullUpDnControl(BUTTON_PIN, PUD_UP);  // Enable pull-up resistor
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    while (digitalRead(BUTTON_PIN) == HIGH and !stop_flag) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     const auto loopDuration = std::chrono::milliseconds(16);  // ~60 Hz
     auto lastTime = std::chrono::steady_clock::now();
