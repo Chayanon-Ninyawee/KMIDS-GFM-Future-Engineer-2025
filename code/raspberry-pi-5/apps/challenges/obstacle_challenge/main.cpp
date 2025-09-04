@@ -36,6 +36,7 @@ const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62;
 const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.78;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.30f;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CW = 0.33f;
+const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE = 0.85f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
 const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
@@ -541,7 +542,7 @@ instant_update:
     // FIXME: NOT TESTED
     case Mode::CCW_UTURN_PRE_FIND_PARKING_1: {
         outMotorSpeed = 2.5f;
-        targetOuterWallDistance = TARGET_OUTER_WALL_INNER2_DISTANCE;
+        targetOuterWallDistance = TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE;
 
         static bool waitTimerActive = false;
         static auto waitStartTime = std::chrono::steady_clock::now();
@@ -564,7 +565,6 @@ instant_update:
         }
         break;
     }
-    // FIXME: NOT TESTED
     case Mode::CCW_UTURN_PRE_FIND_PARKING_2: {
         outMotorSpeed = 2.5f;
         pidWallErrorActive = false;
@@ -580,7 +580,6 @@ instant_update:
         }
         break;
     }
-    // FIXME: NOT TESTED
     case Mode::CCW_UTURN_PRE_FIND_PARKING_3: {
         outMotorSpeed = 2.5f;
         pidWallErrorActive = false;
@@ -594,7 +593,6 @@ instant_update:
         }
         break;
     }
-    // FIXME: NOT TESTED
     case Mode::CW_PRE_FIND_PARKING_1: {
         outMotorSpeed = 1.5f;
         targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE_PARKING_CW;
@@ -617,7 +615,6 @@ instant_update:
         }
         break;
     }
-    // FIXME: NOT TESTED
     case Mode::CW_PRE_FIND_PARKING_2: {
         outMotorSpeed = 0.0f;
         outSteeringPercent = 0.0f;
@@ -647,7 +644,7 @@ instant_update:
     // FIXME: NOT TESTED
     case Mode::CW_UTURN_PRE_FIND_PARKING_1: {
         outMotorSpeed = 2.5f;
-        targetOuterWallDistance = TARGET_OUTER_WALL_INNER2_DISTANCE;
+        targetOuterWallDistance = TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE;
 
         static bool waitTimerActive = false;
         static auto waitStartTime = std::chrono::steady_clock::now();
@@ -670,7 +667,6 @@ instant_update:
         }
         break;
     }
-    // FIXME: NOT TESTED
     case Mode::CW_UTURN_PRE_FIND_PARKING_2: {
         outMotorSpeed = 2.5f;
         pidWallErrorActive = false;
@@ -686,7 +682,6 @@ instant_update:
         }
         break;
     }
-    // FIXME: NOT TESTED
     case Mode::CW_UTURN_PRE_FIND_PARKING_3: {
         outMotorSpeed = 2.5f;
         pidWallErrorActive = false;
@@ -759,7 +754,6 @@ instant_update:
 
         break;
     }
-    // FIXME: NOT TESTED
     case Mode::CW_FIND_PARKING: {
         outMotorSpeed = 1.0f;
 
