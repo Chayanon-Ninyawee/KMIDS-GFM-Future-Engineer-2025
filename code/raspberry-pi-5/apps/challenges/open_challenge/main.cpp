@@ -21,12 +21,12 @@ void signalHandler(int signum) {
 
 const int BUTTON_PIN = 16;
 
-const float TARGET_OUTER_WALL_DISTANCE = 0.50f;
+const float TARGET_OUTER_WALL_DISTANCE = 0.30f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
 const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 
-const float TURNING_FRONT_WALL_DISTANCE = 0.85f;
+const float TURNING_FRONT_WALL_DISTANCE = 0.65f;
 
 const float STOP_FRONT_WALL_DISTANCE = 1.80f;
 const auto STOP_DELAY = std::chrono::milliseconds(100);
@@ -274,7 +274,7 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 
     const auto loopDuration = std::chrono::milliseconds(16);  // ~60 Hz
     auto lastTime = std::chrono::steady_clock::now();
