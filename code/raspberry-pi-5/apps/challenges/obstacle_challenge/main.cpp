@@ -803,8 +803,6 @@ instant_update:
         // std::cout << "backParkingWallDist: " << backParkingWallDist << std::endl;
 
         if (isBackParkingWallBehind && backParkingWallDist >= targetParkingWallDistance) {
-            waitTimerActive = false;
-
             state.robotMode = Mode::PARKING_1;
             goto instant_update;
         }
