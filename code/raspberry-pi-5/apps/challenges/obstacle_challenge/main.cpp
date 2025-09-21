@@ -169,6 +169,55 @@ void update(
     std::optional<lidar_processor::LineSegment> outerWall;
     std::optional<lidar_processor::LineSegment> innerWall;
 
+    state.trafficLightMap[{Segment::A, SegmentLocation::C}] = {
+        {
+            // TrafficLightInfo
+            {},                                      // lidarPosition left default
+            {.color = camera_processor::Color::RED}  // only set color
+        },
+        {Segment::A, SegmentLocation::C, WallSide::INNER}
+    };
+    state.trafficLightMap[{Segment::D, SegmentLocation::C}] = {
+        {
+            // TrafficLightInfo
+            {},                                        // lidarPosition left default
+            {.color = camera_processor::Color::GREEN}  // only set color
+        },
+        {Segment::D, SegmentLocation::C, WallSide::INNER}
+    };
+    state.trafficLightMap[{Segment::D, SegmentLocation::A}] = {
+        {
+            // TrafficLightInfo
+            {},                                      // lidarPosition left default
+            {.color = camera_processor::Color::RED}  // only set color
+        },
+        {Segment::D, SegmentLocation::A, WallSide::OUTER}
+    };
+    state.trafficLightMap[{Segment::C, SegmentLocation::B}] = {
+        {
+            // TrafficLightInfo
+            {},                                        // lidarPosition left default
+            {.color = camera_processor::Color::GREEN}  // only set color
+        },
+        {Segment::C, SegmentLocation::B, WallSide::INNER}
+    };
+    state.trafficLightMap[{Segment::B, SegmentLocation::C}] = {
+        {
+            // TrafficLightInfo
+            {},                                      // lidarPosition left default
+            {.color = camera_processor::Color::RED}  // only set color
+        },
+        {Segment::B, SegmentLocation::C, WallSide::INNER}
+    };
+    state.trafficLightMap[{Segment::B, SegmentLocation::A}] = {
+        {
+            // TrafficLightInfo
+            {},                                        // lidarPosition left default
+            {.color = camera_processor::Color::GREEN}  // only set color
+        },
+        {Segment::B, SegmentLocation::A, WallSide::OUTER}
+    };
+
     if (state.robotTurnDirection) {
         if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
             outerWall = resolveWalls.leftWall;
