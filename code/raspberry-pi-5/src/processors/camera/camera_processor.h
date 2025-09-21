@@ -8,17 +8,17 @@ namespace camera_processor
 {
 
 // ------------------------ Color Ranges (HSV) ------------------------
-const cv::Scalar lowerRed1Light(0, 160, 160);
-const cv::Scalar upperRed1Light(1, 242, 235);
+const cv::Scalar lowerRed1Light(0, 190, 160);
+const cv::Scalar upperRed1Light(1, 242, 255);
 // If a second red range is required
-const cv::Scalar lowerRed2Light(173, 160, 160);
-const cv::Scalar upperRed2Light(180, 242, 235);
+const cv::Scalar lowerRed2Light(173, 190, 160);
+const cv::Scalar upperRed2Light(180, 242, 255);
 
 const cv::Scalar lowerGreen1Light(54, 140, 90);
-const cv::Scalar upperGreen1Light(71, 230, 170);
+const cv::Scalar upperGreen1Light(71, 230, 180);
 // If a second green range is required
-const cv::Scalar lowerGreen2Light(71, 230, 170);
-const cv::Scalar upperGreen2Light(71, 230, 170);
+const cv::Scalar lowerGreen2Light(71, 230, 180);
+const cv::Scalar upperGreen2Light(71, 230, 180);
 
 const cv::Scalar lowerPink1Light(165, 244, 200);
 const cv::Scalar upperPink1Light(171, 255, 255);
@@ -74,7 +74,7 @@ struct ColorMasks {
  * @param areaThreshold Minimum area threshold (in pixels) to filter out small/noisy contours.
  * @return ColorMasks A struct containing masks and contour info for red, green, and pink.
  */
-ColorMasks filterColors(const TimedFrame &timedFrame, double areaThreshold = 800.0);
+ColorMasks filterColors(const TimedFrame &timedFrame, double areaThreshold = 700.0);
 
 /**
  * @brief Draws ColorMasks on an image.

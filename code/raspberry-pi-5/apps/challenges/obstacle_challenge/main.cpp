@@ -31,22 +31,22 @@ const float camHFov = 100.0f;
 
 const float TARGET_OUTER_WALL_DISTANCE = 0.50;
 const float TARGET_OUTER_WALL_OUTER1_DISTANCE = 0.43;
-const float TARGET_OUTER_WALL_OUTER2_DISTANCE = 0.28;
+const float TARGET_OUTER_WALL_OUTER2_DISTANCE = 0.25;
 const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62;
 const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.78;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.30f;
-const float TARGET_OUTER_WALL_DISTANCE_PARKING_CW = 0.33f;
+const float TARGET_OUTER_WALL_DISTANCE_PARKING_CW = 0.32f;
 const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE = 0.85f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
 const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 
-const float TURNING_FRONT_WALL_DISTANCE = 0.80f;
+const float TURNING_FRONT_WALL_DISTANCE = 0.95f;
 const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.70f;
 const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.50f;
 const float TURNING_FRONT_WALL_INNER1_DISTANCE = 1.08f;
 const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.11f;
-const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.67f;
+const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.65f;
 
 // Will just go and park EZ
 const float CCW_PRE_PARKING_FRONT_WALL_DISTANCE = 1.80f;
@@ -188,7 +188,7 @@ void update(
 
         std::cout << "test: " << std::abs(diff / timeDiff) << std::endl;
 
-        if (state.robotMode != Mode::TURNING and std::abs(diff / timeDiff) < 0.000000015f) {
+        if (state.robotMode != Mode::TURNING and std::abs(diff / timeDiff) < 0.000000015f and false) {
             auto classifiedLights = combined_processor::classifyTrafficLights(
                 trafficLightInfos,
                 resolveWalls,
@@ -204,12 +204,12 @@ void update(
                 history.push_back(cl);
 
                 // Keep history limited (avoid unbounded growth)
-                if (history.size() > 4) {
+                if (history.size() > 2) {
                     history.erase(history.begin());
                 }
 
-                // Check if we have 4 consecutive same wallSide and color
-                if (history.size() == 4) {
+                // Check if we have 2 consecutive same wallSide and color
+                if (history.size() == 2) {
                     bool allSame = true;
                     for (size_t i = 1; i < history.size(); ++i) {
                         if (history[i].location.side != history[0].location.side ||
@@ -329,16 +329,19 @@ instant_update:
                         if (firstTrafficLight->info.cameraBlock.color == camera_processor::Color::RED) foundRed = true;
                         if (firstTrafficLight->info.cameraBlock.color == camera_processor::Color::GREEN) foundGreen = true;
                     }
-                    if (secondTrafficLight) {
-                        if (secondTrafficLight->info.cameraBlock.color == camera_processor::Color::RED) foundRed = true;
-                        if (secondTrafficLight->info.cameraBlock.color == camera_processor::Color::GREEN) foundGreen = true;
-                    }
+                    // if (secondTrafficLight) {
+                    //     if (secondTrafficLight->info.cameraBlock.color == camera_processor::Color::RED) foundRed = true;
+                    //     if (secondTrafficLight->info.cameraBlock.color == camera_processor::Color::GREEN) foundGreen = true;
+                    // }
 
                     if (foundRed) {
                         state.robotMode = Mode::CCW_PRE_FIND_PARKING;
                         goto instant_update;
                     } else if (foundGreen) {
                         state.robotMode = Mode::CCW_UTURN_PRE_FIND_PARKING_1;
+                        goto instant_update;
+                    } else {
+                        state.robotMode = Mode::CCW_PRE_FIND_PARKING;
                         goto instant_update;
                     }
                 }
@@ -358,10 +361,10 @@ instant_update:
         if (frontWallDistance > 2.00f && frontWallDistance <= 2.90f && firstTrafficLight) {
             targetedTrafficLight = firstTrafficLight;
         }
-        if (frontWallDistance > 1.50f && frontWallDistance <= 2.40f && secondTrafficLight) {
+        if (frontWallDistance > 1.50f && frontWallDistance <= 2.30f && secondTrafficLight) {
             targetedTrafficLight = secondTrafficLight;
         }
-        if (frontWallDistance > 1.00f && frontWallDistance <= 1.90f && thirdTrafficLight) {
+        if (frontWallDistance > 1.00f && frontWallDistance <= 1.80f && thirdTrafficLight) {
             targetedTrafficLight = thirdTrafficLight;
         }
 
@@ -397,6 +400,9 @@ instant_update:
                     }
                 }
             }
+        }
+        if (state.numberOfTurn == 0) {
+            targetOuterWallDistance = TARGET_OUTER_WALL_OUTER1_DISTANCE;
         }
 
         static auto lastPreTurnTrigger = std::chrono::steady_clock::now() - PRE_TURN_COOLDOWN;
@@ -475,6 +481,10 @@ instant_update:
                         }
                     }
                 }
+            } else {
+                if (state.numberOfTurn == 11) {
+                    turningFrontWallDistance = TURNING_FRONT_WALL_CW_PARKING_DISTANCE;
+                }
             }
         }
 
@@ -539,7 +549,6 @@ instant_update:
         }
         break;
     }
-    // FIXME: NOT TESTED
     case Mode::CCW_UTURN_PRE_FIND_PARKING_1: {
         outMotorSpeed = 2.5f;
         targetOuterWallDistance = TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE;
@@ -582,16 +591,17 @@ instant_update:
     }
     case Mode::CCW_UTURN_PRE_FIND_PARKING_3: {
         outMotorSpeed = 2.5f;
+        outSteeringPercent = 100.0f;
         pidWallErrorActive = false;
 
         float diff = heading - state.headingDirection.toHeading();
         diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
-        if (std::abs(diff) <= 40.0f) {
+        if (diff >= 2.0f) {
             state.robotTurnDirection = RotationDirection::CLOCKWISE;
             state.robotMode = Mode::CW_PRE_FIND_PARKING_1;
             goto instant_update;
         }
-        break;
+        return;
     }
     case Mode::CW_PRE_FIND_PARKING_1: {
         outMotorSpeed = 1.5f;
@@ -631,7 +641,7 @@ instant_update:
 
         outMotorSpeed = -1.5f;
         targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE_PARKING_CW;
-        if (elapsed < CW_PRE_FIND_PARKING_DELAY_2) break;
+        if (elapsed < CW_PRE_FIND_PARKING_DELAY_2) return;
 
         if (elapsed >= CW_PRE_FIND_PARKING_DELAY_2 + std::chrono::milliseconds(700)) {
             waitTimerActive = false;
@@ -639,9 +649,8 @@ instant_update:
             state.robotMode = Mode::CW_FIND_PARKING;
             goto instant_update;
         }
-        break;
+        return;
     }
-    // FIXME: NOT TESTED
     case Mode::CW_UTURN_PRE_FIND_PARKING_1: {
         outMotorSpeed = 2.5f;
         targetOuterWallDistance = TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE;
@@ -689,7 +698,7 @@ instant_update:
         float diff = heading - state.headingDirection.toHeading();
         diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
         if (std::abs(diff) <= 40.0f) {
-            state.robotTurnDirection = RotationDirection::CLOCKWISE;
+            state.robotTurnDirection = RotationDirection::COUNTER_CLOCKWISE;
             state.robotMode = Mode::CCW_PRE_FIND_PARKING;
             goto instant_update;
         }
@@ -744,7 +753,7 @@ instant_update:
 
         // std::cout << "[BackParkingWall] dir=" << backParkingWallDir << "°, dist=" << backParkingWallDist << " m" << std::endl;
 
-        float targetParkingWallDistance = 0.475f;
+        float targetParkingWallDistance = 0.470f;
         bool isBackParkingWallBehind = backParkingWallDir >= 240.0f && backParkingWallDir < 360.0f;
 
         if (isBackParkingWallBehind && backParkingWallDist >= targetParkingWallDistance) {
@@ -803,7 +812,7 @@ instant_update:
 
         // std::cout << "[BackParkingWall] dir=" << backParkingWallDir << "°, dist=" << backParkingWallDist << " m" << std::endl;
 
-        float targetParkingWallDistance = 0.440f;
+        float targetParkingWallDistance = 0.435f;
         bool isBackParkingWallBehind = backParkingWallDir >= 180.0f && backParkingWallDir < 300.0f;
 
         // std::cout << "backParkingWallDist: " << backParkingWallDist << std::endl;
@@ -934,7 +943,7 @@ instant_update:
         float targetEncoderAngle;
         if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
             outSteeringPercent = -100.0f;
-            targetEncoderAngle = 102;
+            targetEncoderAngle = 115;
         } else {
             outSteeringPercent = 100.0f;
             targetEncoderAngle = 92;
@@ -1001,9 +1010,9 @@ instant_update:
 
     outSteeringPercent = state.headingPid.update(headingError, dt);
 
-    if (outMotorSpeed < 0) {
-        outSteeringPercent = -outSteeringPercent;
-    }
+    // if (outMotorSpeed < 0) {
+    //     outSteeringPercent = -outSteeringPercent;
+    // }
 
     // std::cout << "Heading: " << heading << "°, Heading Direction: " << state.headingDirection.toHeading()
     //           << "°, Heading Error: " << headingError << "°, Heading Error Offset: " << headingErrorOffset
