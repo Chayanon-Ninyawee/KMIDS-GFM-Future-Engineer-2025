@@ -33,11 +33,11 @@ public:
      * Sets up internal state but does not start scanning.
      *
      * @param serialPort Path to the serial port used to communicate with the LIDAR (default "/dev/ttyAMA0").
-     * @param baudRate Baud rate for the LIDAR communication (default 460800).
+     * @param baudRate Baud rate for the LIDAR communication (default 1000000, and was 460800).
      */
-    LidarModule(const char *serialPort = "/dev/ttyAMA0", int baudRate = 460800);
+    LidarModule(const char *serialPort = "/dev/ttyAMA0", int baudRate = 1000000);
 
-    LidarModule(Logger *logger, const char *serialPort = "/dev/ttyAMA0", int baudRate = 460800);
+    LidarModule(Logger *logger, const char *serialPort = "/dev/ttyAMA0", int baudRate = 1000000);
 
     /**
      * @brief Destroy the Lidar module.
