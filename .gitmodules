@@ -1,6 +1,6 @@
 [submodule "LCCV"]
 	path = code/raspberry-pi-5/external/lccv
-	url = https://github.com/kbarni/LCCV.git
+	url = https://github.com/Chayanon-Ninyawee/LCCV.git
 [submodule "rplidar_sdk"]
 	path = code/raspberry-pi-5/external/rplidar_sdk
 	url = https://github.com/Slamtec/rplidar_sdk.git
