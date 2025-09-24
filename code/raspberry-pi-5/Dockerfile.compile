@@ -9,8 +9,6 @@ COPY ./src/shared_real/ /code/src/shared/
 
 ENV BUILD_DIR=/code/build
 
-ENV LD_LIBRARY_PATH=/usr/local/lib
-
 RUN mkdir -p $BUILD_DIR \
     && cd $BUILD_DIR \
     && cmake -DCMAKE_TOOLCHAIN_FILE=$CROSS_TOOLCHAIN \
