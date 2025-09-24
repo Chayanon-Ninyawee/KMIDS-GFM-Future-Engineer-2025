@@ -11,7 +11,7 @@ fi
 TARGET="$1"
 
 # Generate build system if not already present
-cmake -B build
+cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=OFF
 
 # Build all if no target is provided
 if [ -z "$TARGET" ]; then
