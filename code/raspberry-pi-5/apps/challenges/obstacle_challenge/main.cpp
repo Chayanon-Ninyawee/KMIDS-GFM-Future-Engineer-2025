@@ -235,7 +235,7 @@ void update(
             std::chrono::duration_cast<std::chrono::nanoseconds>(timedPico2Datas[timedPico2Datas.size() - 13].timestamp.time_since_epoch())
                 .count();
 
-        std::cout << "test: " << std::abs(diff / timeDiff) << std::endl;
+        // std::cout << "test: " << std::abs(diff / timeDiff) << std::endl;
 
         if (state.robotMode != Mode::TURNING and std::abs(diff / timeDiff) < 0.000000015f and false) {
             auto classifiedLights = combined_processor::classifyTrafficLights(
