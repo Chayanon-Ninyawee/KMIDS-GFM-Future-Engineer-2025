@@ -20,3 +20,4 @@ RUN mkdir -p $BUILD_DIR \
 
 FROM scratch
 COPY --from=builder /code/build /
+COPY --from=builder /usr/aarch64-linux-gnu/include/ /aarch64-linux-gnu/include
