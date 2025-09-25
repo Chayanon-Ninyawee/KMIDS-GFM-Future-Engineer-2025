@@ -270,6 +270,7 @@ int main() {
     Logger *lidarLogger = new Logger(timedstampedLogFolder + "/lidar.bin");
     Logger *pico2Logger = new Logger(timedstampedLogFolder + "/pico2.bin");
     Logger *cameraLogger = new Logger(timedstampedLogFolder + "/camera.bin");
+    Logger *scanMapLogger = new Logger(timedstampedLogFolder + "/scanMap.bin");
 
     // Initialize LidarModule
     LidarModule lidar(lidarLogger);
@@ -341,6 +342,10 @@ int main() {
             float motorSpeed, steeringPercent;
             update(dt, lidar, pico2, state, motorSpeed, steeringPercent);
             pico2.setMovementInfo(motorSpeed, steeringPercent);
+
+            uint8_t dummyData[1] = {0x39};
+            uint64_t timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(loopStart.time_since_epoch()).count();
+            scanMapLogger->writeData(timestamp_ns, dummyData, sizeof(dummyData));
 
             // Maintain ~30 Hz loop rate
             auto loopEnd = std::chrono::steady_clock::now();

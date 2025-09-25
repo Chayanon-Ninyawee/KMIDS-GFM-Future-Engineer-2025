@@ -1084,6 +1084,7 @@ int main() {
     Logger *lidarLogger = new Logger(timedstampedLogFolder + "/lidar.bin");
     Logger *pico2Logger = new Logger(timedstampedLogFolder + "/pico2.bin");
     Logger *cameraLogger = new Logger(timedstampedLogFolder + "/camera.bin");
+    Logger *obstacleChallengeLogger = new Logger(timedstampedLogFolder + "/obstacleChallenge.bin");
 
     // Logger *lidarLogger = nullptr;
     // Logger *pico2Logger = nullptr;
@@ -1160,6 +1161,10 @@ int main() {
             float motorSpeed, steeringPercent;
             update(dt, lidar, pico2, camera, state, motorSpeed, steeringPercent);
             pico2.setMovementInfo(motorSpeed, steeringPercent);
+
+            uint8_t dummyData[1] = {0x39};
+            uint64_t timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(loopStart.time_since_epoch()).count();
+            obstacleChallengeLogger->writeData(timestamp_ns, dummyData, sizeof(dummyData));
 
             // Maintain ~30 Hz loop rate
             auto loopEnd = std::chrono::steady_clock::now();
