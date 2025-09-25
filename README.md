@@ -43,13 +43,14 @@ We are a team of dedicated students with a passion for robotics and innovation. 
     - [Raspberry Pi 5 Build](#raspberry-pi-5-build)
     - [Raspberry Pi Pico 2 Build & Upload](#raspberry-pi-pico-2-build--upload)
 - [8. List of Components](#8-list-of-components)
-- [9. 3D Printed Parts](#9-3d-printed-parts)
+- [9. STL Files](#9-stl-files)
   - [9.1 Chassis & Core Structure](#91-chassis--core-structure)
   - [9.2 Motor & Transmission](#92-motor--transmission)
   - [9.3 Wheel & Axle Components](#93-wheel--axle-components)
   - [9.4 Steering Linkages](#94-steering-linkages)
   - [9.5 Miscellaneous](#95-miscellaneous)
-- [10. Extra Documentation](#10-extra-documentation)
+- [10. Building Instructions](#10-building-instructions)
+- [11. Extra Documentation](#11-extra-documentation)
 
 <!-- tocstop -->
 
@@ -1040,38 +1041,39 @@ ______________________________________________________________________
 | 5MP Fish Eye Camera           | 1        | Cytron          |
 | BNO085 IMU                    | 1        | N/A             |
 | S0004m Servo                  | 1        | N/A             |
-| N20 DC Motor + encoder        | 2        | N/A             |
-| DRV8871                       | 1        | N/A             |
-| DC to DC Boost Step Up Module | 1        | N/A             |
-| N Channel MOSFET Transistor   | 1        | N/A             |
-| 4.4 kΩ resistor               | 1        | N/A             |
-| Wires                         | A lot    | N/A             |
-| eSUN PLA+ Spool               | 1-3      | eSUN            |
+| N20 DC Motor + Encoder        | 2        | N/A             |
+| DRV8871 Motor Driver          | 1        | N/A             |
+| DC-DC Boost Step-Up Module    | 1        | N/A             |
+| N-Channel MOSFET Transistor   | 1        | N/A             |
+| 4.4 kΩ Resistor               | 1        | N/A             |
+| Wires                         | Various  | N/A             |
+| eSUN PLA+ Spool               | 1–3      | eSUN            |
+| Screws                        | Various  | Local Supplier  |
+| Tape                          | Various  | Local Supplier  |
+| Lubricant (Grease)            | Small    | Local Supplier  |
 
-**Printers Used:** [Bambu Lab P1S](https://asia.store.bambulab.com/products/p1s?p=W3sicHJvcGVydHlLZXkiOiJWYXJpYW50IiwicHJvcGVydHlWYWx1ZSI6IlAxUyBDb21ibyJ9LHsicHJvcGVydHlLZXkiOiJTaGlwIHRvIiwicHJvcGVydHlWYWx1ZSI6IiJ9LHsicHJvcGVydHlLZXkiOiJPcHRpb24iLCJwcm9wZXJ0eVZhbHVlIjoiQ29tYm8gd2l0aCBIdWIoU2hpcCBTZXBhcmF0ZWx5KSJ9XQ%3D%3D) and [Creality Ender 3 V3 KE](https://store.creality.com/products/ender-3-v3-ke-3d-printer) 
+
+---
+
+## 9. STL Files
+
+**Printers Used:**  
+- [Bambu Lab P1S](https://asia.store.bambulab.com/products/p1s?p=W3sicHJvcGVydHlLZXkiOiJWYXJpYW50IiwicHJvcGVydHlWYWx1ZSI6IlAxUyBDb21ibyJ9LHsicHJvcGVydHlLZXkiOiJTaGlwIHRvIiwicHJvcGVydHlWYWx1ZSI6IiJ9LHsicHJvcGVydHlLZXkiOiJPcHRpb24iLCJwcm9wZXJ0eVZhbHVlIjoiQ29tYm8gd2l0aCBIdWIoU2hpcCBTZXBhcmF0ZWx5KSJ9XQ%3D%3D)  
+- [Creality Ender 3 V3 KE](https://store.creality.com/products/ender-3-v3-ke-3d-printer)
 
 Slicer files for both printers can be found [here](./Slicer-Files)
 
-
-
-______________________________________________________________________
-
-## 9. 3D Printed Parts
-
 ### 9.1 Chassis & Core Structure
-
 - [`Chassis_1x.stl`](FreeCAD-Files/Assembly/mesh_export/Chassis_1x.stl)
 - [`FrontCover_1x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontCover_1x.stl)
 - [`AxleHolder_3x.stl`](FreeCAD-Files/Assembly/mesh_export/AxleHolder_3x.stl)
 
 ### 9.2 Motor & Transmission
-
 - [`MotorGear_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorGear_1x.stl)
 - [`MotorHolder_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorHolder_1x.stl)
 - [`MotorPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorPlate_1x.stl)
 
 ### 9.3 Wheel & Axle Components
-
 - [`BackWheelAxle_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelAxle_2x.stl)
 - [`BackWheelConnector_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelConnector_2x.stl)
 - [`BackWheelStopper_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelStopper_2x.stl)
@@ -1080,7 +1082,6 @@ ______________________________________________________________________
 - [`FrontWheelStopper_2x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontWheelStopper_2x.stl)
 
 ### 9.4 Steering Linkages
-
 - [`TBoneLinkageBottom_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TBoneLinkageBottom_1x.stl)
 - [`TBoneLinkageTop_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TBoneLinkageTop_1x.stl)
 - [`TransferLinkageLeft_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TransferLinkageLeft_1x.stl)
@@ -1091,14 +1092,99 @@ ______________________________________________________________________
 - [`WheelLinkageTopRight_1x.stl`](FreeCAD-Files/Assembly/mesh_export/WheelLinkageTopRight_1x.stl)
 
 ### 9.5 Miscellaneous
-
 - [`LidarPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/LidarPlate_1x.stl)
 
-<!--TODO:-->
+---
 
-### 10. Extra Documentation
 
-[Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](docs/image-drive-linux.md)
+______________________________________________________________________
 
-[How to Image Drive in Linux](docs/dhcp-server-on-ethernet-port.md)
+## 10. Building Instructions
+
+---
+### **Step 0: Print the 3D parts**
+All STL files can be found in the `/3d-models` folder. Printed with the following recommended settings:
+
+- **Material:** PLA+  
+- **Layer height:** 
+- **Infill:** 
+- **Supports:** Yes (tree support)  
+- **Raft:** 
+- **Brim:**   
+
+---
+
+### **Step 1: Assemble the steering system**
+1. Mount the servo (S0004m) into the servo plate using -- screws.  
+2. Fix the Ackermann steering linkages to the servo horn with ⌀ 2 mm steel rods (approx. 20 mm).  
+3. Insert the **front wheel axles** (Left + Right) into the linkage mounts. Secure with Bush 1/2 spacers.  
+4. Attach the **T-bone linkage** between the servo horn and the wheel hubs using ⌀ 2 mm rods.  
+5. Verify that both wheels pivot symmetrically adjust the servo horn angle iteratively until alignment is correct.  
+
+---
+
+### **Step 2: Assemble the powertrain**
+1. Place the **N20 motors with encoders** into the 3D-printed motor clamps. Secure using M2 screws.  
+2. Attach the clamps to the **motor plate**, then fix the plate to the rear chassis frame with peg joints.  
+3. Connect the motor shafts to the **MotorGear_1x.stl** parts, meshing with the **28T LEGO differential** in the chassis.  
+4. Inside the differential, place 3 × 12T bevel gears for smooth torque transfer.  
+5. Insert the **rear axle supports (AxleHolder_3x.stl)** with ⌀ 2 mm rods, locking them with Bush 1/2 spacers.  
+
+---
+
+### **Step 3: Mount electronics**
+1. Attach the **Raspberry Pi 5** to the **electronics plate** using M2.5 standoffs.  
+2. Mount the **Raspberry Pi Pico 2** near the motor driver board for shorter wiring.  
+3. Secure the **UPS EP-0136** in its chassis slot. Insert 2 × 18650 cells (7.4 V nominal).  
+4. Mount the **MOSFET switch board** to the side plate, ensuring easy access to the power switch.  
+5. Place the **RPLIDAR C1** on the **LidarPlate_1x.stl** at the front center of the chassis. Secure with M2 screws.  
+6. Fix the **fish-eye camera** to its 3D-printed holder on the front cover, angled slightly upward (~15°).  
+7. Organize wiring:  
+   - **Pi 5 → Camera** via USB/UART bridge.  
+   - **Pico 2 → Motors** via H-bridge driver.  
+   - **UPS → Step-up converter → Motors** (12 V).  
+   - **UPS → Pi 5** (5 V regulated).  
+   - **UPS → Pico 2** (5 V).  
+8. Use Dupont connectors for neat wiring. Secure longer wires with zip ties or tape.
+
+---
+
+### **Step 4: Attach the wheels**
+1. Mount **front wheels** onto the Ackermann steering axles. Secure with spacers and Bush 1/2.  
+2. Mount **rear wheels** onto the differential axle. Ensure both sides are level with the front wheels.  
+3. Adjust spacers if needed so all four wheels sit flush on the ground.  
+
+---
+
+### **Step 5: Final balancing & stability**
+1. Verify all moving parts (steering, drivetrain, linkages) move smoothly without binding.  
+
+---
+
+### **Step 6: Upload the software**
+1. Connect the **Raspberry Pi 5** to your PC via SSH or USB-C. Install dependencies from the GitHub repo (`raspberry-pi-5/requirements.txt`).  
+2. Upload the **motor control firmware** to the **Pico 2** using Thonny or Arduino IDE.  
+3. Upload the **navigation and perception code** to the Raspberry Pi 5.  
+4. Connect the **RPLIDAR C1** via USB and run the provided SLAM test script (`ros2_launch lidar.launch.py`).  
+5. Test the **camera pipeline** by running the OpenCV color-detection script.  
+6. Run the **integration script** (`main.py`) to start full obstacle navigation.  
+
+---
+
+### **Step 7: Testing & calibration**
+1. Place the robot on a flat track.  
+2. Calibrate the servo center by adjusting horn alignment until wheels are straight.  
+3. Test motor speeds with `motor_test.py`. Adjust PID gains in the config file for smooth control.  
+4. Test obstacle detection using `lidar_test.py` and confirm obstacle avoidance logic.  
+5. Run a full lap test and fine-tune speed, braking, and steering parameters.
+
+[test and checking and calibratrion]   
+
+
+
+### 11. Extra Documentation
+
+[Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](docs/dhcp-server-on-ethernet-port.md)
+
+[How to Image Drive in Linux](docs/image-drive-linux.md)(
 ______________________________________________________________________
