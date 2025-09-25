@@ -1,22 +1,14 @@
 #include "lidar_module.h"
 
 LidarModule::LidarModule(const char *serialPort, int baudRate)
-    : lidarDriver_(nullptr)
-    , serialChannel_(nullptr)
-    , serialPort_(serialPort)
+    : serialPort_(serialPort)
     , baudRate_(baudRate)
-    , logger_(nullptr)
-    , initialized_(false)
-    , running_(false) {}
+    , logger_(nullptr) {}
 
 LidarModule::LidarModule(Logger *logger, const char *serialPort, int baudRate)
-    : lidarDriver_(nullptr)
-    , serialChannel_(nullptr)
-    , serialPort_(serialPort)
+    : serialPort_(serialPort)
     , baudRate_(baudRate)
-    , logger_(logger)
-    , initialized_(false)
-    , running_(false) {}
+    , logger_(logger) {}
 
 LidarModule::~LidarModule() {
     shutdown();
@@ -166,7 +158,7 @@ void LidarModule::scanLoop() {
 
         TimedLidarData timedScan{std::move(temp), std::chrono::steady_clock::now()};
 
-        if (logger_) {
+        if (logger_ and logging_) {
             uint64_t ts = std::chrono::duration_cast<std::chrono::nanoseconds>(timedScan.timestamp.time_since_epoch()).count();
             logger_->writeData(ts, timedScan.lidarData.data(), timedScan.lidarData.size() * sizeof(RawLidarNode));
         }
@@ -177,6 +169,14 @@ void LidarModule::scanLoop() {
             lidarDataUpdated_.notify_all();
         }
     }
+}
+
+void LidarModule::startLogging() {
+    logging_ = true;
+}
+
+void LidarModule::stopLogging() {
+    logging_ = false;
 }
 
 bool LidarModule::printDeviceInfo() {

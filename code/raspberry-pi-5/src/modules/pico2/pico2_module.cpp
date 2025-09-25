@@ -6,12 +6,10 @@
 
 Pico2Module::Pico2Module(uint8_t i2cAddress)
     : master_(i2cAddress)
-    , running_(false)
     , logger_(nullptr) {}
 
 Pico2Module::Pico2Module(Logger *logger, uint8_t i2cAddress)
     : master_(i2cAddress)
-    , running_(false)
     , logger_(logger) {}
 
 Pico2Module::~Pico2Module() {
@@ -125,7 +123,7 @@ void Pico2Module::pollingLoop() {
 
             TimedPico2Data sample{steady_clock::now(), accel, euler, encoderAngle};
 
-            if (logger_) {
+            if (logger_ and logging_) {
                 uint64_t ts = std::chrono::duration_cast<std::chrono::nanoseconds>(sample.timestamp.time_since_epoch()).count();
 
                 struct {
@@ -149,4 +147,12 @@ void Pico2Module::pollingLoop() {
             std::this_thread::sleep_for(interval - elapsed);
         }
     }
+}
+
+void Pico2Module::startLogging() {
+    logging_ = true;
+}
+
+void Pico2Module::stopLogging() {
+    logging_ = false;
 }

@@ -265,18 +265,20 @@ int main() {
     if (!home) throw std::runtime_error("HOME environment variable not set");
     std::string logFolder = std::string(home) + "/gfm_logs/scan_map_outer";
 
-    Logger lidarLogger(Logger::generateFilename(logFolder, "lidar"));
-    Logger pico2Logger(Logger::generateFilename(logFolder, "pico2"));
-    Logger cameraLogger(Logger::generateFilename(logFolder, "camera"));
+    std::string timedstampedLogFolder = Logger::generateTimestampedFolder(logFolder);
+
+    Logger *lidarLogger = new Logger(timedstampedLogFolder + "/lidar.bin");
+    Logger *pico2Logger = new Logger(timedstampedLogFolder + "/pico2.bin");
+    Logger *cameraLogger = new Logger(timedstampedLogFolder + "/camera.bin");
 
     // Initialize LidarModule
-    LidarModule lidar(&lidarLogger);
+    LidarModule lidar(lidarLogger);
     if (!lidar.initialize()) return -1;
     lidar.printDeviceInfo();
     if (!lidar.start()) return -1;
 
     // Initialize Pico2Module
-    Pico2Module pico2(&pico2Logger);
+    Pico2Module pico2(pico2Logger);
     if (!pico2.initialize()) return -1;
 
     // Initialize CameraModule (for logging only)
@@ -300,7 +302,7 @@ int main() {
         cam.options->contrast = 1;
         cam.options->gain = 5;
     };
-    CameraModule camera(&cameraLogger, cameraOptionCallback);
+    CameraModule camera(cameraLogger, cameraOptionCallback);
     if (!camera.start()) return -1;
 
     State state;
@@ -319,29 +321,38 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    if (!stop_flag) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 
-    const auto loopDuration = std::chrono::milliseconds(32);  // ~30 Hz
-    auto lastTime = std::chrono::steady_clock::now();
+        lidar.startLogging();
+        pico2.startLogging();
+        camera.startLogging();
 
-    while (!stop_flag) {
-        auto loopStart = std::chrono::steady_clock::now();
+        const auto loopDuration = std::chrono::milliseconds(32);  // ~30 Hz
+        auto lastTime = std::chrono::steady_clock::now();
 
-        std::chrono::duration<float> delta = loopStart - lastTime;
-        float dt = delta.count();
-        lastTime = loopStart;
+        while (!stop_flag) {
+            auto loopStart = std::chrono::steady_clock::now();
 
-        float motorSpeed, steeringPercent;
-        update(dt, lidar, pico2, state, motorSpeed, steeringPercent);
-        pico2.setMovementInfo(motorSpeed, steeringPercent);
+            std::chrono::duration<float> delta = loopStart - lastTime;
+            float dt = delta.count();
+            lastTime = loopStart;
 
-        // Maintain ~30 Hz loop rate
-        auto loopEnd = std::chrono::steady_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(loopEnd - loopStart);
-        if (elapsed < loopDuration) {
-            std::this_thread::sleep_for(loopDuration - elapsed);
+            float motorSpeed, steeringPercent;
+            update(dt, lidar, pico2, state, motorSpeed, steeringPercent);
+            pico2.setMovementInfo(motorSpeed, steeringPercent);
+
+            // Maintain ~30 Hz loop rate
+            auto loopEnd = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(loopEnd - loopStart);
+            if (elapsed < loopDuration) {
+                std::this_thread::sleep_for(loopDuration - elapsed);
+            }
         }
+    } else {
+        std::filesystem::remove_all(timedstampedLogFolder);
     }
+
     pico2.setMovementInfo(0.0f, 0.0f);
 
     // Shutdown

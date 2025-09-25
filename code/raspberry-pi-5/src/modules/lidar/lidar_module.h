@@ -98,6 +98,10 @@ public:
 
     bool getAllTimedLidarData(std::vector<TimedLidarData> &outTimedLidarData) const;
 
+    void startLogging();
+
+    void stopLogging();
+
     /**
      * @brief Print information about the connected LIDAR device.
      *
@@ -120,15 +124,15 @@ private:
      */
     void scanLoop();
 
-    sl::ILidarDriver *lidarDriver_;
-    sl::IChannel *serialChannel_;
+    sl::ILidarDriver *lidarDriver_ = nullptr;
+    sl::IChannel *serialChannel_ = nullptr;
     const char *serialPort_;
     int baudRate_;
 
-    bool initialized_;
+    bool initialized_ = false;
 
     std::thread lidarThread_;
-    std::atomic<bool> running_;
+    std::atomic<bool> running_ = false;
 
     mutable std::mutex lidarDataMutex_;
     std::condition_variable lidarDataUpdated_;
@@ -136,4 +140,5 @@ private:
     RingBuffer<TimedLidarData> lidarDataBuffer_{10};
 
     Logger *logger_;
+    bool logging_ = false;
 };

@@ -117,6 +117,10 @@ public:
      */
     bool waitForFrame(TimedFrame &outTimedFrame);
 
+    void startLogging();
+
+    void stopLogging();
+
 private:
     /**
      * @brief The function running in the background thread.
@@ -128,7 +132,7 @@ private:
     lccv::PiCamera cam_;
 
     std::thread cameraThread_;
-    std::atomic<bool> running_;
+    std::atomic<bool> running_ = false;
 
     mutable std::mutex frameMutex_;
     std::condition_variable frameUpdated_;
@@ -136,4 +140,5 @@ private:
     RingBuffer<TimedFrame> frameBuffer_{30};
 
     Logger *logger_;
+    bool logging_ = false;
 };
