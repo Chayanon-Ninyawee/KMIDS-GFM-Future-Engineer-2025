@@ -212,7 +212,7 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 
 ### 3.2 Sensor and Camera
 
-[RPLIDAR C1](https://www.slamtec.com/en/C1)
+[RPLIDAR S2](https://www.slamtec.com/en/S2)
 
 <table>
   <tr>
@@ -351,7 +351,7 @@ There are two challenges in this competition:
 - The **open challenge** involves the robot completing three full laps around the field without touching the wall. The size of each side of the field and the direction in which the car drives are randomised.
 - The **obstacle challenge** requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomised. After the third lap, the car must find the parking area and park in the area without touching the surrounding barriers around it.
 
-Our implementation relies heavily on the RPLIDAR C1 sensor and the fish-eye lens camera for continuous environment scanning, which helps the algorithm decide the movement of the robot.
+Our implementation relies heavily on the RPLIDAR S2 sensor and the fish-eye lens camera for continuous environment scanning, which helps the algorithm decide the movement of the robot.
 
 We divide the strategy into three phases:
 
@@ -1037,7 +1037,7 @@ ______________________________________________________________________
 | Raspberry Pi Pico 2           | 1        | Cytron          |
 | UPS EP-0136                   | 1        | 52Pi            |
 | 18650 Lithium-Ion Battery     | 2        | Cytron          |
-| RPLidar C1                    | 1        | SLAMTEC         |
+| RPLidar S2                    | 1        | SLAMTEC         |
 | 5MP Fish Eye Camera           | 1        | Cytron          |
 | BNO085 IMU                    | 1        | N/A             |
 | S0004m Servo                  | 1        | N/A             |
@@ -1048,9 +1048,9 @@ ______________________________________________________________________
 | 4.4 kΩ Resistor               | 1        | N/A             |
 | Wires                         | Various  | N/A             |
 | eSUN PLA+ Spool               | 1–3      | eSUN            |
-| Screws                        | Various  | Local Supplier  |
-| Tape                          | Various  | Local Supplier  |
-| Lubricant (Grease)            | Small    | Local Supplier  |
+| Screws (M2 & M2.6 & M3)       | Various  | N/A             |
+| Tape                          | Various  | N/A             |
+| Lithium Grease                | Small    | N/A             |
 
 
 ---
@@ -1103,32 +1103,27 @@ ______________________________________________________________________
 
 ---
 ### **Step 0: Print the 3D parts**
-All STL files can be found in the `/3d-models` folder. Printed with the following recommended settings:
 
-- **Material:** PLA+  
-- **Layer height:** 
-- **Infill:** 
-- **Supports:** Yes (tree support)  
-- **Raft:** 
-- **Brim:**   
+Before assembly, prepare the components listed above and print the 3D parts. 
 
+We used the Bambu Lab P1S to chassis, the gcode, which includes the print settings, can be found [here.](Slicer-Files/Bambu_Lab_P1S_(Bambu_Slicer)/gcode-files)
+
+For the rest of the parts, we used the Creality Ender 3 V3 KE to print. The gcode files can be found [here.](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files)
 ---
 
 ### **Step 1: Assemble the steering system**
 1. Mount the servo (S0004m) into the servo plate using -- screws.  
 2. Fix the Ackermann steering linkages to the servo horn with ⌀ 2 mm steel rods (approx. 20 mm).  
 3. Insert the **front wheel axles** (Left + Right) into the linkage mounts. Secure with Bush 1/2 spacers.  
-4. Attach the **T-bone linkage** between the servo horn and the wheel hubs using ⌀ 2 mm rods.  
-5. Verify that both wheels pivot symmetrically adjust the servo horn angle iteratively until alignment is correct.  
-
+4. Attach the **T-bone linkage** between the servo horn and the wheel hubs.
 ---
 
 ### **Step 2: Assemble the powertrain**
-1. Place the **N20 motors with encoders** into the 3D-printed motor clamps. Secure using M2 screws.  
+1. Place the **N20 motors with encoders** into the 3D-printed motor clamps. Secure using M2.6 screws.  
 2. Attach the clamps to the **motor plate**, then fix the plate to the rear chassis frame with peg joints.  
 3. Connect the motor shafts to the **MotorGear_1x.stl** parts, meshing with the **28T LEGO differential** in the chassis.  
 4. Inside the differential, place 3 × 12T bevel gears for smooth torque transfer.  
-5. Insert the **rear axle supports (AxleHolder_3x.stl)** with ⌀ 2 mm rods, locking them with Bush 1/2 spacers.  
+5. Insert the **rear axle supports (AxleHolder_3x.stl)** with screws.
 
 ---
 
@@ -1137,7 +1132,7 @@ All STL files can be found in the `/3d-models` folder. Printed with the followin
 2. Mount the **Raspberry Pi Pico 2** near the motor driver board for shorter wiring.  
 3. Secure the **UPS EP-0136** in its chassis slot. Insert 2 × 18650 cells (7.4 V nominal).  
 4. Mount the **MOSFET switch board** to the side plate, ensuring easy access to the power switch.  
-5. Place the **RPLIDAR C1** on the **LidarPlate_1x.stl** at the front center of the chassis. Secure with M2 screws.  
+5. Place the **RPLIDAR S2** on the **LidarPlate_1x.stl** at the front center of the chassis. Secure with M2 screws.  
 6. Fix the **fish-eye camera** to its 3D-printed holder on the front cover, angled slightly upward (~15°).  
 7. Organize wiring:  
    - **Pi 5 → Camera** via USB/UART bridge.  
@@ -1165,9 +1160,10 @@ All STL files can be found in the `/3d-models` folder. Printed with the followin
 1. Connect the **Raspberry Pi 5** to your PC via SSH or USB-C. Install dependencies from the GitHub repo (`raspberry-pi-5/requirements.txt`).  
 2. Upload the **motor control firmware** to the **Pico 2** using Thonny or Arduino IDE.  
 3. Upload the **navigation and perception code** to the Raspberry Pi 5.  
-4. Connect the **RPLIDAR C1** via USB and run the provided SLAM test script (`ros2_launch lidar.launch.py`).  
+4. Connect the **RPLIDAR S2** via USB and run the provided SLAM test script (`ros2_launch lidar.launch.py`).  
 5. Test the **camera pipeline** by running the OpenCV color-detection script.  
-6. Run the **integration script** (`main.py`) to start full obstacle navigation.  
+6. Run the **integration script** (`main.py`) to start full obstacle navigation.
+   
 
 ---
 
@@ -1177,8 +1173,6 @@ All STL files can be found in the `/3d-models` folder. Printed with the followin
 3. Test motor speeds with `motor_test.py`. Adjust PID gains in the config file for smooth control.  
 4. Test obstacle detection using `lidar_test.py` and confirm obstacle avoidance logic.  
 5. Run a full lap test and fine-tune speed, braking, and steering parameters.
-
-[test and checking and calibratrion]   
 
 
 
