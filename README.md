@@ -1052,28 +1052,32 @@ ______________________________________________________________________
 | Tape                          | Various  | N/A             |
 | Lithium Grease                | Small    | N/A             |
 
-
----
-
-## 9. STL Files
-
 **Printers Used:**  
 - [Bambu Lab P1S](https://asia.store.bambulab.com/products/p1s?p=W3sicHJvcGVydHlLZXkiOiJWYXJpYW50IiwicHJvcGVydHlWYWx1ZSI6IlAxUyBDb21ibyJ9LHsicHJvcGVydHlLZXkiOiJTaGlwIHRvIiwicHJvcGVydHlWYWx1ZSI6IiJ9LHsicHJvcGVydHlLZXkiOiJPcHRpb24iLCJwcm9wZXJ0eVZhbHVlIjoiQ29tYm8gd2l0aCBIdWIoU2hpcCBTZXBhcmF0ZWx5KSJ9XQ%3D%3D)  
 - [Creality Ender 3 V3 KE](https://store.creality.com/products/ender-3-v3-ke-3d-printer)
 
-Slicer files for both printers can be found [here](./Slicer-Files)
 
+
+---
+
+## 9. STL and Slicer Files
+
+The FreeCAD files can be found [here](./FreeCAD-Files)
+  
 ### 9.1 Chassis & Core Structure
+
 - [`Chassis_1x.stl`](FreeCAD-Files/Assembly/mesh_export/Chassis_1x.stl)
 - [`FrontCover_1x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontCover_1x.stl)
 - [`AxleHolder_3x.stl`](FreeCAD-Files/Assembly/mesh_export/AxleHolder_3x.stl)
 
 ### 9.2 Motor & Transmission
+
 - [`MotorGear_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorGear_1x.stl)
 - [`MotorHolder_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorHolder_1x.stl)
 - [`MotorPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorPlate_1x.stl)
 
 ### 9.3 Wheel & Axle Components
+
 - [`BackWheelAxle_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelAxle_2x.stl)
 - [`BackWheelConnector_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelConnector_2x.stl)
 - [`BackWheelStopper_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelStopper_2x.stl)
@@ -1082,6 +1086,7 @@ Slicer files for both printers can be found [here](./Slicer-Files)
 - [`FrontWheelStopper_2x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontWheelStopper_2x.stl)
 
 ### 9.4 Steering Linkages
+
 - [`TBoneLinkageBottom_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TBoneLinkageBottom_1x.stl)
 - [`TBoneLinkageTop_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TBoneLinkageTop_1x.stl)
 - [`TransferLinkageLeft_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TransferLinkageLeft_1x.stl)
@@ -1092,9 +1097,34 @@ Slicer files for both printers can be found [here](./Slicer-Files)
 - [`WheelLinkageTopRight_1x.stl`](FreeCAD-Files/Assembly/mesh_export/WheelLinkageTopRight_1x.stl)
 
 ### 9.5 Miscellaneous
+
 - [`LidarPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/LidarPlate_1x.stl)
 
----
+  
+
+
+### Slicer Files
+
+Slicer files for both printers can be found [here](./Slicer-Files)
+
+### Chassis & Core Structure
+
+- [`Main chassis`](Slicer-Files/Bambu_Lab_P1S_(Bambu_Slicer)/Chassis_1x.3mf)
+
+- [`Front cover (for camera and steering)`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_FrontCover_1x.gcode)
+- [`Rear wheel mounts`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_BackWheelStuff.gcode)
+- [`Motor plate`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_MotorPlate_1x.gcode)
+- [`Lidar plate`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_LidarPlate_1x.gcode)
+  
+### Motor & Gear Components
+
+- [`Motor Gear`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_MotorGear_1x.gcode)
+- [`Motor holder`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_AxleHolder_MotorHolder.gcode)
+
+### Steering & Linkages
+
+- [`Linkages`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_Linkages.gcode)
+
 
 
 ______________________________________________________________________
@@ -1104,11 +1134,19 @@ ______________________________________________________________________
 ---
 ### **Step 0: Print the 3D parts**
 
-Before assembly, prepare the components listed above and print the 3D parts. 
+Before assembly, prepare the components in the previous section and print the 3D parts. 
 
-We used the Bambu Lab P1S to chassis, the gcode, which includes the print settings, can be found [here.](Slicer-Files/Bambu_Lab_P1S_(Bambu_Slicer)/gcode-files)
+We used the Bambu Lab P1S to print the chassis, the gcode, which includes the print settings, can be found [here.](Slicer-Files/Bambu_Lab_P1S_(Bambu_Slicer)/gcode-files)
 
 For the rest of the parts, we used the Creality Ender 3 V3 KE to print. The gcode files can be found [here.](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files)
+
+- Material: PLA
+- Layer height: 0.2mm
+- Infill: 20%
+- Supports: Yes
+- Raft: No
+- Brim: Yes
+  
 ---
 
 ### **Step 1: Assemble the steering system**
