@@ -1184,19 +1184,10 @@ The recommended settings we used for the robot are as follows:
 ---
 
 ### **Step 4: Upload the software**
-1. Connect the **Raspberry Pi 5** to your PC via SSH or USB-C. Install dependencies from the GitHub repo (`raspberry-pi-5/requirements.txt`).  
-2. Upload the **motor control firmware** to the **Pico 2** using Thonny or Arduino IDE.  
-3. Upload the **navigation and perception code** to the Raspberry Pi 5.  
-4. Connect the **RPLIDAR S2** via USB and run the provided SLAM test script (`ros2_launch lidar.launch.py`).  
-5. Test the **camera pipeline** by running the OpenCV color-detection script.  
-6. Run the **integration script** (`main.py`) to start full obstacle navigation.
-   
-
+1. Connect the Raspberry Pi 5 to your computer via SSH or a USB-C cable.
+2. Follow the steps listed in [7.2](72-Compilation-/-Upload-Instructions).
+3. 
 ---
-
-
-
-
 ### 11. Extra Documentation
 
 [Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](docs/dhcp-server-on-ethernet-port.md)
