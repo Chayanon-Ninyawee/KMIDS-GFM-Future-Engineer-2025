@@ -1149,10 +1149,14 @@ The recommended settings we used for the robot are as follows:
 ---
 
 ### **Step 1: Assemble the steering system**
-1. Mount the servo (S0004m) into the servo plate using -- screws.  
-2. Fix the Ackermann steering linkages to the servo horn with ⌀ 2 mm steel rods (approx. 20 mm).  
-3. Insert the **front wheel axles** (Left + Right) into the linkage mounts. Secure with Bush 1/2 spacers.  
-4. Attach the **T-bone linkage** between the servo horn and the wheel hubs.
+1.	At the front, combine the wheel linkage by connecting the wheel axle and steering linkage between the two wheel linkages 
+2.	Connect the T-bone linkages to the steering linkage 
+3.	Mount the front plate on the chassis, while securing the wheel linkage in between the chassis and front plate using 2x M3 screws.
+4.	Attach the servo to the front plate using 2x M1.6 screws, ensuring it fits into the T bone linkage.
+5.	Fix the wheels in place using the wheel stoppers, securing them using 3x M3 screws on each side.
+
+6.	<!-- TODO: Pic of: wheel linkage, t bone link below the servo, wheels  -->
+
 ---
 
 ### **Step 2: Assemble the powertrain**
