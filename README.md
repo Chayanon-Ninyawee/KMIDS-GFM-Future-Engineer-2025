@@ -1183,7 +1183,7 @@ The recommended settings we used for the robot are as follows:
 
 ---
 
-### **Step 6: Upload the software**
+### **Step 4: Upload the software**
 1. Connect the **Raspberry Pi 5** to your PC via SSH or USB-C. Install dependencies from the GitHub repo (`raspberry-pi-5/requirements.txt`).  
 2. Upload the **motor control firmware** to the **Pico 2** using Thonny or Arduino IDE.  
 3. Upload the **navigation and perception code** to the Raspberry Pi 5.  
@@ -1194,12 +1194,6 @@ The recommended settings we used for the robot are as follows:
 
 ---
 
-### **Step 7: Testing & calibration**
-1. Place the robot on a flat track.  
-2. Calibrate the servo center by adjusting horn alignment until wheels are straight.  
-3. Test motor speeds with `motor_test.py`. Adjust PID gains in the config file for smooth control.  
-4. Test obstacle detection using `lidar_test.py` and confirm obstacle avoidance logic.  
-5. Run a full lap test and fine-tune speed, braking, and steering parameters.
 
 
 
