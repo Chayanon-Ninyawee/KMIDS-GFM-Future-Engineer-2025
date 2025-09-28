@@ -1183,18 +1183,6 @@ The recommended settings we used for the robot are as follows:
 
 ---
 
-### **Step 4: Attach the wheels**
-1. Mount **front wheels** onto the Ackermann steering axles. Secure with spacers and Bush 1/2.  
-2. Mount **rear wheels** onto the differential axle. Ensure both sides are level with the front wheels.  
-3. Adjust spacers if needed so all four wheels sit flush on the ground.  
-
----
-
-### **Step 5: Final balancing & stability**
-1. Verify all moving parts (steering, drivetrain, linkages) move smoothly without binding.  
-
----
-
 ### **Step 6: Upload the software**
 1. Connect the **Raspberry Pi 5** to your PC via SSH or USB-C. Install dependencies from the GitHub repo (`raspberry-pi-5/requirements.txt`).  
 2. Upload the **motor control firmware** to the **Pico 2** using Thonny or Arduino IDE.  
