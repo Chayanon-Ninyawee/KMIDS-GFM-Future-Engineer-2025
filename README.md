@@ -1155,17 +1155,18 @@ The recommended settings we used for the robot are as follows:
 4.	Attach the servo to the front plate using 2x M1.6 screws, ensuring it fits into the T bone linkage.
 5.	Fix the wheels in place using the wheel stoppers, securing them using 3x M3 screws on each side.
 
-6.	<!-- TODO: Pic of: wheel linkage, t bone link below the servo, wheels  -->
+	<!-- TODO: Pic of: wheel linkage, t bone link below the servo, wheels  -->
 
 ---
 
 ### **Step 2: Assemble the powertrain**
-1. Place the **N20 motors with encoders** into the 3D-printed motor clamps. Secure using M2.6 screws.  
-2. Attach the clamps to the **motor plate**, then fix the plate to the rear chassis frame with peg joints.  
-3. Connect the motor shafts to the **MotorGear_1x.stl** parts, meshing with the **28T LEGO differential** in the chassis.  
-4. Inside the differential, place 3 × 12T bevel gears for smooth torque transfer.  
-5. Insert the **rear axle supports (AxleHolder_3x.stl)** with screws.
-
+1.	Attach the rear wheel axles to the connector using 2x M3 screws, 
+2.	Place a LEGO differential gear in between the rear wheel chassis walls, and insert the connector into the chassis wall, securing it using the stopper and 2x M3 screws on each side.
+3.	Place the **N20 motor ** into the motor plate. Secure the motor with the motor clamp using 2x M3 screws.
+4.	Attach the 3D printed gear to the motor and secure the motor plate onto the chassis using M3 screws.
+6.	Attach the wheels to the axles using 3x M3 screws on each side.
+   
+	<!-- TODO: Pic of: back wheel. Specify the LEGO differential gear  -->
 ---
 
 ### **Step 3: Mount electronics**
