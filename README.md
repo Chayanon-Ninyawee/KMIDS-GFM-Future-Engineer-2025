@@ -1134,17 +1134,16 @@ ______________________________________________________________________
 ---
 ### **Step 0: Print the 3D parts**
 
-Before assembly, prepare the components in the previous section and print the 3D parts. 
+Before assembly, prepare the components listed above and print the 3D parts. 
 
-We used the Bambu Lab P1S to print the chassis, the gcode, which includes the print settings, can be found [here.](Slicer-Files/Bambu_Lab_P1S_(Bambu_Slicer)/gcode-files)
+We used the Bambu Lab P1S to print the chassis, while the rest of the parts were printed using the Creality Ender 3 V3 KE. 
 
-For the rest of the parts, we used the Creality Ender 3 V3 KE to print. The gcode files can be found [here.](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files)
+The recommended settings we used for the robot are as follows: 
 
 - Material: PLA
 - Layer height: 0.2mm
-- Infill: 20%
+- Infill: 15%
 - Supports: Yes
-- Raft: No
 - Brim: Yes
   
 ---
