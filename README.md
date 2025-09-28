@@ -1170,19 +1170,16 @@ The recommended settings we used for the robot are as follows:
 ---
 
 ### **Step 3: Mount electronics**
-1. Attach the **Raspberry Pi 5** to the **electronics plate** using M2.5 standoffs.  
-2. Mount the **Raspberry Pi Pico 2** near the motor driver board for shorter wiring.  
-3. Secure the **UPS EP-0136** in its chassis slot. Insert 2 × 18650 cells (7.4 V nominal).  
-4. Mount the **MOSFET switch board** to the side plate, ensuring easy access to the power switch.  
-5. Place the **RPLIDAR S2** on the **LidarPlate_1x.stl** at the front center of the chassis. Secure with M2 screws.  
-6. Fix the **fish-eye camera** to its 3D-printed holder on the front cover, angled slightly upward (~15°).  
-7. Organize wiring:  
-   - **Pi 5 → Camera** via USB/UART bridge.  
-   - **Pico 2 → Motors** via H-bridge driver.  
-   - **UPS → Step-up converter → Motors** (12 V).  
-   - **UPS → Pi 5** (5 V regulated).  
-   - **UPS → Pico 2** (5 V).  
-8. Use Dupont connectors for neat wiring. Secure longer wires with zip ties or tape.
+1.	Attach the camera to the front plate using 4x M2 screws, ensuring the wire is threaded through the front plate as shown.
+2.	Mount the UPS EP-0136 onto the chassis, ensuring battery access at the bottom of the robot.
+3.	Attach the Raspberry Pi 5 above the UPS using M2.5 standoffs.  
+4.	Place the Raspberry Pi Pico 2, BNO085 IMU, and the step-up module at the back.
+5.	Attach the LIDAR plate behind the Raspberry Pi, using standoffs to elevate the plate.
+6.	Attach the button and RPLIDARS2 onto the LIDAR Plate
+7.	Organise the wiring for added components according to the [wiring diagram](#34-Circuit-Diagram)
+8.	Insert 2x 18650 Lithium-Ion Batteries into the UPS
+
+<!-- TODO: Pic of camera. Specify where the IMU, step up, and driver should be placed -->
 
 ---
 
