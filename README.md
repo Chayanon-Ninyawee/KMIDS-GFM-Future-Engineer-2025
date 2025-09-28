@@ -835,7 +835,7 @@ Our chassis was designed with a focus on weight and modularity. The goal is for 
 **Layout**
 The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring.
 
-Our robot chassis was completely custom-designed in FreeCAD and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture and less warping compared to ABS, while also being lightweight and durable. Alongside the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that were fine-tuned during testing to achieve the correct alignment with other components. Other components, such as motor clamps, sensor brackets, are designed as independent printable components. The chassis was also designed with modularity in mind for replacements and upgrades, with reduced overhangs for printing ease.
+Our robot chassis was completely custom-designed in FreeCAD and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture and less warping compared to ABS, while also being lightweight and durable. Alongside the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that were fine-tuned during testing to achieve the correct alignment with other components. Other components, such as motor clamps and sensor brackets, are designed as independent printable components. The chassis was also designed with modularity in mind for replacements and upgrades, with reduced overhangs for printing ease.
 
 ______________________________________________________________________
 
@@ -1144,9 +1144,8 @@ The recommended settings we used for the robot are as follows:
 - Layer height: 0.2mm
 - Infill: 15%
 - Supports: Yes
-- Brim: Yes
+- Adhesion type: Brim
   
----
 
 ### **Step 1: Assemble the steering system**
 1.	At the front, combine the wheel linkage by connecting the wheel axle and steering linkage between the two wheel linkages 
@@ -1155,38 +1154,35 @@ The recommended settings we used for the robot are as follows:
 4.	Attach the servo to the front plate using 2x M1.6 screws, ensuring it fits into the T bone linkage.
 5.	Fix the wheels in place using the wheel stoppers, securing them using 3x M3 screws on each side.
 
-	<!-- TODO: Pic of: wheel linkage, t bone link below the servo, wheels  -->
 
----
+
 
 ### **Step 2: Assemble the powertrain**
 1.	Attach the rear wheel axles to the connector using 2x M3 screws, 
 2.	Place a LEGO differential gear in between the rear wheel chassis walls, and insert the connector into the chassis wall, securing it using the stopper and 2x M3 screws on each side.
 3.	Place the **N20 motor ** into the motor plate. Secure the motor with the motor clamp using 2x M3 screws.
-4.	Attach the 3D printed gear to the motor and secure the motor plate onto the chassis using M3 screws.
+4.	Attach the 3D printed gear to the motor and secure the motor plate onto the chassis using 4x M3 screws.
 6.	Attach the wheels to the axles using 3x M3 screws on each side.
    
-	<!-- TODO: Pic of: back wheel. Specify the LEGO differential gear  -->
----
+
 
 ### **Step 3: Mount electronics**
-1.	Attach the camera to the front plate using 4x M2 screws, ensuring the wire is threaded through the front plate as shown.
+1.	Attach the camera to the front plate using 4x M2 screws, ensuring the wire is threaded through the small gap in the front plate.
 2.	Mount the UPS EP-0136 onto the chassis, ensuring battery access at the bottom of the robot.
-3.	Attach the Raspberry Pi 5 above the UPS using M2.5 standoffs.  
+3.	Attach the Raspberry Pi 5 above the UPS using 4x M2.5 standoffs.  
 4.	Place the Raspberry Pi Pico 2, BNO085 IMU, and the step-up module at the back.
-5.	Attach the LIDAR plate behind the Raspberry Pi, using standoffs to elevate the plate.
-6.	Attach the button and RPLIDARS2 onto the LIDAR Plate
+5.	Attach the LIDAR plate behind the Raspberry Pi, using 4x M2.5 standoffs and pillars to elevate the plate.
+6.	Attach the button and RPLIDARS2 onto the LIDAR Plate, ensuring the LIDAR sensor module is above the motor plate.
 7.	Organise the wiring for added components according to the [wiring diagram](#34-Circuit-Diagram)
-8.	Insert 2x 18650 Lithium-Ion Batteries into the UPS
+8.	Insert 2x 18650 Lithium-Ion Batteries into the UPS.
 
-<!-- TODO: Pic of camera. Specify where the IMU, step up, and driver should be placed -->
 
----
 
 ### **Step 4: Upload the software**
 1. Connect the Raspberry Pi 5 to your computer via SSH or a USB-C cable.
 2. Follow the steps listed in [7.2](72-Compilation-/-Upload-Instructions).
-3. 
+
+#### **Ensure all components are connected, and power on the robot**
 ---
 ### 11. Extra Documentation
 
