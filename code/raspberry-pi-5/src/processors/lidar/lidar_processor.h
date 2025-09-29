@@ -201,13 +201,15 @@ std::vector<LineSegment> getParkingWalls(
  * @param resolveWalls Resolved walls around the robot.
  * @param turnDirection Optional turn direction of the robot (if has no value assume CLOCKWISE).
  * @param distanceThreshold Maximum distance between points to cluster into a single traffic light point.
+ * @param minClusterSize Minimum cluster size
  * @return Vector of 2D points representing detected traffic light locations.
  */
 std::vector<cv::Point2f> getTrafficLightPoints(
     const TimedLidarData &timedLidarData,
     const ResolvedWalls &resolveWalls,
     std::optional<RotationDirection> turnDirection,
-    float distanceThreshold = 0.05f
+    float distanceThreshold = 0.05f,
+    size_t minClusterSize = 10
 );
 
 /**
