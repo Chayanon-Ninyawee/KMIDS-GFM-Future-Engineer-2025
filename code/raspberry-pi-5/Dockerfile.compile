@@ -1,0 +1,21 @@
+FROM cross-pi AS builder
+
+COPY ./src/ /code/src/
+COPY ./external/ /code/external/
+COPY ./apps/ /code/apps/
+COPY ./CMakeLists.txt /code/
+# Copy the symlinks shared folder
+COPY ./src/shared_real/ /code/src/shared/
+
+ENV BUILD_DIR=/code/build
+
+RUN mkdir -p $BUILD_DIR \
+    && cd $BUILD_DIR \
+    && cmake -DCMAKE_TOOLCHAIN_FILE=$CROSS_TOOLCHAIN \
+        -DCMAKE_INSTALL_PREFIX=$CROSS_INSTALL_PREFIX \
+        .. \
+    && cmake --build $BUILD_DIR -j $(nproc)
+
+FROM scratch
+COPY --from=builder /code/build /
+COPY --from=builder /usr/aarch64-linux-gnu/include/ /aarch64-linux-gnu/include

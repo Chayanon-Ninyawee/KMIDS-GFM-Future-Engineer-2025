@@ -10,6 +10,7 @@
 #include <iostream>
 #include <optional>
 #include <thread>
+#include <wiringPi.h>
 
 volatile std::sig_atomic_t stop_flag = 0;
 
@@ -18,12 +19,14 @@ void signalHandler(int signum) {
     stop_flag = 1;
 }
 
-const float TARGET_OUTER_WALL_DISTANCE = 0.50f;
+const int BUTTON_PIN = 16;
+
+const float TARGET_OUTER_WALL_DISTANCE = 0.30f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
 const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 
-const float TURNING_FRONT_WALL_DISTANCE = 0.85f;
+const float TURNING_FRONT_WALL_DISTANCE = 0.65f;
 
 const float STOP_FRONT_WALL_DISTANCE = 1.80f;
 const auto STOP_DELAY = std::chrono::milliseconds(100);
@@ -86,6 +89,8 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
         if (newRobotTurnDirection) state.robotTurnDirection = newRobotTurnDirection;
     }
 
+    bool pidWallErrorActive = true;
+
     auto frontWall = resolveWalls.frontWall;
     auto backWall = resolveWalls.backWall;
 
@@ -112,6 +117,8 @@ instant_update:
     case Mode::NORMAL: {
         // std::cout << "[Mode::NORMAL]\n";
 
+        outMotorSpeed = 4.5f;
+
         if (state.numberOfTurn == 12) {
             state.robotMode = Mode::PRE_STOP;
             goto instant_update;
@@ -125,11 +132,12 @@ instant_update:
             lastPreTurnTrigger = now;
             goto instant_update;
         }
-        outMotorSpeed = 4.5f;
         break;
     }
     case Mode::PRE_TURN: {
         // std::cout << "[Mode::PRE_TURN]\n";
+
+        outMotorSpeed = 4.5f;
 
         if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= TURNING_FRONT_WALL_DISTANCE) {
             Direction nextHeadingDirection;
@@ -148,24 +156,28 @@ instant_update:
             state.robotMode = Mode::TURNING;
             goto instant_update;
         }
-
-        outMotorSpeed = 4.5f;
         break;
     }
     case Mode::TURNING: {
         // std::cout << "[Mode::TURNING]\n";
 
-        if (std::abs(state.headingDirection.toHeading() - heading) <= 20.0f) {
+        outMotorSpeed = 4.5f;
+
+        pidWallErrorActive = false;
+
+        float diff = heading - state.headingDirection.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+        if (std::abs(diff) <= 20.0f) {
             state.numberOfTurn++;
             state.robotMode = Mode::NORMAL;
             goto instant_update;
         }
-
-        outMotorSpeed = 4.5f;
         break;
     }
     case Mode::PRE_STOP: {
         // std::cout << "[Mode::PRE_STOP]\n";
+
+        outMotorSpeed = 4.5f;
 
         static bool stopTimerActive = false;
         static auto stopStartTime = std::chrono::steady_clock::now();
@@ -181,8 +193,6 @@ instant_update:
             state.robotMode = Mode::STOP;
             goto instant_update;
         }
-        outMotorSpeed = 4.5f;
-
         break;
     }
     case Mode::STOP: {
@@ -209,10 +219,12 @@ instant_update:
     if (headingError < 0) headingError += 360.0f;
     headingError -= 180.0f;
 
-    if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
-        headingError -= headingErrorOffset;
-    } else {
-        headingError += headingErrorOffset;
+    if (pidWallErrorActive) {
+        if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
+            headingError -= headingErrorOffset;
+        } else {
+            headingError += headingErrorOffset;
+        }
     }
 
     outSteeringPercent = state.headingPid.update(headingError, dt);
@@ -233,45 +245,72 @@ int main() {
     if (!home) throw std::runtime_error("HOME environment variable not set");
     std::string logFolder = std::string(home) + "/gfm_logs/open_challenge";
 
-    Logger lidarLogger(Logger::generateFilename(logFolder, "lidar"));
-    Logger pico2Logger(Logger::generateFilename(logFolder, "pico2"));
+    std::string timedstampedLogFolder = Logger::generateTimestampedFolder(logFolder);
+
+    Logger *lidarLogger = new Logger(timedstampedLogFolder + "/lidar.bin");
+    Logger *pico2Logger = new Logger(timedstampedLogFolder + "/pico2.bin");
+    Logger *openChallengeLogger = new Logger(timedstampedLogFolder + "/openChallenge.bin");
 
     // Initialize LidarModule
-    LidarModule lidar(&lidarLogger);
+    LidarModule lidar(lidarLogger);
     if (!lidar.initialize()) return -1;
     lidar.printDeviceInfo();
     if (!lidar.start()) return -1;
 
     // Initialize Pico2Module
-    Pico2Module pico2(&pico2Logger);
+    Pico2Module pico2(pico2Logger);
     if (!pico2.initialize()) return -1;
 
     State state;
 
-    std::cout << "Waiting 2 seconds before starting control loop..." << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-
-    const auto loopDuration = std::chrono::milliseconds(16);  // ~60 Hz
-    auto lastTime = std::chrono::steady_clock::now();
-
-    while (!stop_flag) {
-        auto loopStart = std::chrono::steady_clock::now();
-
-        std::chrono::duration<float> delta = loopStart - lastTime;
-        float dt = delta.count();
-        lastTime = loopStart;
-
-        float motorSpeed, steeringPercent;
-        update(dt, lidar, pico2, state, motorSpeed, steeringPercent);
-        pico2.setMovementInfo(motorSpeed, steeringPercent);
-
-        // Maintain ~60 Hz loop rate
-        auto loopEnd = std::chrono::steady_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(loopEnd - loopStart);
-        if (elapsed < loopDuration) {
-            std::this_thread::sleep_for(loopDuration - elapsed);
-        }
+    if (wiringPiSetupGpio() == -1) {  // Use GPIO numbering
+        printf("WiringPi setup failed.\n");
+        return -1;
     }
+
+    pinMode(BUTTON_PIN, INPUT);
+    pullUpDnControl(BUTTON_PIN, PUD_UP);  // Enable pull-up resistor
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    while (digitalRead(BUTTON_PIN) == HIGH and !stop_flag) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    if (!stop_flag) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+
+        lidar.startLogging();
+        pico2.startLogging();
+
+        const auto loopDuration = std::chrono::milliseconds(16);  // ~60 Hz
+        auto lastTime = std::chrono::steady_clock::now();
+
+        while (!stop_flag) {
+            auto loopStart = std::chrono::steady_clock::now();
+
+            std::chrono::duration<float> delta = loopStart - lastTime;
+            float dt = delta.count();
+            lastTime = loopStart;
+
+            float motorSpeed, steeringPercent;
+            update(dt, lidar, pico2, state, motorSpeed, steeringPercent);
+            pico2.setMovementInfo(motorSpeed, steeringPercent);
+
+            uint8_t dummyData[1] = {0x39};
+            uint64_t timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(loopStart.time_since_epoch()).count();
+            openChallengeLogger->writeData(timestamp_ns, dummyData, sizeof(dummyData));
+
+            // Maintain ~60 Hz loop rate
+            auto loopEnd = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(loopEnd - loopStart);
+            if (elapsed < loopDuration) {
+                std::this_thread::sleep_for(loopDuration - elapsed);
+            }
+        }
+    } else {
+        std::filesystem::remove_all(timedstampedLogFolder);
+    }
+
     pico2.setMovementInfo(0.0f, 0.0f);
 
     // Shutdown

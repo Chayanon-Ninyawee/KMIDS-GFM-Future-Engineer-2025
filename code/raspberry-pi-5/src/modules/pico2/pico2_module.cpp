@@ -6,12 +6,10 @@
 
 Pico2Module::Pico2Module(uint8_t i2cAddress)
     : master_(i2cAddress)
-    , running_(false)
     , logger_(nullptr) {}
 
 Pico2Module::Pico2Module(Logger *logger, uint8_t i2cAddress)
     : master_(i2cAddress)
-    , running_(false)
     , logger_(logger) {}
 
 Pico2Module::~Pico2Module() {
@@ -104,18 +102,37 @@ void Pico2Module::pollingLoop() {
         bool imuOk = master_.readImu(accel, euler);
         bool encOk = master_.readEncoder(encoderAngle);
 
+        static float lastValidEulerH = 0.0f;
+        static double lastValidEncoderAngle = 0.0;
+
         if (imuOk && encOk) {
             // Wrap Euler heading into [0,360)
+            if (euler.h == 0.0f)
+                euler.h = lastValidEulerH;
+            else
+                lastValidEulerH = euler.h;
+
             euler.h = std::fmod(-euler.h, 360.0f);
             if (euler.h < 0) euler.h += 360.0f;
 
+            // Use previous value if encoderAngle is 0
+            if (encoderAngle == 0.0)
+                encoderAngle = lastValidEncoderAngle;
+            else
+                lastValidEncoderAngle = encoderAngle;
+
             TimedPico2Data sample{steady_clock::now(), accel, euler, encoderAngle};
 
-            if (logger_) {
+            if (logger_ and logging_) {
                 uint64_t ts = std::chrono::duration_cast<std::chrono::nanoseconds>(sample.timestamp.time_since_epoch()).count();
-                logger_->writeData(ts, &sample.accel, sizeof(sample.accel));
-                logger_->writeData(ts, &sample.euler, sizeof(sample.euler));
-                logger_->writeData(ts, &sample.encoderAngle, sizeof(sample.encoderAngle));
+
+                struct {
+                    ImuAccel accel;
+                    ImuEuler euler;
+                    double encoderAngle;
+                } payload{sample.accel, sample.euler, sample.encoderAngle};
+
+                logger_->writeData(ts, &payload, sizeof(payload));
             }
 
             {
@@ -130,4 +147,12 @@ void Pico2Module::pollingLoop() {
             std::this_thread::sleep_for(interval - elapsed);
         }
     }
+}
+
+void Pico2Module::startLogging() {
+    logging_ = true;
+}
+
+void Pico2Module::stopLogging() {
+    logging_ = false;
 }

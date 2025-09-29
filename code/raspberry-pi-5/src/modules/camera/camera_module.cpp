@@ -1,14 +1,12 @@
 #include "camera_module.h"
 
 CameraModule::CameraModule(CameraOptionCallback callback)
-    : logger_(nullptr)
-    , running_(false) {
+    : logger_(nullptr) {
     callback(cam_);
 }
 
 CameraModule::CameraModule(Logger *logger, CameraOptionCallback callback)
-    : logger_(logger)
-    , running_(false) {
+    : logger_(logger) {
     callback(cam_);
 }
 
@@ -105,7 +103,7 @@ void CameraModule::captureLoop() {
 
         TimedFrame timedFrame{std::move(frame), std::chrono::steady_clock::now()};
 
-        if (logger_) {
+        if (logger_ and logging_) {
             std::vector<uchar> buffer;
             cv::imencode(".png", timedFrame.frame, buffer);
 
@@ -120,4 +118,12 @@ void CameraModule::captureLoop() {
 
         frameUpdated_.notify_all();
     }
+}
+
+void CameraModule::startLogging() {
+    logging_ = true;
+}
+
+void CameraModule::stopLogging() {
+    logging_ = false;
 }

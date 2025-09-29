@@ -1,0 +1,186 @@
+FROM debian:bookworm
+
+# --------------------------
+# 1. Cross compiler environment
+# --------------------------
+ENV GNU_HOST=aarch64-linux-gnu
+ENV C_COMPILER_ARM_LINUX=$GNU_HOST-gcc
+ENV CXX_COMPILER_ARM_LINUX=$GNU_HOST-g++
+
+ENV CROSS_INSTALL_PREFIX=/usr/$GNU_HOST
+ENV CROSS_TOOLCHAIN=/arm.toolchain.cmake
+
+# Set up a CMake toolchain file
+# https://cmake.org/cmake/help/v3.16/manual/cmake-toolchains.7.html#cross-compiling-for-linux
+# https://cmake.org/cmake/help/v2.8.11/cmake.html#variable%3aCMAKE_PREFIX_PATH
+RUN echo "set(CMAKE_SYSTEM_NAME Linux)" >>$CROSS_TOOLCHAIN \
+    && echo "set(CMAKE_SYSTEM_PROCESSOR aarch64)" >>$CROSS_TOOLCHAIN \
+    && echo "set(CMAKE_C_COMPILER /usr/bin/$C_COMPILER_ARM_LINUX)" >>$CROSS_TOOLCHAIN \
+    && echo "set(CMAKE_CXX_COMPILER /usr/bin/$CXX_COMPILER_ARM_LINUX)" >>$CROSS_TOOLCHAIN \
+    && echo "set(CMAKE_PREFIX_PATH $CROSS_INSTALL_PREFIX)" >>$CROSS_TOOLCHAIN
+
+ENV MESON_CROSS_TOOLCHAIN=/arm64-cross.ini
+
+# Create Meson cross file
+RUN echo "[binaries]" >$MESON_CROSS_TOOLCHAIN \
+    && echo "c = '/usr/bin/aarch64-linux-gnu-gcc'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "cpp = '/usr/bin/aarch64-linux-gnu-g++'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "ar = '/usr/bin/aarch64-linux-gnu-ar'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "strip = '/usr/bin/aarch64-linux-gnu-strip'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "pkgconfig = '/usr/bin/pkg-config'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "[host_machine]" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "system = 'linux'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "cpu_family = 'aarch64'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "cpu = 'aarch64'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "endian = 'little'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "[paths]" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "prefix = '/usr/aarch64-linux-gnu'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "libdir = 'lib'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "includedir = 'include'" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "[properties]" >>$MESON_CROSS_TOOLCHAIN \
+    && echo "needs_exe_wrapper = true" >>$MESON_CROSS_TOOLCHAIN
+
+
+# --------------------------
+# 2. Install host packages + cross compiler
+# --------------------------
+RUN apt-get update \
+    && apt-get --no-install-recommends install -y autoconf \
+        automake \
+        build-essential \
+        ca-certificates \
+        curl \
+        gcc-$GNU_HOST \
+        g++-$GNU_HOST \
+        git \
+        gnupg \
+        libssl-dev \
+        openssh-client \
+        pkg-config \
+        software-properties-common \
+        wget \
+        python3 \
+        python3-pip \
+        ninja-build \
+        python3-setuptools \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --break-system-packages meson jinja2 PyYAML ply
+
+RUN dpkg --add-architecture arm64 \
+    && apt-get update \
+    && apt-get install -y \
+        libcrypt-dev:arm64 \
+        libglib2.0-dev:arm64 \
+        libgnutls28-dev:arm64 \
+        libtiff5-dev:arm64 \
+        pkg-config:arm64 \
+        libexif-dev:arm64 \
+        libjpeg-dev:arm64 \
+        libavcodec-dev:arm64 \
+        libavformat-dev:arm64 \
+        libswscale-dev:arm64 \
+        libv4l-dev:arm64 \
+        gstreamer1.0-plugins-base:arm64 \
+        libgstreamer1.0-dev:arm64 \
+        libgstreamer-plugins-base1.0-dev:arm64 \
+    && rm -rf /var/lib/apt/lists/*
+
+# -------------------------------------------------------
+# 3. Build libcamera from source (ARM64)
+# -------------------------------------------------------
+ENV LIBCAMERA_CHECKOUT=v0.5.2
+
+RUN git clone https://github.com/raspberrypi/libcamera.git /libcamera \
+    && cd /libcamera \
+    && git checkout $LIBCAMERA_CHECKOUT \
+    && export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig \
+    && meson setup build --cross-file $MESON_CROSS_TOOLCHAIN --buildtype=release \
+        -Dpipelines=rpi/vc4,rpi/pisp \
+        -Dipas=rpi/vc4,rpi/pisp \
+        -Dv4l2=true \
+        -Dgstreamer=enabled \
+        -Dtest=false \
+        -Dlc-compliance=disabled \
+        -Dcam=disabled \
+        -Dqcam=disabled \
+        -Ddocumentation=disabled \
+        -Dpycamera=disabled \
+    && ninja -C build install
+
+
+# --------------------------
+# 4. Build CMake
+# --------------------------
+ENV CMAKE_VERSION=3.31.8
+
+RUN export CMAKE_DIR=cmake-$CMAKE_VERSION \
+    && export CMAKE_ARCH=$CMAKE_DIR.tar.gz \
+    && wget --progress=bar:force:noscroll https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/$CMAKE_ARCH \
+    && tar -xzf $CMAKE_ARCH \
+    && cd $CMAKE_DIR \
+    && ./bootstrap --parallel=$(nproc) \
+    && make -j $(nproc) \
+    && make install \
+    && rm -rf ../$CMAKE_ARCH \
+        ../$CMAKE_DIR
+
+# --------------------------
+# 5. Build WiringPi
+# --------------------------
+# NOTE: These versions must be the same on the target host
+ENV WIRINGPI_CHECKOUT=3.16
+
+# WiringPi
+# https://github.com/WiringPi/WiringPi
+RUN WPI_DIR=/wpi \
+    && WPI_WIRING_PI_DIR=$WPI_DIR/wiringPi \
+    && git clone --single-branch --branch master https://github.com/WiringPi/WiringPi.git $WPI_DIR \
+    && cd $WPI_DIR \
+    && git checkout $WIRINGPI_CHECKOUT \
+    && cd $WPI_WIRING_PI_DIR \
+    && CC=$C_COMPILER_ARM_LINUX make -j $(nproc) \
+    && make install DESTDIR=$CROSS_INSTALL_PREFIX PREFIX="" \
+    && cd / \
+    && rm -rf $WPI_DIR
+
+# -------------------------------------------------------
+# 6. Build OpenCV from source (ARM64)
+# -------------------------------------------------------
+# NOTE: These versions must be the same on the target host
+ENV OPENCV_CHECKOUT=4.12.0
+
+RUN OCV_DIR=/ocv \
+    && git clone --branch $OPENCV_CHECKOUT --depth=1 https://github.com/opencv/opencv.git $OCV_DIR/opencv \
+    && git clone --branch $OPENCV_CHECKOUT --depth=1 https://github.com/opencv/opencv_contrib.git $OCV_DIR/opencv_contrib \
+    && mkdir -p $OCV_DIR/opencv/build && cd $OCV_DIR/opencv/build \
+    && cmake -DCMAKE_TOOLCHAIN_FILE=$CROSS_TOOLCHAIN \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/aarch64-linux-gnu \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DCMAKE_CXX_COMPILER=${CXX} \
+        -DOPENCV_EXTRA_MODULES_PATH=$OCV_DIR/opencv_contrib/modules \
+        -DENABLE_NEON=ON \
+        -DWITH_OPENMP=ON \
+        -DWITH_OPENCL=OFF \
+        -DBUILD_TIFF=ON \
+        -DWITH_FFMPEG=ON \
+        -DWITH_TBB=ON \
+        -DBUILD_TBB=ON \
+        -DWITH_GSTREAMER=ON \
+        -DBUILD_TESTS=OFF \
+        -DWITH_EIGEN=OFF \
+        -DWITH_V4L=ON \
+        -DWITH_LIBV4L=ON \
+        -DWITH_VTK=OFF \
+        -DWITH_QT=OFF \
+        -DWITH_PROTOBUF=ON \
+        -DOPENCV_ENABLE_NONFREE=ON \
+        -DINSTALL_C_EXAMPLES=OFF \
+        -DINSTALL_PYTHON_EXAMPLES=OFF \
+        -DOPENCV_FORCE_LIBATOMIC_COMPILER_CHECK=1 \
+        -DOPENCV_GENERATE_PKGCONFIG=ON \
+        -DBUILD_EXAMPLES=OFF \
+        .. \
+    && make -j$(nproc) && make install \
+    && rm -rf $OCV_DIR

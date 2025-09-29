@@ -1,3 +1,5 @@
+#pragma once
+
 #include <opencv2/opencv.hpp>
 #include <optional>
 
@@ -203,7 +205,7 @@ std::vector<LineSegment> getParkingWalls(
  */
 std::vector<cv::Point2f> getTrafficLightPoints(
     const TimedLidarData &timedLidarData,
-    const ResolvedWalls resolveWalls,
+    const ResolvedWalls &resolveWalls,
     std::optional<RotationDirection> turnDirection,
     float distanceThreshold = 0.05f
 );

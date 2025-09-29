@@ -93,14 +93,6 @@ public:
     bool getData(TimedPico2Data &outData) const;
 
     /**
-     * @brief Block until a new sample is available.
-     *
-     * @param outData Filled with the new sample.
-     * @return true if data was retrieved, false if module stopped.
-     */
-    bool waitForData(TimedPico2Data &outData);
-
-    /**
      * @brief Copy all buffered samples into a vector.
      *
      * @param outData Vector filled with samples in chronological order.
@@ -113,12 +105,25 @@ public:
      */
     size_t bufferSize() const;
 
+    /**
+     * @brief Block until a new sample is available.
+     *
+     * @param outData Filled with the new sample.
+     * @return true if data was retrieved, false if module stopped.
+     */
+    bool waitForData(TimedPico2Data &outData);
+
+    void startLogging();
+
+    void stopLogging();
+
 private:
     /// Background polling loop (runs at ~120 Hz).
     void pollingLoop();
 
     I2cMaster master_;
-    std::atomic<bool> running_;
+
+    std::atomic<bool> running_ = false;
     std::thread pollingThread_;
 
     mutable std::mutex dataMutex_;
@@ -129,4 +134,5 @@ private:
     RingBuffer<TimedPico2Data> dataBuffer_{120};
 
     Logger *logger_;
+    bool logging_ = false;
 };

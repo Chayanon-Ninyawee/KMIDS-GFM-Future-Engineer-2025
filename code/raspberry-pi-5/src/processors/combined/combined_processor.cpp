@@ -37,8 +37,7 @@ RobotDeltaPose aproximateRobotPose(const TimedLidarData &timedLidarData, const s
 
         // Calculate heading difference
         float dHeading = curr.euler.h - prev.euler.h;
-        dHeading = std::fmod(dHeading, 360.0f);
-        if (dHeading < 0.0f) dHeading += 360.0f;
+        dHeading = std::fmod(dHeading + 180.0f, 360.0f) - 180.0f;
 
         totalDeltaH += dHeading;
         totalDeltaH = std::fmod(totalDeltaH, 360.0f);
@@ -93,11 +92,28 @@ std::optional<SyncedLidarCamera> syncLidarCamera(
 std::vector<TrafficLightInfo> combineTrafficLightInfo(
     const std::vector<camera_processor::BlockAngle> &blockAngles,
     const std::vector<cv::Point2f> &lidarPoints,
+    const RobotDeltaPose &robotDeltaPose,
     cv::Point2f cameraOffset,
     float maxAngleDiff
 ) {
-    std::vector<TrafficLightInfo> results;
-    std::vector<cv::Point2f> availableLidar = lidarPoints;
+    std::vector<TrafficLightInfo> trafficLightInfos;
+    std::vector<cv::Point2f> avaliableLidarPoints = lidarPoints;
+
+    // Apply delta transform: translate (-deltaX, -deltaY) and rotate (-deltaH)
+    float radH = robotDeltaPose.deltaH * static_cast<float>(M_PI) / 180.0f;
+    float cosH = std::cos(radH);
+    float sinH = std::sin(radH);
+
+    avaliableLidarPoints.reserve(lidarPoints.size());
+    for (const auto &p : lidarPoints) {
+        // Translate
+        float xt = p.x - robotDeltaPose.deltaX;
+        float yt = p.y - robotDeltaPose.deltaY;
+
+        // Rotate around (0,0)
+        cv::Point2f transformed{xt * cosH - yt * sinH, xt * sinH + yt * cosH};
+        avaliableLidarPoints.push_back(transformed);
+    }
 
     for (const auto &block : blockAngles) {
         size_t bestIndex = std::numeric_limits<size_t>::max();
@@ -105,8 +121,8 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
         float closestDistance = std::numeric_limits<float>::max();
 
         // Loop over all available LiDAR points
-        for (size_t i = 0; i < availableLidar.size(); ++i) {
-            const auto &lp = availableLidar[i];
+        for (size_t i = 0; i < avaliableLidarPoints.size(); ++i) {
+            const auto &lp = avaliableLidarPoints[i];
             float dx = lp.x - cameraOffset.x;
             float dy = lp.y - cameraOffset.y;
 
@@ -115,7 +131,15 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
 
             float angleDiff = std::abs(90.0f - block.angle - lidarAngleDeg);
 
-            if (angleDiff <= maxAngleDiff) {
+            // Distance of LiDAR point from origin (0,0)
+            float originDistance = std::sqrt(lp.x * lp.x + lp.y * lp.y);
+
+            // Scale tolerance: closer points allow bigger angleDiff, farther ones stricter
+            // Example: tolerance shrinks like 1/originDistance
+            float dynamicMaxAngleDiff = maxAngleDiff / (1.0f + originDistance * 2.0f);
+
+            // If angle difference within distance-scaled tolerance
+            if (angleDiff <= dynamicMaxAngleDiff) {
                 float distanceAlongRay = std::sqrt(dx * dx + dy * dy);  // distance from camera to LiDAR point
 
                 // Pick the closest along the ray (smallest distance)
@@ -128,9 +152,126 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
         }
 
         if (bestIndex != std::numeric_limits<size_t>::max()) {
-            results.push_back(TrafficLightInfo{availableLidar[bestIndex], block});
-            availableLidar.erase(availableLidar.begin() + bestIndex);  // consume
+            trafficLightInfos.push_back(TrafficLightInfo{avaliableLidarPoints[bestIndex], block});
+            avaliableLidarPoints.erase(avaliableLidarPoints.begin() + bestIndex);  // consume
         }
+    }
+
+    return trafficLightInfos;
+}
+
+std::vector<ClassifiedTrafficLight> classifyTrafficLights(
+    const std::vector<TrafficLightInfo> &trafficLights,
+    const lidar_processor::ResolvedWalls &resolvedWalls,
+    RotationDirection turnDirection,
+    Segment currentSegment
+
+) {
+    std::vector<ClassifiedTrafficLight> results;
+    results.reserve(trafficLights.size());
+
+    // Pick outer/inner walls
+    std::optional<lidar_processor::LineSegment> outerWall, innerWall;
+    if (turnDirection == RotationDirection::CLOCKWISE) {
+        outerWall = resolvedWalls.leftWall;
+        innerWall = resolvedWalls.rightWall;
+    } else {
+        outerWall = resolvedWalls.rightWall;
+        innerWall = resolvedWalls.leftWall;
+    }
+
+    for (const auto &tl : trafficLights) {
+        const cv::Point2f &p = tl.lidarPosition;
+
+        // --- Distances ---
+        float frontDist = 0.0f;
+        if (resolvedWalls.frontWall) {
+            frontDist = resolvedWalls.frontWall->perpendicularDistance(p.x, p.y);
+        } else if (resolvedWalls.backWall) {
+            frontDist = 3.0f - resolvedWalls.backWall->perpendicularDistance(p.x, p.y);
+        }
+
+        float outerDist = 0.0f;
+        if (outerWall) {
+            outerDist = outerWall->perpendicularDistance(p.x, p.y);
+        } else if (innerWall) {
+            outerDist = 1.0f - innerWall->perpendicularDistance(p.x, p.y);
+        }
+
+        // --- SegmentLocation: A/B/C depending on rotation ---
+        Segment seg;
+        SegmentLocation loc;
+        WallSide side;
+        if (outerDist < 0.900) {
+            if (turnDirection == RotationDirection::CLOCKWISE) {
+                seg = currentSegment;
+
+                if (frontDist > 0.80 && frontDist < 1.15f)
+                    loc = SegmentLocation::C;  // front
+                else if (frontDist > 1.35 && frontDist < 1.65f)
+                    loc = SegmentLocation::B;  // mid
+                else if (frontDist > 1.85 && frontDist < 2.15)
+                    loc = SegmentLocation::A;  // back
+                else
+                    continue;
+            } else {
+                seg = currentSegment;
+
+                if (frontDist > 0.80 && frontDist < 1.15f)
+                    loc = SegmentLocation::A;  // front (reverse)
+                else if (frontDist > 1.35 && frontDist < 1.65f)
+                    loc = SegmentLocation::B;  // mid
+                else if (frontDist > 1.85 && frontDist < 2.15)
+                    loc = SegmentLocation::C;  // back
+                else
+                    continue;
+            }
+
+            if (outerDist < 0.480)
+                side = WallSide::OUTER;
+            else if (outerDist > 0.520)
+                side = WallSide::INNER;
+            else
+                continue;
+        } else {
+            if (turnDirection == RotationDirection::CLOCKWISE) {
+                float nextHeading = currentSegment.toHeading() + 90.0f;
+                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+                seg = Segment::fromHeading(nextHeading);
+
+                if (outerDist > 0.900 && outerDist < 1.15f)
+                    loc = SegmentLocation::A;  // front
+                else if (outerDist > 1.35 && outerDist < 1.65f)
+                    loc = SegmentLocation::B;  // mid
+                else if (outerDist > 1.85 && outerDist < 2.15)
+                    loc = SegmentLocation::C;  // back
+                else
+                    continue;
+            } else {
+                float nextHeading = currentSegment.toHeading() - 90.0f;
+                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+                seg = Segment::fromHeading(nextHeading);
+
+                if (outerDist >= 0.900 && outerDist < 1.15f)
+                    loc = SegmentLocation::C;  // front
+                else if (outerDist > 1.35 && outerDist < 1.65f)
+                    loc = SegmentLocation::B;  // mid
+                else if (outerDist > 1.85 && outerDist < 2.15)
+                    loc = SegmentLocation::A;  // back
+                else
+                    continue;
+            }
+
+            if (frontDist < 0.480)
+                side = WallSide::OUTER;
+            else if (frontDist > 0.520)
+                side = WallSide::INNER;
+            else
+                continue;
+        }
+
+        // --- Pack result ---
+        results.push_back(ClassifiedTrafficLight{tl, TrafficLightLocation{seg, loc, side}});
     }
 
     return results;
@@ -148,10 +289,10 @@ void drawTrafficLightInfo(cv::Mat &img, const TrafficLightInfo &info, float scal
     // Choose color based on camera block
     cv::Scalar color;
     switch (info.cameraBlock.color) {
-    case camera_processor::Color::Red:
+    case camera_processor::Color::RED:
         color = cv::Scalar(0, 0, 255);  // BGR
         break;
-    case camera_processor::Color::Green:
+    case camera_processor::Color::GREEN:
         color = cv::Scalar(0, 255, 0);
         break;
     default:

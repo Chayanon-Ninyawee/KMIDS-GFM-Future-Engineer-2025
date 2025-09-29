@@ -2,6 +2,8 @@
 
 #include "camera_processor.h"
 #include "camera_struct.h"
+#include "direction.h"
+#include "lidar_processor.h"
 #include "lidar_struct.h"
 #include "pico2_struct.h"
 #include "ring_buffer.hpp"
@@ -69,8 +71,66 @@ struct TrafficLightInfo {
 std::vector<TrafficLightInfo> combineTrafficLightInfo(
     const std::vector<camera_processor::BlockAngle> &blockAngles,
     const std::vector<cv::Point2f> &lidarPoints,
+    const RobotDeltaPose &robotDeltaPose,
     cv::Point2f cameraOffset = {0.0f, 0.15f},
-    float maxAngleDiff = 8.0f
+    float maxAngleDiff = 6.0f
+);
+
+/**
+ * @brief Represents the classified location of a traffic light relative to the robot's path and walls.
+ */
+struct TrafficLightLocation {
+    Segment segment;           ///< Quadrant segment (A–D) where the traffic light is located.
+    SegmentLocation location;  ///< Relative position within the segment (front/mid/back).
+    WallSide side;             ///< Relative wall side (inner or outer) the traffic light is near.
+};
+
+/**
+ * @brief A traffic light along with its classified location in the environment.
+ */
+struct ClassifiedTrafficLight {
+    TrafficLightInfo info;          ///< Original traffic light data (LiDAR and camera block).
+    TrafficLightLocation location;  ///< Classified location relative to the robot and walls.
+};
+
+/**
+ * @brief Classify traffic lights relative to the robot's path and surrounding walls.
+ *
+ * For each traffic light, this function determines:
+ * 1. The segment (A–D) the traffic light is in relative to the robot's current segment.
+ * 2. Its position within the segment (SegmentLocation: A/B/C) based on the distance to the front/back wall.
+ * 3. Which wall side (WallSide: INNER/OUTER) the traffic light is closest to.
+ *
+ * Distances are computed using perpendicular distance from walls. If a front or back wall
+ * is missing, fallback distances are used (3.0f for back, 1.0f for inner). Traffic lights
+ * outside the expected distance ranges are ignored.
+ *
+ * SegmentLocation mapping depends on rotation direction:
+ * - CLOCKWISE:
+ *     - Front wall: SegmentLocation::A
+ *     - Mid distance: SegmentLocation::B
+ *     - Back distance: SegmentLocation::C
+ * - COUNTER_CLOCKWISE:
+ *     - Front wall: SegmentLocation::C
+ *     - Mid distance: SegmentLocation::B
+ *     - Back distance: SegmentLocation::A
+ *
+ * WallSide is chosen based on the distance to the outer wall:
+ * - outerDist < 0.48 → OUTER
+ * - outerDist > 0.52 → INNER
+ * Traffic lights in the ambiguous range (0.48–0.52) are skipped.
+ *
+ * @param trafficLights Vector of traffic lights to classify.
+ * @param resolvedWalls Resolved walls from LiDAR, used to compute distances.
+ * @param turnDirection Robot rotation direction (CLOCKWISE or COUNTER_CLOCKWISE).
+ * @param currentSegment Robot's current segment (A–D), used as a reference for classification.
+ * @return std::vector<ClassifiedTrafficLight> Classified traffic lights with segment, location, and wall side.
+ */
+std::vector<ClassifiedTrafficLight> classifyTrafficLights(
+    const std::vector<TrafficLightInfo> &trafficLights,
+    const lidar_processor::ResolvedWalls &resolvedWalls,
+    RotationDirection turnDirection,
+    Segment currentSegment
 );
 
 /**

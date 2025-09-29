@@ -71,7 +71,12 @@ int main() {
                     if (newRobotTurnDirecton) robotTurnDirection = newRobotTurnDirecton;
 
                     auto resolveWalls = lidar_processor::resolveWalls(relativeWalls);
-                    auto parkingWalls = lidar_processor::getParkingWalls(lineSegments, Direction::fromHeading(heading), heading, 0.25f);
+
+                    auto lineSegmentsForParking =
+                        lidar_processor::getLines(filteredLidarData, {0.0f, 0.0f, 0.0f}, 0.02f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
+
+                    auto parkingWalls =
+                        lidar_processor::getParkingWalls(lineSegmentsForParking, Direction::fromHeading(heading), heading, 0.30f);
                     auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, robotTurnDirection);
 
                     const float SCALE = 6.0f;

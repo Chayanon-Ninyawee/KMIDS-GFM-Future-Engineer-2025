@@ -26,5 +26,7 @@ void Logger::writeData(uint64_t timestamp_ns, const void *data, size_t dataSize)
 
     file.write(reinterpret_cast<const char *>(&timestamp_ns), sizeof(timestamp_ns));
     file.write(reinterpret_cast<const char *>(&dataSize), sizeof(dataSize));
-    file.write(reinterpret_cast<const char *>(data), dataSize);
+    if (dataSize > 0 && data != nullptr) {
+        file.write(reinterpret_cast<const char *>(data), dataSize);
+    }
 }

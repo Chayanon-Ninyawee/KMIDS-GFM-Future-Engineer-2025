@@ -1,5 +1,3 @@
-// FIXME: UNTESTED
-
 #include "camera_module.h"
 #include "combined_processor.h"
 #include "lidar_module.h"
@@ -13,6 +11,7 @@
 #include <iostream>
 #include <optional>
 #include <thread>
+#include <wiringPi.h>
 
 volatile std::sig_atomic_t stop_flag = 0;
 
@@ -21,15 +20,17 @@ void signalHandler(int signum) {
     stop_flag = 1;
 }
 
+const int BUTTON_PIN = 16;
+
 const uint32_t camWidth = 1296;
 const uint32_t camHeight = 972;
 
-const float TARGET_OUTER_WALL_DISTANCE = 0.84;
+const float TARGET_OUTER_WALL_DISTANCE = 0.77;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
-const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
+const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(3000);
 
-const float TURNING_FRONT_WALL_DISTANCE = 0.85f;
+const float TURNING_FRONT_WALL_DISTANCE = 1.05f;
 
 const float STOP_FRONT_WALL_DISTANCE = 1.80f;
 const auto STOP_DELAY = std::chrono::milliseconds(100);
@@ -108,20 +109,22 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
         }
     }
 
+    bool pidWallErrorActive = true;
+
     float targetOuterWallDistance;
-    float turningFrontWallDistance;
     targetOuterWallDistance = TARGET_OUTER_WALL_DISTANCE;
-    turningFrontWallDistance = TURNING_FRONT_WALL_DISTANCE;
 
 instant_update:
     switch (state.robotMode) {
     default:
-        std::cout << "[OpenChallenge] Invalid Mode!" << std::endl;
+        std::cout << "[ScanMapInner] Invalid Mode!" << std::endl;
         stop_flag = 1;
         return;
 
     case Mode::NORMAL: {
         // std::cout << "[Mode::NORMAL]\n";
+
+        outMotorSpeed = 2.5f;
 
         if (state.numberOfTurn == 8) {
             state.robotMode = Mode::PRE_STOP;
@@ -136,11 +139,15 @@ instant_update:
             lastPreTurnTrigger = now;
             goto instant_update;
         }
-        outMotorSpeed = 2.5f;
         break;
     }
     case Mode::PRE_TURN: {
         // std::cout << "[Mode::PRE_TURN]\n";
+
+        outMotorSpeed = 2.5f;
+
+        float turningFrontWallDistance;
+        turningFrontWallDistance = TURNING_FRONT_WALL_DISTANCE;
 
         if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= turningFrontWallDistance) {
             Direction nextHeadingDirection;
@@ -159,24 +166,28 @@ instant_update:
             state.robotMode = Mode::TURNING;
             goto instant_update;
         }
-
-        outMotorSpeed = 2.5f;
         break;
     }
     case Mode::TURNING: {
         // std::cout << "[Mode::TURNING]\n";
 
-        if (std::abs(state.headingDirection.toHeading() - heading) <= 20.0f) {
+        outMotorSpeed = 2.5f;
+
+        pidWallErrorActive = false;
+
+        float diff = heading - state.headingDirection.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+        if (std::abs(diff) <= 20.0f) {
             state.numberOfTurn++;
             state.robotMode = Mode::NORMAL;
             goto instant_update;
         }
-
-        outMotorSpeed = 2.5f;
         break;
     }
     case Mode::PRE_STOP: {
         // std::cout << "[Mode::PRE_STOP]\n";
+
+        outMotorSpeed = 2.5f;
 
         static bool stopTimerActive = false;
         static auto stopStartTime = std::chrono::steady_clock::now();
@@ -192,8 +203,6 @@ instant_update:
             state.robotMode = Mode::STOP;
             goto instant_update;
         }
-        outMotorSpeed = 2.5f;
-
         break;
     }
     case Mode::STOP: {
@@ -212,7 +221,7 @@ instant_update:
     // NOTE: Use innerWall instead since the outerWall might get block by Traffic Light
     float wallError = 0.0f;
     if (innerWall) {
-        wallError = 1.00f - (innerWall->perpendicularDistance(0.0f, 0.0f) - targetOuterWallDistance);
+        wallError = (1.00f - innerWall->perpendicularDistance(0.0f, 0.0f)) - targetOuterWallDistance;
     }
     float headingErrorOffset = state.wallPid.update(wallError, dt);
 
@@ -221,10 +230,12 @@ instant_update:
     if (headingError < 0) headingError += 360.0f;
     headingError -= 180.0f;
 
-    if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
-        headingError -= headingErrorOffset;
-    } else {
-        headingError += headingErrorOffset;
+    if (pidWallErrorActive) {
+        if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
+            headingError -= headingErrorOffset;
+        } else {
+            headingError += headingErrorOffset;
+        }
     }
 
     outSteeringPercent = state.headingPid.update(headingError, dt);
@@ -245,18 +256,21 @@ int main() {
     if (!home) throw std::runtime_error("HOME environment variable not set");
     std::string logFolder = std::string(home) + "/gfm_logs/scan_map_inner";
 
-    Logger lidarLogger(Logger::generateFilename(logFolder, "lidar"));
-    Logger pico2Logger(Logger::generateFilename(logFolder, "pico2"));
-    Logger cameraLogger(Logger::generateFilename(logFolder, "camera"));
+    std::string timedstampedLogFolder = Logger::generateTimestampedFolder(logFolder);
+
+    Logger *lidarLogger = new Logger(timedstampedLogFolder + "/lidar.bin");
+    Logger *pico2Logger = new Logger(timedstampedLogFolder + "/pico2.bin");
+    Logger *cameraLogger = new Logger(timedstampedLogFolder + "/camera.bin");
+    Logger *scanMapLogger = new Logger(timedstampedLogFolder + "/scanMap.bin");
 
     // Initialize LidarModule
-    LidarModule lidar(&lidarLogger);
+    LidarModule lidar(lidarLogger);
     if (!lidar.initialize()) return -1;
     lidar.printDeviceInfo();
     if (!lidar.start()) return -1;
 
     // Initialize Pico2Module
-    Pico2Module pico2(&pico2Logger);
+    Pico2Module pico2(pico2Logger);
     if (!pico2.initialize()) return -1;
 
     // Initialize CameraModule (for logging only)
@@ -271,7 +285,7 @@ int main() {
         camControls.set(controls::ExposureTimeMode, controls::ExposureTimeModeEnum::ExposureTimeModeAuto);
         camControls.set(controls::AwbEnable, false);
 
-        cam.options->awb_gain_r = 0.83;
+        cam.options->awb_gain_r = 0.90;
         cam.options->awb_gain_b = 1.5;
 
         cam.options->brightness = 0.1;
@@ -280,41 +294,68 @@ int main() {
         cam.options->contrast = 1;
         cam.options->gain = 5;
     };
-    CameraModule camera(&cameraLogger, cameraOptionCallback);
+    CameraModule camera(cameraLogger, cameraOptionCallback);
     if (!camera.start()) return -1;
 
     State state;
 
-    std::cout << "Waiting 2 seconds before starting control loop..." << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-
-    const auto loopDuration = std::chrono::milliseconds(16);  // ~60 Hz
-    auto lastTime = std::chrono::steady_clock::now();
-
-    while (!stop_flag) {
-        auto loopStart = std::chrono::steady_clock::now();
-
-        std::chrono::duration<float> delta = loopStart - lastTime;
-        float dt = delta.count();
-        lastTime = loopStart;
-
-        float motorSpeed, steeringPercent;
-        update(dt, lidar, pico2, state, motorSpeed, steeringPercent);
-        pico2.setMovementInfo(motorSpeed, steeringPercent);
-
-        // Maintain ~60 Hz loop rate
-        auto loopEnd = std::chrono::steady_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(loopEnd - loopStart);
-        if (elapsed < loopDuration) {
-            std::this_thread::sleep_for(loopDuration - elapsed);
-        }
+    if (wiringPiSetupGpio() == -1) {  // Use GPIO numbering
+        printf("WiringPi setup failed.\n");
+        return -1;
     }
+
+    pinMode(BUTTON_PIN, INPUT);
+    pullUpDnControl(BUTTON_PIN, PUD_UP);  // Enable pull-up resistor
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    while (digitalRead(BUTTON_PIN) == HIGH and !stop_flag) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+
+    if (!stop_flag) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+
+        lidar.startLogging();
+        pico2.startLogging();
+        camera.startLogging();
+
+        const auto loopDuration = std::chrono::milliseconds(32);  // ~30 Hz
+        auto lastTime = std::chrono::steady_clock::now();
+
+        while (!stop_flag) {
+            auto loopStart = std::chrono::steady_clock::now();
+
+            std::chrono::duration<float> delta = loopStart - lastTime;
+            float dt = delta.count();
+            lastTime = loopStart;
+
+            float motorSpeed, steeringPercent;
+            update(dt, lidar, pico2, state, motorSpeed, steeringPercent);
+            pico2.setMovementInfo(motorSpeed, steeringPercent);
+
+            uint8_t dummyData[1] = {0x39};
+            uint64_t timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(loopStart.time_since_epoch()).count();
+            scanMapLogger->writeData(timestamp_ns, dummyData, sizeof(dummyData));
+
+            // Maintain ~30 Hz loop rate
+            auto loopEnd = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(loopEnd - loopStart);
+            if (elapsed < loopDuration) {
+                std::this_thread::sleep_for(loopDuration - elapsed);
+            }
+        }
+    } else {
+        std::filesystem::remove_all(timedstampedLogFolder);
+    }
+
     pico2.setMovementInfo(0.0f, 0.0f);
 
     // Shutdown
     lidar.stop();
     lidar.shutdown();
     pico2.shutdown();
+    camera.stop();
 
     std::cout << "[Main] Shutdown complete." << std::endl;
     return 0;

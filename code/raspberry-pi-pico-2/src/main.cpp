@@ -105,21 +105,31 @@ int main() {
 
         if (now - lastImuUpdate >= imuInterval) {
             if (imu.wasReset()) {
-                imu.enableRotation(10);
-                imu.enableAccelerometer(10);
+                imu.enableRotation(8);
+                imu.enableAccelerometer(8);
             }
 
             if (imu.update(accel, euler)) {
+                if (accel.x == 0.0f) accel.x = 0.0001f;
+                if (accel.y == 0.0f) accel.y = 0.0001f;
+                if (accel.z == 0.0f) accel.z = 0.0001f;
+
+                if (euler.h == 0.0f) euler.h = 0.0001f;
+                if (euler.p == 0.0f) euler.p = 0.0001f;
+                if (euler.r == 0.0f) euler.r = 0.0001f;
+
                 i2c_slave::setImuData(accel, euler);
                 // printf("Euler angles: H: %.2f°, P: %.2f°, R: %.2f°\n", euler.h, euler.p, euler.r);
             }
 
+            double encoderAngleToSend = encoder.getAngle();
+            if (encoderAngleToSend == 0.0) encoderAngleToSend = 0.0001;
+            i2c_slave::setEncoderAngle(encoderAngleToSend);
+
+            i2c_slave::getMovementInfo(motorSpeed, steeringPercent);
+
             lastImuUpdate = now;
         }
-
-        i2c_slave::setEncoderAngle(encoder.getAngle());
-
-        i2c_slave::getMovementInfo(motorSpeed, steeringPercent);
 
         if (now - lastMotorPidUpdate >= motorPidInterval) {
             // TODO: Make this a proper protocol
@@ -134,10 +144,11 @@ int main() {
             }
 
             motorPid.update();
+
+            servo.setAngle(toSteeringAngle(steeringPercent));
+
             lastMotorPidUpdate = now;
         }
-
-        servo.setAngle(toSteeringAngle(steeringPercent));
 
         // printf("%.2f\n", motorPid.getPower());
 

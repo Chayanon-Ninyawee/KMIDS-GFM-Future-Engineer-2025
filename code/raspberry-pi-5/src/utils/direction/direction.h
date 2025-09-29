@@ -3,26 +3,46 @@
 #include <cmath>
 #include <cstdint>
 
+/**
+ * @brief Direction of the robot's turn or rotation.
+ */
 enum class RotationDirection
 {
-    CLOCKWISE,
-    COUNTER_CLOCKWISE
+    CLOCKWISE,         ///< Robot or path rotates clockwise.
+    COUNTER_CLOCKWISE  ///< Robot or path rotates counter-clockwise.
 };
 
-// Wall-relative side (inner or outer)
+/**
+ * @brief Relative side of a traffic light or object with respect to a reference wall.
+ */
 enum class WallSide
 {
-    INNER = 0,
-    OUTER = 1
+    INNER = 0,  ///< Closer to the inner wall.
+    OUTER = 1   ///< Closer to the outer wall.
 };
 
-// Robot-relative or generic side (left, right, front, back)
+/**
+ * @brief Relative side with respect to the robot or a generic reference frame.
+ */
 enum class RelativeSide
 {
-    LEFT = 0,
-    RIGHT = 1,
-    FRONT = 2,
-    BACK = 3
+    LEFT = 0,   ///< Left side relative to robot or reference.
+    RIGHT = 1,  ///< Right side relative to robot or reference.
+    FRONT = 2,  ///< Front side relative to robot or reference.
+    BACK = 3    ///< Back side relative to robot or reference.
+};
+
+/**
+ * @brief Location within a segment, relative to front/mid/back along robot path.
+ *
+ * For clockwise (CW) rotation: A = front, B = mid, C = back.
+ * For counter-clockwise (CCW) rotation: A = back, B = mid, C = front.
+ */
+enum class SegmentLocation
+{
+    A,  ///< Front (CW) or Back (CCW)
+    B,  ///< Mid
+    C   ///< Back (CW) or Front (CCW)
 };
 
 // Cardinal directions
@@ -95,6 +115,98 @@ public:
             break;
         }
         return Direction(static_cast<Value>((static_cast<uint8_t>(value) + offset) % 4));
+    }
+
+private:
+    Value value;
+};
+
+/**
+ * @brief Quadrant segment of the robot's path or environment.
+ *
+ * The robot starts at Segment A, and numbering proceeds clockwise (CW) or
+ * counter-clockwise (CCW) depending on RotationDirection.
+ *
+ * Example (robot facing north at start, segments clockwise):
+ *
+ *     North (0°)  → Segment A
+ *     East  (90°) → Segment B
+ *     South (180°)→ Segment C
+ *     West  (270°)→ Segment D
+ *
+ * If rotation is counter-clockwise, the segment sequence becomes:
+ *
+ *     North (0°)  → Segment A
+ *     West  (270°)→ Segment D
+ *     South (180°)→ Segment C
+ *     East  (90°) → Segment B
+ */
+class Segment
+{
+public:
+    enum Value : uint8_t
+    {
+        A = 0,
+        B = 1,
+        C = 2,
+        D = 3
+    };
+
+    Segment() = default;
+    constexpr Segment(Value seg)
+        : value(seg) {}
+
+    // Allow switch-case and comparisons
+    constexpr operator Value() const {
+        return value;
+    }
+
+    /**
+     * @brief Convert the Segment to a Direction object.
+     */
+    constexpr Direction toDirection() const {
+        switch (value) {
+        case A:
+            return Direction(Direction::NORTH);
+        case B:
+            return Direction(Direction::EAST);
+        case C:
+            return Direction(Direction::SOUTH);
+        case D:
+            return Direction(Direction::WEST);
+        }
+        return Direction(Direction::NORTH);  // fallback
+    }
+
+    /**
+     * @brief Convert the Segment to a heading in degrees.
+     */
+    constexpr float toHeading() const {
+        return toDirection().toHeading();  // reuse Direction
+    }
+
+    /**
+     * @brief Construct a Segment from a Direction object.
+     */
+    static constexpr Segment fromDirection(const Direction &dir) {
+        switch (static_cast<Direction::Value>(dir)) {
+        case Direction::NORTH:
+            return A;
+        case Direction::EAST:
+            return B;
+        case Direction::SOUTH:
+            return C;
+        case Direction::WEST:
+            return D;
+        }
+        return A;  // fallback
+    }
+
+    /**
+     * @brief Construct a Segment from a heading (degrees) via Direction.
+     */
+    static constexpr Segment fromHeading(float heading) {
+        return fromDirection(Direction::fromHeading(heading));
     }
 
 private:

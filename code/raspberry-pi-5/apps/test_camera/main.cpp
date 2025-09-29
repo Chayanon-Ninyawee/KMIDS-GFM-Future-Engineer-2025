@@ -147,7 +147,7 @@ int main() {
         camControls.set(controls::ExposureTimeMode, controls::ExposureTimeModeEnum::ExposureTimeModeAuto);
         camControls.set(controls::AwbEnable, false);
 
-        cam.options->awb_gain_r = 0.83;
+        cam.options->awb_gain_r = 0.90;
         cam.options->awb_gain_b = 1.5;
 
         cam.options->brightness = 0.1;

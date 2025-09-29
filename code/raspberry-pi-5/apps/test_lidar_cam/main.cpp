@@ -122,7 +122,7 @@ int main() {
             auto colorMasks = camera_processor::filterColors(timedFrame);
             auto blockAngles = camera_processor::computeBlockAngles(colorMasks, camWidth, camHFov);
 
-            auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints);
+            auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints, {0.0f, 0.0f, 0.0f});
 
             const float SCALE = 6.0f;
 
@@ -183,7 +183,7 @@ int main() {
 
             for (const auto &block : blockAngles) {
                 // Choose color for drawing
-                cv::Scalar lineColor = (block.color == camera_processor::Color::Red) ? cv::Scalar(0, 0, 255)   // Red in BGR
+                cv::Scalar lineColor = (block.color == camera_processor::Color::RED) ? cv::Scalar(0, 0, 255)   // Red in BGR
                                                                                      : cv::Scalar(0, 255, 0);  // Green in BGR
 
                 // Draw a line from the centroid along the angle

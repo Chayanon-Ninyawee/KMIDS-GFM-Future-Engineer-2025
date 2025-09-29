@@ -42,21 +42,14 @@ public:
     void writeData(uint64_t timestamp_ns, const void *data, size_t dataSize);
 
     /**
-     * @brief Generate a filename inside a timestamped folder.
+     * @brief Generate a timestamped folder.
      *
      * Creates folder logs/YYYYMMDD_HHMMSS if it doesn't exist.
-     * Format: folder/prefix.suffix
      *
      * @param baseFolder Base folder for logs (default: "logs")
-     * @param prefix File prefix (default: "log")
-     * @param suffix File extension (default: ".bin")
-     * @return std::string Full path to the generated file
+     * @return std::string Full path to the generated folder
      */
-    static std::string generateFilename(
-        const std::string &baseFolder = "logs",
-        const std::string &prefix = "log",
-        const std::string &suffix = ".bin"
-    ) {
+    static std::string generateTimestampedFolder(const std::string &baseFolder = "logs") {
         // Generate timestamp for folder
         auto now = std::chrono::system_clock::now();
         auto t_c = std::chrono::system_clock::to_time_t(now);
@@ -74,11 +67,7 @@ public:
         // Create the timestamped folder
         std::filesystem::create_directories(folderName.str());
 
-        // Full file path
-        std::ostringstream filePath;
-        filePath << folderName.str() << "/" << prefix << suffix;
-
-        return filePath.str();
+        return folderName.str();
     }
 
 private:

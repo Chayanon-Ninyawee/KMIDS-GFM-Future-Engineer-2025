@@ -32,8 +32,8 @@ bool I2cMaster::writeRegister(uint8_t reg, const uint8_t *data, size_t len) {
 }
 
 bool I2cMaster::readRegister(uint8_t reg, uint8_t *data, size_t len) {
-    if (write(fd_, &reg, 1) == -1) return false;
-    return read(fd_, data, len) != -1;
+    int result = wiringPiI2CReadBlockData(fd_, reg, data, len);
+    return (result >= 0);
 }
 
 /** Command operations */
