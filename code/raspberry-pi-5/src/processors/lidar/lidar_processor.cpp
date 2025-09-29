@@ -588,7 +588,8 @@ std::vector<cv::Point2f> getTrafficLightPoints(
     const TimedLidarData &timedLidarData,
     const ResolvedWalls &resolveWalls,
     std::optional<RotationDirection> turnDirection,
-    float distanceThreshold
+    float distanceThreshold,
+    size_t minClusterSize
 ) {
     // Convert polar to Cartesian (in meters)
     std::vector<cv::Point2f> points;
@@ -672,6 +673,8 @@ std::vector<cv::Point2f> getTrafficLightPoints(
         if (dist < distanceThreshold) {
             currentCluster.push_back(p2);
         } else {
+            if (currentCluster.size() < minClusterSize) continue;
+
             // compute average for current cluster
             float sumX = 0, sumY = 0;
             for (auto &p : currentCluster) {
@@ -687,7 +690,7 @@ std::vector<cv::Point2f> getTrafficLightPoints(
     }
 
     // handle last cluster
-    if (!currentCluster.empty()) {
+    if (currentCluster.size() >= minClusterSize) {
         float sumX = 0, sumY = 0;
         for (auto &p : currentCluster) {
             sumX += p.x;
