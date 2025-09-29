@@ -572,8 +572,8 @@ std::vector<LineSegment> getParkingWalls(
         // Angle of the segment’s perpendicular relative to the target direction frame
         float perpAngleTargetFrame = std::fmod(perpAngleRobotFrame - (heading - targetDirection.toHeading()) + 360.0f, 360.0f);
 
-        if (not((perpAngleTargetFrame > 45.0f && perpAngleTargetFrame < 135.0f) ||
-                (perpAngleTargetFrame > 225.0f && perpAngleTargetFrame < 315.0f)))
+        if (not((perpAngleTargetFrame > 85.0f && perpAngleTargetFrame < 95.0f) ||
+                (perpAngleTargetFrame > 265.0f && perpAngleTargetFrame < 285.0f)))
             continue;
 
         if (segment.length() <= maxLength) {
