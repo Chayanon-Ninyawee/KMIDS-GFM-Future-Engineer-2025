@@ -1,5 +1,6 @@
 # Ignore build directory
 /code/raspberry-pi-5/build/
+/code/raspberry-pi-5/build_native/
 /code/raspberry-pi-pico-2/build/
 
 /code/raspberry-pi-5/log/
