@@ -357,6 +357,11 @@ int main() {
     pico2.shutdown();
     camera.stop();
 
+    delete lidarLogger;
+    delete pico2Logger;
+    delete cameraLogger;
+    delete scanMapLogger;
+
     std::cout << "[Main] Shutdown complete." << std::endl;
     return 0;
 }
