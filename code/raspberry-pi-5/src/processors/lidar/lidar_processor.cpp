@@ -661,42 +661,40 @@ std::vector<cv::Point2f> getTrafficLightPoints(
     std::vector<cv::Point2f> averages;
     if (filteredPoints.empty()) return averages;
 
-    std::vector<cv::Point2f> currentCluster;
-    currentCluster.push_back(filteredPoints[0]);
+    std::vector<bool> visited(filteredPoints.size(), false);
 
-    for (size_t i = 1; i < filteredPoints.size(); ++i) {
-        cv::Point2f p1 = currentCluster.back();
-        cv::Point2f p2 = filteredPoints[i];
+    for (size_t i = 0; i < filteredPoints.size(); ++i) {
+        if (visited[i]) continue;
 
-        float dist = std::hypot(p2.x - p1.x, p2.y - p1.y);
+        std::vector<cv::Point2f> currentCluster;
+        currentCluster.push_back(filteredPoints[i]);
+        visited[i] = true;
 
-        if (dist < distanceThreshold) {
-            currentCluster.push_back(p2);
-        } else {
-            if (currentCluster.size() < minClusterSize) continue;
+        size_t idx = 0;
+        while (idx < currentCluster.size()) {
+            cv::Point2f p = currentCluster[idx];
 
-            // compute average for current cluster
+            for (size_t j = 0; j < filteredPoints.size(); ++j) {
+                if (visited[j]) continue;
+
+                float dist = std::hypot(p.x - filteredPoints[j].x, p.y - filteredPoints[j].y);
+                if (dist < distanceThreshold) {
+                    currentCluster.push_back(filteredPoints[j]);
+                    visited[j] = true;
+                }
+            }
+            ++idx;
+        }
+
+        if (currentCluster.size() >= minClusterSize) {
+            // compute average
             float sumX = 0, sumY = 0;
-            for (auto &p : currentCluster) {
-                sumX += p.x;
-                sumY += p.y;
+            for (auto &pt : currentCluster) {
+                sumX += pt.x;
+                sumY += pt.y;
             }
             averages.emplace_back(sumX / currentCluster.size(), sumY / currentCluster.size());
-
-            // start new cluster
-            currentCluster.clear();
-            currentCluster.push_back(p2);
         }
-    }
-
-    // handle last cluster
-    if (currentCluster.size() >= minClusterSize) {
-        float sumX = 0, sumY = 0;
-        for (auto &p : currentCluster) {
-            sumX += p.x;
-            sumY += p.y;
-        }
-        averages.emplace_back(sumX / currentCluster.size(), sumY / currentCluster.size());
     }
 
     return averages;
