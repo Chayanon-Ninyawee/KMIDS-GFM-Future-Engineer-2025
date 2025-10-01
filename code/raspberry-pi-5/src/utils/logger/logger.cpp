@@ -17,6 +17,7 @@ Logger::Logger(const std::string &filename) {
 
 Logger::~Logger() {
     if (file.is_open()) {
+        file.flush();
         file.close();
     }
 }
