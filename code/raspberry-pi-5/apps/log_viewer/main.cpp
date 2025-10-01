@@ -325,18 +325,44 @@ int main(int argc, char **argv) {
     };
 
     size_t currentTimeIdx = 0;
+    int playDirection = 0;  // -1 = backward, +1 = forward, 0 = stopped
+    auto lastPressTime = std::chrono::steady_clock::now();
 
     while (true) {
-        int key = cv::waitKey(0);
-        if (key == 'q') break;  // ESC
+        int key = cv::waitKey(1);
+        if (key == 'q') break;
 
-        if (key == 'a') {  // left arrow
+        // --- Handle taps ---
+        if (key == 'j') {  // step one frame back (single frame mode)
             if (currentTimeIdx > 0) currentTimeIdx--;
-        } else if (key == 'd') {  // right arrow
+        } else if (key == 'l') {  // step one frame forward
             if (currentTimeIdx < loopTimestamps.size() - 1) currentTimeIdx++;
-        } else if (not(key == 'i' or key == 'c')) {
-            continue;
         }
+
+        // --- Handle continuous ---
+        if (key == 'a') {
+            playDirection = -1;
+            lastPressTime = std::chrono::steady_clock::now();
+        } else if (key == 'd') {
+            playDirection = +1;
+            lastPressTime = std::chrono::steady_clock::now();
+        } else if (key == -1) {
+            // check how long since last press
+            auto now = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastPressTime).count();
+
+            if (elapsed > 50) {
+                // more than ~50ms without real press → stop auto-move
+                playDirection = 0;
+            }
+        }
+
+        if (playDirection == -1 && currentTimeIdx > 0)
+            currentTimeIdx--;
+        else if (playDirection == +1 && currentTimeIdx < loopTimestamps.size() - 1)
+            currentTimeIdx++;
+        else if (key == -1 && playDirection == 0)
+            continue;
         uint64_t currentTime =
             std::chrono::duration_cast<std::chrono::nanoseconds>(loopTimestamps[currentTimeIdx].time_since_epoch()).count();
 
