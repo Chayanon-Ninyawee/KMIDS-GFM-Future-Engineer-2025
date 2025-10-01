@@ -60,7 +60,7 @@ jobs:
           key: ${{ runner.os }}-docker-cross-pi-${{ hashFiles('code/raspberry-pi-5/Dockerfile.cross') }}
           restore-keys: |
             ${{ runner.os }}-docker-cross-pi-
-            ${{ runner.os }}-docker-cross-pi-failed-
+            ${{ runner.os }}-failed-docker-cross-pi-
 
       - name: Log in to GHCR
         uses: docker/login-action@v2
@@ -87,14 +87,14 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-cross-pi-${{ hashFiles('code/raspberry-pi-5/Dockerfile.cross') }}
+          key: ${{ runner.os }}-docker-cross-pi-${{ github.run_number }}
 
       - name: Save Docker cache (failure)
         if: steps.docker-cross.outcome == 'failure'
         uses: actions/cache/save@v4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-cross-pi-failed-${{ hashFiles('code/raspberry-pi-5/Dockerfile.cross') }}
+          key: ${{ runner.os }}-failed-docker-cross-pi-${{ github.run_number }}
 
       - name: Fail job if Dockerfile.cross build failed
         if: steps.docker-cross.outcome == 'failure'
