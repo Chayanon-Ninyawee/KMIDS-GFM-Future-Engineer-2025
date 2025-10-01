@@ -318,6 +318,10 @@ int main() {
     lidar.shutdown();
     pico2.shutdown();
 
+    delete lidarLogger;
+    delete pico2Logger;
+    delete openChallengeLogger;
+
     std::cout << "[Main] Shutdown complete." << std::endl;
     return 0;
 }
