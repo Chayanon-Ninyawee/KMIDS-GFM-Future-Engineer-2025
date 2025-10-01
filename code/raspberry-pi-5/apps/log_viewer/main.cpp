@@ -180,6 +180,23 @@ int main(int argc, char **argv) {
 
     std::string folderPath = argv[1];
 
+    // Detect challenge type
+    bool isOpenChallenge = fs::exists(fs::path(folderPath) / "openChallenge.bin");
+    bool isScanMap = fs::exists(fs::path(folderPath) / "scanMap.bin");
+    bool isObstacleChallenge = fs::exists(fs::path(folderPath) / "obstacleChallenge.bin");
+
+    // Count how many challenge logs exist
+    int challengeCount = (isOpenChallenge ? 1 : 0) + (isScanMap ? 1 : 0) + (isObstacleChallenge ? 1 : 0);
+
+    if (challengeCount == 0) {
+        std::cerr << "Error: No challenge log file found in folder: " << folderPath << std::endl;
+        return 1;
+    }
+    if (challengeCount > 1) {
+        std::cerr << "Error: More than one challenge log file found in folder: " << folderPath << std::endl;
+        return 1;
+    }
+
     // Build file paths
     std::string lidarLogFile = (fs::path(folderPath) / "lidar.bin").string();
     std::string pico2File = (fs::path(folderPath) / "pico2.bin").string();
@@ -203,20 +220,74 @@ int main(int argc, char **argv) {
     }
     std::cout << "Loaded " << pico2Entries.size() << " Pico2 log entries." << std::endl;
 
-    std::vector<LogEntry> cameraEntries;  // declare here, always in scope
+    // ---- Camera (only for scanMap & obstacleChallenge) ----
+    std::vector<LogEntry> cameraEntries;
     bool hasCamera = false;
 
-    // ---- Camera (optional) ----
-    if (fs::exists(cameraLogFile)) {
-        LogReader cameraReader(cameraLogFile);
-        if (!cameraReader.readAll(cameraEntries)) {
-            std::cerr << "Failed to read Camera log file: " << cameraLogFile << std::endl;
+    if (!isOpenChallenge) {
+        if (fs::exists(cameraLogFile)) {
+            LogReader cameraReader(cameraLogFile);
+            if (!cameraReader.readAll(cameraEntries)) {
+                std::cerr << "Failed to read Camera log file: " << cameraLogFile << std::endl;
+                return 1;
+            }
+            std::cout << "Loaded " << cameraEntries.size() << " Camera log entries." << std::endl;
+            hasCamera = true;
+        } else {
+            std::cerr << "Expected camera log file, but not found: " << cameraLogFile << std::endl;
             return 1;
         }
-        std::cout << "Loaded " << cameraEntries.size() << " Camera log entries." << std::endl;
-        hasCamera = true;
     } else {
-        std::cout << "No camera log file found, skipping." << std::endl;
+        std::cout << "OpenChallenge detected → no camera log expected." << std::endl;
+    }
+
+    // ---- Main loop logs ----
+    std::vector<LogEntry> openChallengeEntries;
+    std::vector<LogEntry> scanMapEntries;
+    std::vector<LogEntry> obstacleChallengeEntries;
+
+    std::vector<std::chrono::steady_clock::time_point> loopTimestamps;
+
+    if (isOpenChallenge) {
+        LogReader openChallengeReader((fs::path(folderPath) / "openChallenge.bin").string());
+        if (!openChallengeReader.readAll(openChallengeEntries)) {
+            std::cerr << "Failed to read openChallenge log" << std::endl;
+            return 1;
+        }
+        std::cout << "Loaded " << openChallengeEntries.size() << " openChallenge entries." << std::endl;
+
+        for (const auto &entry : openChallengeEntries) {
+            auto tp = std::chrono::steady_clock::time_point(std::chrono::nanoseconds(entry.timestamp));
+            loopTimestamps.push_back(tp);
+        }
+    }
+
+    if (isScanMap) {
+        LogReader scanMapReader((fs::path(folderPath) / "scanMap.bin").string());
+        if (!scanMapReader.readAll(scanMapEntries)) {
+            std::cerr << "Failed to read scanMap log" << std::endl;
+            return 1;
+        }
+        std::cout << "Loaded " << scanMapEntries.size() << " scanMap entries." << std::endl;
+
+        for (const auto &entry : scanMapEntries) {
+            auto tp = std::chrono::steady_clock::time_point(std::chrono::nanoseconds(entry.timestamp));
+            loopTimestamps.push_back(tp);
+        }
+    }
+
+    if (isObstacleChallenge) {
+        LogReader obstacleChallengeReader((fs::path(folderPath) / "obstacleChallenge.bin").string());
+        if (!obstacleChallengeReader.readAll(obstacleChallengeEntries)) {
+            std::cerr << "Failed to read obstacleChallenge log" << std::endl;
+            return 1;
+        }
+        std::cout << "Loaded " << obstacleChallengeEntries.size() << " obstacleChallenge entries." << std::endl;
+
+        for (const auto &entry : obstacleChallengeEntries) {
+            auto tp = std::chrono::steady_clock::time_point(std::chrono::nanoseconds(entry.timestamp));
+            loopTimestamps.push_back(tp);
+        }
     }
 
     // Windows: only open Camera View if we have camera data
@@ -253,23 +324,21 @@ int main(int argc, char **argv) {
         return idx;
     };
 
-    // 1/30 s in nanoseconds
-    constexpr uint64_t stepNs = static_cast<uint64_t>(1e9 / 30.0);
-
-    // Current playback time starts at first lidar timestamp
-    uint64_t currentTime = lidarEntries.front().timestamp;
+    size_t currentTimeIdx = 0;
 
     while (true) {
         int key = cv::waitKey(0);
         if (key == 'q') break;  // ESC
 
         if (key == 'a') {  // left arrow
-            if (currentTime > stepNs) currentTime -= stepNs;
+            if (currentTimeIdx > 0) currentTimeIdx--;
         } else if (key == 'd') {  // right arrow
-            currentTime += stepNs;
+            if (currentTimeIdx < loopTimestamps.size() - 1) currentTimeIdx++;
         } else if (not(key == 'i' or key == 'c')) {
             continue;
         }
+        uint64_t currentTime =
+            std::chrono::duration_cast<std::chrono::nanoseconds>(loopTimestamps[currentTimeIdx].time_since_epoch()).count();
 
         // ---- LIDAR ----
         lidarIdx = findClosestIndex(lidarEntries, lidarIdx, currentTime);
