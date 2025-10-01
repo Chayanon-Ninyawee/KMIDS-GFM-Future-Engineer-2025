@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.0...v0.1.1) (2025-10-01)
+
+
+### CI/CD
+
+* Make cache key base on run number instead of hash since same Dockerfile can have difference cache ([137cafb](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/137cafbd318d167ce982e7589d4ed60951a38f6c))
+
 ## [0.1.0](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.0.2...v0.1.0) (2025-10-01)
 
 
