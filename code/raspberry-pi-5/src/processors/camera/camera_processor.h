@@ -8,17 +8,17 @@ namespace camera_processor
 {
 
 // ------------------------ Color Ranges (HSV) ------------------------
-const cv::Scalar lowerRed1Light(0, 190, 160);
-const cv::Scalar upperRed1Light(1, 242, 255);
+const cv::Scalar lowerRed1Light(0, 160, 170);
+const cv::Scalar upperRed1Light(1, 230, 255);
 // If a second red range is required
-const cv::Scalar lowerRed2Light(173, 190, 160);
-const cv::Scalar upperRed2Light(180, 242, 255);
+const cv::Scalar lowerRed2Light(172, 160, 170);
+const cv::Scalar upperRed2Light(180, 230, 255);
 
-const cv::Scalar lowerGreen1Light(54, 140, 90);
-const cv::Scalar upperGreen1Light(71, 230, 180);
+const cv::Scalar lowerGreen1Light(49, 140, 100);
+const cv::Scalar upperGreen1Light(75, 230, 160);
 // If a second green range is required
-const cv::Scalar lowerGreen2Light(71, 230, 180);
-const cv::Scalar upperGreen2Light(71, 230, 180);
+const cv::Scalar lowerGreen2Light(75, 230, 180);
+const cv::Scalar upperGreen2Light(75, 230, 180);
 
 const cv::Scalar lowerPink1Light(165, 244, 200);
 const cv::Scalar upperPink1Light(171, 255, 255);
