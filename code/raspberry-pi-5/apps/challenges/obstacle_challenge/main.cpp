@@ -27,7 +27,7 @@ const int BUTTON_PIN = 16;
 
 const uint32_t camWidth = 1296;
 const uint32_t camHeight = 972;
-const float camHFov = 100.0f;
+const float camHFov = 110.0f;
 
 const float TARGET_OUTER_WALL_DISTANCE = 0.50;
 const float TARGET_OUTER_WALL_OUTER1_DISTANCE = 0.43;
@@ -1109,7 +1109,7 @@ int main() {
         cam.options->framerate = 30.0f;
 
         camControls.set(controls::AnalogueGainMode, controls::AnalogueGainModeEnum::AnalogueGainModeManual);
-        camControls.set(controls::ExposureTimeMode, controls::ExposureTimeModeEnum::ExposureTimeModeAuto);
+        camControls.set(controls::ExposureTimeMode, controls::ExposureTimeModeEnum::ExposureTimeModeManual);
         camControls.set(controls::AwbEnable, false);
 
         cam.options->awb_gain_r = 0.90;
@@ -1120,6 +1120,7 @@ int main() {
         cam.options->saturation = 1.5;
         cam.options->contrast = 1;
         cam.options->gain = 5;
+        cam.options->shutter = 30000;
     };
     CameraModule camera(cameraLogger, cameraOptionCallback);
     if (!camera.start()) return -1;

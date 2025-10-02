@@ -282,7 +282,7 @@ int main() {
         cam.options->framerate = 30.0f;
 
         camControls.set(controls::AnalogueGainMode, controls::AnalogueGainModeEnum::AnalogueGainModeManual);
-        camControls.set(controls::ExposureTimeMode, controls::ExposureTimeModeEnum::ExposureTimeModeAuto);
+        camControls.set(controls::ExposureTimeMode, controls::ExposureTimeModeEnum::ExposureTimeModeManual);
         camControls.set(controls::AwbEnable, false);
 
         cam.options->awb_gain_r = 0.90;
@@ -293,6 +293,7 @@ int main() {
         cam.options->saturation = 1.5;
         cam.options->contrast = 1;
         cam.options->gain = 5;
+        cam.options->shutter = 30000;
     };
     CameraModule camera(cameraLogger, cameraOptionCallback);
     if (!camera.start()) return -1;
