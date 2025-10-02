@@ -1066,19 +1066,19 @@ ______________________________________________________________________
 
 The FreeCAD files can be found [here](./FreeCAD-Files)
   
-### 9.1.1 Chassis & Core Structure
+#### 9.1.1 Chassis & Core Structure
 
 - [`Chassis_1x.stl`](FreeCAD-Files/Assembly/mesh_export/Chassis_1x.stl)
 - [`FrontCover_1x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontCover_1x.stl)
 - [`AxleHolder_3x.stl`](FreeCAD-Files/Assembly/mesh_export/AxleHolder_3x.stl)
 
-### 9.1.2 Motor & Transmission
+#### 9.1.2 Motor & Transmission
 
 - [`MotorGear_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorGear_1x.stl)
 - [`MotorHolder_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorHolder_1x.stl)
 - [`MotorPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorPlate_1x.stl)
 
-### 9.1.3 Wheel & Axle Components
+#### 9.1.3 Wheel & Axle Components
 
 - [`BackWheelAxle_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelAxle_2x.stl)
 - [`BackWheelConnector_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelConnector_2x.stl)
@@ -1087,7 +1087,7 @@ The FreeCAD files can be found [here](./FreeCAD-Files)
 - [`FrontWheelAxleRight_1x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontWheelAxleRight_1x.stl)
 - [`FrontWheelStopper_2x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontWheelStopper_2x.stl)
 
-### 9.1.4 Steering Linkages
+#### 9.1.4 Steering Linkages
 
 - [`TBoneLinkageBottom_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TBoneLinkageBottom_1x.stl)
 - [`TBoneLinkageTop_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TBoneLinkageTop_1x.stl)
@@ -1098,18 +1098,18 @@ The FreeCAD files can be found [here](./FreeCAD-Files)
 - [`WheelLinkageTopLeft_1x.stl`](FreeCAD-Files/Assembly/mesh_export/WheelLinkageTopLeft_1x.stl)
 - [`WheelLinkageTopRight_1x.stl`](FreeCAD-Files/Assembly/mesh_export/WheelLinkageTopRight_1x.stl)
 
-### 9.1.5 Miscellaneous
+#### 9.1.5 Miscellaneous
 
 - [`LidarPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/LidarPlate_1x.stl)
 
   
 
 
-### 9.2 Slicer Files
+#### 9.2 Slicer Files
 
 Slicer files for both printers can be found [here](./Slicer-Files)
 
-### 9.2.1 Chassis & Core Structure
+#### 9.2.1 Chassis & Core Structure
 
 - [`Main chassis`](Slicer-Files/Bambu_Lab_P1S_(Bambu_Slicer)/Chassis_1x.3mf)
 
@@ -1118,12 +1118,12 @@ Slicer files for both printers can be found [here](./Slicer-Files)
 - [`Motor plate`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_MotorPlate_1x.gcode)
 - [`Lidar plate`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_LidarPlate_1x.gcode)
   
-### 9.2.2 Motor & Gear Components
+#### 9.2.2 Motor & Gear Components
 
 - [`Motor Gear`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_MotorGear_1x.gcode)
 - [`Motor holder`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_AxleHolder_MotorHolder.gcode)
 
-### 9.2.3 Steering & Linkages
+#### 9.2.3 Steering & Linkages
 
 - [`Linkages`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_Linkages.gcode)
 
