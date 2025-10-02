@@ -1107,7 +1107,7 @@ The FreeCAD files can be found [here](./FreeCAD-Files)
 
 #### 9.2 Slicer Files
 
-Slicer files for both printers can be found [here](./Slicer-Files)
+Slicer files in .gcode format, which include the settings for both printers, can be found [here](./Slicer-Files)
 
 #### 9.2.1 Chassis & Core Structure
 
