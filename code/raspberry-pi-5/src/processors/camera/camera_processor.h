@@ -131,7 +131,7 @@ struct BlockAngle {
  *
  * @param masks       The ColorMasks containing red and green contour data.
  * @param imageWidth  The width of the camera image in pixels. Default is 1296.
- * @param hfov        The horizontal field of view of the camera in degrees. Default is 100.0f.
+ * @param hfov        The horizontal field of view of the camera in degrees. Default is 110.0f.
  *
  * @return std::vector<BlockAngle> A vector of BlockAngle structs, each containing:
  *         - angle: Horizontal angle of the block in radians.
@@ -143,6 +143,6 @@ struct BlockAngle {
  *       to determine the block's horizontal angle and does not compute
  *       vertical angles.
  */
-std::vector<BlockAngle> computeBlockAngles(const ColorMasks &masks, int imageWidth = 1296, float hfov = 100.0f);
+std::vector<BlockAngle> computeBlockAngles(const ColorMasks &masks, int imageWidth = 1296, float hfov = 110.0f);
 
 }  // namespace camera_processor

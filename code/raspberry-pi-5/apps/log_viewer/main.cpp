@@ -15,7 +15,7 @@ namespace fs = std::filesystem;
 
 const uint32_t camWidth = 1296;
 const uint32_t camHeight = 972;
-const float camHFov = 104.0f;
+const float camHFov = 110.0f;
 
 std::vector<cv::Point> polygonPoints;
 bool selectMode = false;
