@@ -318,7 +318,7 @@ std::vector<LineSegment> getLines(
         // TODO: Change this value to fit the actual robot
         if (node.distance < 0.005) continue;
         if (node.distance > 3.200) continue;
-        if (node.angle > 5 && node.angle < 175 && node.distance > 0.700) continue;
+        if ((node.angle > 340 || node.angle < 200) && node.distance > 0.700) continue;
 
         float rad = node.angle * static_cast<float>(M_PI) / 180.0f;
 
