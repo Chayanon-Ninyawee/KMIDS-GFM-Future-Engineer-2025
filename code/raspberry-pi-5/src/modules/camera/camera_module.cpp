@@ -25,6 +25,7 @@ void CameraModule::changeSetting(CameraOptionCallback callback) {
               << "cam.options->saturation = " << cam_.options->saturation << ";\n"
               << "cam.options->contrast = " << cam_.options->contrast << ";\n"
               << "cam.options->gain = " << cam_.options->gain << ";\n"
+              << "cam.options->shutter = " << cam_.options->shutter << ";\n"
               << std::endl;
 
     start();
