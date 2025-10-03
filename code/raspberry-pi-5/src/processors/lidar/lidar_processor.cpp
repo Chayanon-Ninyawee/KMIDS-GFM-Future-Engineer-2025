@@ -587,6 +587,7 @@ std::vector<LineSegment> getParkingWalls(
 std::vector<cv::Point2f> getTrafficLightPoints(
     const TimedLidarData &timedLidarData,
     const ResolvedWalls &resolveWalls,
+    const RobotDeltaPose &robotDeltaPose,
     std::optional<RotationDirection> turnDirection,
     float distanceThreshold,
     size_t minClusterSize
@@ -695,6 +696,20 @@ std::vector<cv::Point2f> getTrafficLightPoints(
             }
             averages.emplace_back(sumX / currentCluster.size(), sumY / currentCluster.size());
         }
+    }
+
+    float radH = robotDeltaPose.deltaH * static_cast<float>(M_PI) / 180.0f;
+    float cosH = std::cos(radH);
+    float sinH = std::sin(radH);
+
+    for (auto &pt : averages) {
+        // Translate
+        float xt = pt.x - robotDeltaPose.deltaX;
+        float yt = pt.y - robotDeltaPose.deltaY;
+
+        // Rotate around (0,0)
+        pt.x = xt * cosH - yt * sinH;
+        pt.y = xt * sinH + yt * cosH;
     }
 
     return averages;

@@ -207,6 +207,7 @@ std::vector<LineSegment> getParkingWalls(
 std::vector<cv::Point2f> getTrafficLightPoints(
     const TimedLidarData &timedLidarData,
     const ResolvedWalls &resolveWalls,
+    const RobotDeltaPose &robotDeltaPose,
     std::optional<RotationDirection> turnDirection,
     float distanceThreshold = 0.05f,
     size_t minClusterSize = 10
