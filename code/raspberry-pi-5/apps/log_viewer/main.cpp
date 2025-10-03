@@ -434,7 +434,7 @@ int main(int argc, char **argv) {
 
         auto resolveWalls = lidar_processor::resolveWalls(relativeWalls);
         auto parkingWalls = lidar_processor::getParkingWalls(lineSegments, Direction::fromHeading(heading), heading, 0.25f);
-        auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, robotTurnDirection);
+        auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, deltaPose, robotTurnDirection);
 
         auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints, deltaPose);
 
