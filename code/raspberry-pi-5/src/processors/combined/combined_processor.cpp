@@ -93,50 +93,83 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
     const std::vector<camera_processor::BlockAngle> &blockAngles,
     const std::vector<cv::Point2f> &lidarPoints,
     cv::Point2f cameraOffset,
-    float maxAngleDiff
+    float trafficLightRadius
 ) {
     std::vector<TrafficLightInfo> trafficLightInfos;
     std::vector<cv::Point2f> avaliableLidarPoints = lidarPoints;
 
+    // ---- Helper: ray-circle intersection ----
+    auto rayCircleIntersect =
+        [](const cv::Point2f &rayOrigin, const cv::Point2f &rayDir, const cv::Point2f &circleCenter, float radius, float &tHit) -> bool {
+        cv::Point2f oc = rayOrigin - circleCenter;
+        float b = 2.0f * (oc.x * rayDir.x + oc.y * rayDir.y);
+        float c = oc.x * oc.x + oc.y * oc.y - radius * radius;
+        float disc = b * b - 4 * c;
+        if (disc < 0) return false;
+
+        float sqrtDisc = std::sqrt(disc);
+        float t1 = (-b - sqrtDisc) * 0.5f;
+        float t2 = (-b + sqrtDisc) * 0.5f;
+
+        if (t1 >= 0) {
+            tHit = t1;
+            return true;
+        }
+        if (t2 >= 0) {
+            tHit = t2;
+            return true;
+        }
+        return false;
+    };
+
+    // ---- Track which lidar points were hit, and by what colors ----
+    std::unordered_map<size_t, std::vector<camera_processor::BlockAngle>> lidarHits;
+
     for (const auto &block : blockAngles) {
+        float rayAngle = (90.0f - block.angle) * static_cast<float>(M_PI) / 180.0f;
+        cv::Point2f rayDir{std::cos(rayAngle), std::sin(rayAngle)};
+
         size_t bestIndex = std::numeric_limits<size_t>::max();
-        float smallestDiff = std::numeric_limits<float>::max();
-        float closestDistance = std::numeric_limits<float>::max();
+        float bestTHit = std::numeric_limits<float>::max();
 
-        // Loop over all available LiDAR points
         for (size_t i = 0; i < avaliableLidarPoints.size(); ++i) {
-            const auto &lp = avaliableLidarPoints[i];
-            float dx = lp.x - cameraOffset.x;
-            float dy = lp.y - cameraOffset.y;
-
-            float lidarAngle = std::atan2(dy, dx);  // radians
-            float lidarAngleDeg = lidarAngle * 180.0f / M_PI;
-
-            float angleDiff = std::abs(90.0f - block.angle - lidarAngleDeg);
-
-            // Distance of LiDAR point from origin (0,0)
-            float originDistance = std::sqrt(lp.x * lp.x + lp.y * lp.y);
-
-            // Scale tolerance: closer points allow bigger angleDiff, farther ones stricter
-            // Example: tolerance shrinks like 1/originDistance
-            float dynamicMaxAngleDiff = maxAngleDiff / (1.0f + originDistance * 2.0f);
-
-            // If angle difference within distance-scaled tolerance
-            if (angleDiff <= dynamicMaxAngleDiff) {
-                float distanceAlongRay = std::sqrt(dx * dx + dy * dy);  // distance from camera to LiDAR point
-
-                // Pick the closest along the ray (smallest distance)
-                if (distanceAlongRay < closestDistance || angleDiff < smallestDiff) {
-                    closestDistance = distanceAlongRay;
-                    smallestDiff = angleDiff;
+            float tHit;
+            if (rayCircleIntersect(cameraOffset, rayDir, avaliableLidarPoints[i], trafficLightRadius, tHit)) {
+                if (tHit < bestTHit) {  // keep the nearest intersection
+                    bestTHit = tHit;
                     bestIndex = i;
                 }
             }
         }
 
         if (bestIndex != std::numeric_limits<size_t>::max()) {
-            trafficLightInfos.push_back(TrafficLightInfo{avaliableLidarPoints[bestIndex], block});
-            avaliableLidarPoints.erase(avaliableLidarPoints.begin() + bestIndex);  // consume
+            // only record the closest hit for this ray
+            lidarHits[bestIndex].push_back(block);
+        }
+    }
+
+    // ---- Conflict resolution: discard if multiple colors hit the same point ----
+    for (auto &kv : lidarHits) {
+        auto &blocks = kv.second;
+        bool conflict = false;
+
+        camera_processor::Color firstColor = blocks[0].color;
+        for (auto &b : blocks) {
+            if (b.color != firstColor) {
+                conflict = true;
+                break;
+            }
+        }
+
+        if (!conflict) {
+            cv::Point2f rel = lidarPoints[kv.first] - cameraOffset;
+            float angle = 90.0f - (std::atan2(rel.y, rel.x) * 180.0f / static_cast<float>(M_PI));
+
+            if (angle >= -54.0f && angle <= 54.0f) {
+                for (auto &b : blocks) {
+                    trafficLightInfos.push_back(TrafficLightInfo{lidarPoints[kv.first], b});
+                }
+            }
         }
     }
 
