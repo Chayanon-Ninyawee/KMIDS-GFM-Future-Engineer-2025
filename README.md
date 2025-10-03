@@ -1151,10 +1151,11 @@ The recommended settings we used for the robot are as follows:
 
 ### **Step 1: Assemble the steering system**
 1.	At the front, combine the wheel linkage by connecting the wheel axle and steering linkage between the two wheel linkages 
-2.	Connect the T-bone linkages to the steering linkage 
-3.	Mount the front plate on the chassis, while securing the wheel linkage in between the chassis and front plate using 2x M3 screws.
-4.	Attach the servo to the front plate using 2x M1.6 screws, ensuring it fits into the T bone linkage.
-5.	Fix the wheels in place using the wheel stoppers, securing them using 3x M3 screws on each side.
+2.	Attach the steering linkage to the T-bone linkage.
+3.	Glue the two T-bone linkage parts together using glue.
+4.	Mount the front plate on the chassis, while securing the wheel linkage in between the chassis and front plate using 2x M3 screws.
+5.	Attach the servo to the front plate using 2x M1.6 screws, using glue to attach the shaft to the T-bone linkage below.
+6.	Fix the wheels in place using the wheel stoppers, securing them using 3x M3 screws on each side.
 
 
 
