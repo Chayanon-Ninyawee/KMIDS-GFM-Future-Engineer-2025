@@ -77,7 +77,8 @@ int main() {
 
                     auto parkingWalls =
                         lidar_processor::getParkingWalls(lineSegmentsForParking, Direction::fromHeading(heading), heading, 0.30f);
-                    auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, robotTurnDirection);
+                    auto trafficLightPoints =
+                        lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, {0.0f, 0.0f, 0.0f}, robotTurnDirection);
 
                     const float SCALE = 6.0f;
 
