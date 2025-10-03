@@ -71,7 +71,6 @@ struct TrafficLightInfo {
 std::vector<TrafficLightInfo> combineTrafficLightInfo(
     const std::vector<camera_processor::BlockAngle> &blockAngles,
     const std::vector<cv::Point2f> &lidarPoints,
-    const RobotDeltaPose &robotDeltaPose,
     cv::Point2f cameraOffset = {0.0f, 0.15f},
     float maxAngleDiff = 6.0f
 );

@@ -156,12 +156,12 @@ void update(
         if (newRobotTurnDirection) state.robotTurnDirection = newRobotTurnDirection;
     }
 
-    auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, state.robotTurnDirection);
+    auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, deltaPose, state.robotTurnDirection);
 
     auto colorMasks = camera_processor::filterColors(timedFrame);
     auto blockAngles = camera_processor::computeBlockAngles(colorMasks, camWidth, camHFov);
 
-    auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints, deltaPose);
+    auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints);
 
     auto frontWall = resolveWalls.frontWall;
     auto backWall = resolveWalls.backWall;

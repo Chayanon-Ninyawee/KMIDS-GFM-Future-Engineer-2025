@@ -117,12 +117,13 @@ int main() {
 
             auto resolveWalls = lidar_processor::resolveWalls(relativeWalls);
             auto parkingWalls = lidar_processor::getParkingWalls(lineSegments, Direction::fromHeading(heading), heading, 0.25f);
-            auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, robotTurnDirection);
+            auto trafficLightPoints =
+                lidar_processor::getTrafficLightPoints(filteredLidarData, resolveWalls, {0.0f, 0.0f, 0.0f}, robotTurnDirection);
 
             auto colorMasks = camera_processor::filterColors(timedFrame);
             auto blockAngles = camera_processor::computeBlockAngles(colorMasks, camWidth, camHFov);
 
-            auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints, {0.0f, 0.0f, 0.0f});
+            auto trafficLightInfos = combined_processor::combineTrafficLightInfo(blockAngles, trafficLightPoints);
 
             const float SCALE = 6.0f;
 
