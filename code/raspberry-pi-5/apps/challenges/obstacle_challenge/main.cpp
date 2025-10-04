@@ -34,14 +34,14 @@ const float TARGET_OUTER_WALL_OUTER1_DISTANCE = 0.43;
 const float TARGET_OUTER_WALL_OUTER2_DISTANCE = 0.25;
 const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62;
 const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.78;
-const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.30f;
+const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.29f;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CW = 0.32f;
 const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE = 0.85f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
 const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 
-const float TURNING_FRONT_WALL_DISTANCE = 0.95f;
+const float TURNING_FRONT_WALL_DISTANCE = 0.80f;
 const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.70f;
 const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.50f;
 const float TURNING_FRONT_WALL_INNER1_DISTANCE = 1.08f;
@@ -85,8 +85,8 @@ enum Mode
 };
 
 struct State {
-    PIDController headingPid{3.0f, 0.0, 0.0f};
-    PIDController wallPid{180.0f, 0.0, 0.0f};
+    PIDController headingPid{3.0f, 0.0f, 0.0f};
+    PIDController wallPid{180.0f, 0.0f, 0.0f};
 
     std::map<std::pair<Segment, SegmentLocation>, std::vector<combined_processor::ClassifiedTrafficLight>> detectionHistory;
     std::map<std::pair<Segment, SegmentLocation>, combined_processor::ClassifiedTrafficLight> trafficLightMap;
@@ -246,6 +246,9 @@ void update(
             );
 
             for (const auto &cl : classifiedLights) {
+                // Starting section can't have outer wall
+                if (cl.location.segment == Segment::A and cl.location.side == WallSide::OUTER) continue;
+
                 std::pair<Segment, SegmentLocation> key = {cl.location.segment, cl.location.location};
 
                 // Append to detection history
