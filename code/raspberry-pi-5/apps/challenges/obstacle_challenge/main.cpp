@@ -169,54 +169,54 @@ void update(
     std::optional<lidar_processor::LineSegment> outerWall;
     std::optional<lidar_processor::LineSegment> innerWall;
 
-    state.trafficLightMap[{Segment::A, SegmentLocation::C}] = {
-        {
-            // TrafficLightInfo
-            {},                                      // lidarPosition left default
-            {.color = camera_processor::Color::RED}  // only set color
-        },
-        {Segment::A, SegmentLocation::C, WallSide::INNER}
-    };
-    state.trafficLightMap[{Segment::D, SegmentLocation::C}] = {
-        {
-            // TrafficLightInfo
-            {},                                        // lidarPosition left default
-            {.color = camera_processor::Color::GREEN}  // only set color
-        },
-        {Segment::D, SegmentLocation::C, WallSide::INNER}
-    };
-    state.trafficLightMap[{Segment::D, SegmentLocation::A}] = {
-        {
-            // TrafficLightInfo
-            {},                                      // lidarPosition left default
-            {.color = camera_processor::Color::RED}  // only set color
-        },
-        {Segment::D, SegmentLocation::A, WallSide::OUTER}
-    };
-    state.trafficLightMap[{Segment::C, SegmentLocation::B}] = {
-        {
-            // TrafficLightInfo
-            {},                                        // lidarPosition left default
-            {.color = camera_processor::Color::GREEN}  // only set color
-        },
-        {Segment::C, SegmentLocation::B, WallSide::INNER}
-    };
-    state.trafficLightMap[{Segment::B, SegmentLocation::C}] = {
-        {
-            // TrafficLightInfo
-            {},                                      // lidarPosition left default
-            {.color = camera_processor::Color::RED}  // only set color
-        },
-        {Segment::B, SegmentLocation::C, WallSide::INNER}
-    };
-    state.trafficLightMap[{Segment::B, SegmentLocation::A}] = {
-        {
-            // TrafficLightInfo
-            {},                                        // lidarPosition left default
-            {.color = camera_processor::Color::GREEN}  // only set color
-        },
-        {Segment::B, SegmentLocation::A, WallSide::OUTER}
-    };
+    // state.trafficLightMap[{Segment::A, SegmentLocation::C}] = {
+    //     {
+    //         // TrafficLightInfo
+    //         {},                                      // lidarPosition left default
+    //         {.color = camera_processor::Color::RED}  // only set color
+    //     },
+    //     {Segment::A, SegmentLocation::C, WallSide::INNER}
+    // };
+    // state.trafficLightMap[{Segment::D, SegmentLocation::C}] = {
+    //     {
+    //         // TrafficLightInfo
+    //         {},                                        // lidarPosition left default
+    //         {.color = camera_processor::Color::GREEN}  // only set color
+    //     },
+    //     {Segment::D, SegmentLocation::C, WallSide::INNER}
+    // };
+    // state.trafficLightMap[{Segment::D, SegmentLocation::A}] = {
+    //     {
+    //         // TrafficLightInfo
+    //         {},                                      // lidarPosition left default
+    //         {.color = camera_processor::Color::RED}  // only set color
+    //     },
+    //     {Segment::D, SegmentLocation::A, WallSide::OUTER}
+    // };
+    // state.trafficLightMap[{Segment::C, SegmentLocation::B}] = {
+    //     {
+    //         // TrafficLightInfo
+    //         {},                                        // lidarPosition left default
+    //         {.color = camera_processor::Color::GREEN}  // only set color
+    //     },
+    //     {Segment::C, SegmentLocation::B, WallSide::INNER}
+    // };
+    // state.trafficLightMap[{Segment::B, SegmentLocation::C}] = {
+    //     {
+    //         // TrafficLightInfo
+    //         {},                                      // lidarPosition left default
+    //         {.color = camera_processor::Color::RED}  // only set color
+    //     },
+    //     {Segment::B, SegmentLocation::C, WallSide::INNER}
+    // };
+    // state.trafficLightMap[{Segment::B, SegmentLocation::A}] = {
+    //     {
+    //         // TrafficLightInfo
+    //         {},                                        // lidarPosition left default
+    //         {.color = camera_processor::Color::GREEN}  // only set color
+    //     },
+    //     {Segment::B, SegmentLocation::A, WallSide::OUTER}
+    // };
 
     if (state.robotTurnDirection) {
         if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
@@ -237,7 +237,7 @@ void update(
 
         // std::cout << "test: " << std::abs(diff / timeDiff) << std::endl;
 
-        if (state.robotMode != Mode::TURNING and std::abs(diff / timeDiff) < 0.000000015f and false) {
+        if (state.robotMode != Mode::TURNING) {
             auto classifiedLights = combined_processor::classifyTrafficLights(
                 trafficLightInfos,
                 resolveWalls,
@@ -295,29 +295,29 @@ void update(
                 }
             }
         }
-        // std::cout << "Traffic Light Map contents:\n";
-        // for (const auto &entry : state.trafficLightMap) {
-        //     const auto &cl = entry.second;
+        std::cout << "Traffic Light Map contents:\n";
+        for (const auto &entry : state.trafficLightMap) {
+            const auto &cl = entry.second;
 
-        //     std::string colorStr;
-        //     switch (cl.info.cameraBlock.color) {
-        //     case camera_processor::Color::RED:
-        //         colorStr = "RED";
-        //         break;
-        //     case camera_processor::Color::GREEN:
-        //         colorStr = "GREEN";
-        //         break;
-        //     default:
-        //         colorStr = "UNKNOWN";
-        //         break;
-        //     }
+            std::string colorStr;
+            switch (cl.info.cameraBlock.color) {
+            case camera_processor::Color::RED:
+                colorStr = "RED";
+                break;
+            case camera_processor::Color::GREEN:
+                colorStr = "GREEN";
+                break;
+            default:
+                colorStr = "UNKNOWN";
+                break;
+            }
 
-        //     std::cout << "Traffic Light (" << colorStr << ") at LiDAR position (" << cl.info.lidarPosition.x << ", "
-        //               << cl.info.lidarPosition.y << ")"
-        //               << " mapped to Segment " << static_cast<int>(cl.location.segment) << ", Location "
-        //               << static_cast<int>(cl.location.location) << ", WallSide "
-        //               << (cl.location.side == WallSide::INNER ? "INNER" : "OUTER") << std::endl;
-        // }
+            std::cout << "Traffic Light (" << colorStr << ") at LiDAR position (" << cl.info.lidarPosition.x << ", "
+                      << cl.info.lidarPosition.y << ")"
+                      << " mapped to Segment " << static_cast<int>(cl.location.segment) << ", Location "
+                      << static_cast<int>(cl.location.location) << ", WallSide "
+                      << (cl.location.side == WallSide::INNER ? "INNER" : "OUTER") << std::endl;
+        }
     }
 
     bool pidWallErrorActive = true;
@@ -1056,6 +1056,7 @@ instant_update:
             headingError += headingErrorOffset;
         }
     }
+    if (outMotorSpeed < 0) headingError = -headingError;
 
     outSteeringPercent = state.headingPid.update(headingError, dt);
 
