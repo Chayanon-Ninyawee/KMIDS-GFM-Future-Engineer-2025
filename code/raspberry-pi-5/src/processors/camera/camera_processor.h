@@ -11,14 +11,14 @@ namespace camera_processor
 const cv::Scalar lowerRed1Light(0, 110, 170);
 const cv::Scalar upperRed1Light(1, 230, 255);
 // If a second red range is required
-const cv::Scalar lowerRed2Light(175, 110, 170);
+const cv::Scalar lowerRed2Light(166, 70, 170);
 const cv::Scalar upperRed2Light(180, 230, 255);
 
 const cv::Scalar lowerGreen1Light(45, 110, 120);
-const cv::Scalar upperGreen1Light(76, 230, 200);
+const cv::Scalar upperGreen1Light(85, 230, 200);
 // If a second green range is required
-const cv::Scalar lowerGreen2Light(76, 230, 200);
-const cv::Scalar upperGreen2Light(76, 230, 200);
+const cv::Scalar lowerGreen2Light(85, 230, 200);
+const cv::Scalar upperGreen2Light(85, 230, 200);
 
 const cv::Scalar lowerPink1Light(165, 244, 200);
 const cv::Scalar upperPink1Light(171, 255, 255);
