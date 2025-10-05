@@ -58,7 +58,7 @@ ______________________________________________________________________
 - [10. Building Instructions](#10-building-instructions)
   - [**Step 0: Print the 3D parts**](#step-0-print-the-3d-parts)
   - [**Step 1: Assemble the steering system**](#step-1-assemble-the-steering-system)
-  - [**Step 2: Assemble the powertrain**](#step-2-assemble-the-powertrain)
+  - [**Step 2: Assemble the drivetrain**](#step-2-assemble-the-drivetrain)
   - [**Step 3: Mount electronics**](#step-3-mount-electronics)
   - [**Step 4: Upload the software**](#step-4-upload-the-software)
 - [11. Extra Documentation](#11-extra-documentation)
@@ -75,7 +75,7 @@ Team KMIDS-GFM was inspired by the challenge of applying engineering principles 
 
 Our goal is to design and build a reliable and efficient system that demonstrates our technical and collaborative skills while serving as a learning experience. We followed a systematic process, including brainstorming, researching, prototyping, testing, and iterating. We maintained detailed documentation to facilitate knowledge sharing and ensure a smoother workflow throughout the project.
 
-Our robot is engineered using a custom modular chassis in a rear-wheel drive configuration, controlled using a Raspberry Pi 5 and a Raspberry Pi Pico 2. It utilises a combination of an LIDAR sensor and a fish-eye lens camera to provide an advanced system for obstacle detection and navigation.
+Our robot is engineered using a custom modular chassis in a rear-wheel drive configuration, controlled using a Raspberry Pi 5 and a Raspberry Pi Pico 2. It utilizes a combination of an LIDAR sensor and a fish-eye lens camera to provide an advanced system for obstacle detection and navigation.
 
 Our objective is to create an intelligent robot that is capable of navigating through obstacles with pinpoint precision and speed.
 
@@ -114,7 +114,7 @@ ______________________________________________________________________
 - Provides moderate torque that is more than enough for the flat arena.
 - Easy to use on the robot and integrate with other parts.
 
-The N20 motor is equipped with an encoder to provide precise motion feedback, ensuring the robot’s movements are accurate. The motor drives the rear wheels through a LEGO differential gear system, which allows the robot to maintain smooth and balanced turns even at higher speeds. By distributing torque between the two wheels, the differential minimises wheel slip and ensures stability during sharp manoeuvres.
+The N20 motor is equipped with an encoder to provide precise motion feedback, ensuring the robot’s movements are accurate. The motor drives the rear wheels through a LEGO differential gear system, which allows the robot to maintain smooth and balanced turns even at higher speeds. By distributing torque between the two wheels, the differential minimizes wheel slip and ensures stability during sharp maneuvers.
 The integration of encoders with the N20 motors provides real-time feedback for closed-loop control, enabling precise speed regulation and consistent lap performance. Although the torque of the N20 is modest, the combination with the differential gear makes it well-suited for the flat and predictable competition arena, striking a balance between efficiency, stability, and mechanical simplicity.
 
 **Mounting:**
@@ -131,13 +131,13 @@ To reach a faster speed, we can upgrade the N20 motor to the N30, which is the e
 
 ### 2.2 Steering
 
-We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behaviour of real-world vehicles. Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
+We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behavior of real-world vehicles. Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
 
 The fundamental principle of Ackermann geometry involves positioning the steering linkage so that a line drawn through both front wheels intersects the rear axle of the robot.
 
 <img src="./docs/resources/ackermann_steering.png">
 
-While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking, where precise control and minimized turning radius are essential. It enables smoother manoeuvring and accurate alignment in narrower spaces.
+While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking, where precise control and minimized turning radius are essential. It enables smoother maneuvering and accurate alignment in narrower spaces.
 
 Our implementation comes in the form of a custom 3D-printed Ackermann steering mechanism. Using CAD allowed us to experiment with different pivot points and steering angles iteratively. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behavior iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes until it suits our desired behavior.
 
@@ -301,9 +301,9 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 - Detect and differentiate wall positions.
 
-- Identify pillar colours and types.
+- Identify pillar colors and types.
 
-- Recognise parking zones.
+- Recognize parking zones.
 
 - Track path lines and boundaries.
 
@@ -364,7 +364,7 @@ ______________________________________________________________________
 There are two challenges in this competition:
 
 - The **open challenge** involves the robot completing three full laps around the field without touching the wall. The size of each side of the field and the direction in which the car drives are randomised.
-- The **obstacle challenge** requires the robot to complete three laps whilst avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomised. After the third lap, the car must find the parking area and park in the area without touching the surrounding barriers around it.
+- The **obstacle challenge** requires the robot to complete three laps while avoiding the traffic signs. If the sign is red, then the robot must traverse on the right side and if the pillar is green, the robot must traverse on the left. The direction in which the car drives and the placement of the signs are randomised. After the third lap, the car must find the parking area and park in the area without touching the surrounding barriers around it.
 
 Our implementation relies heavily on the RPLIDAR S2 sensor and the fish-eye lens camera for continuous environment scanning, which helps the algorithm decide the movement of the robot.
 
@@ -539,8 +539,8 @@ The Obstacle Challenge requires the robot to navigate the arena while avoiding o
 
 1. **Filter camera colors**
 
-   - The camera frame is converted to HSV colour space.
-   - Thresholded for red, green, and pink colours.
+   - The camera frame is converted to HSV color space.
+   - Thresholded for red, green, and pink colors.
    - The top 50% of the frame is blacked out to reduce noise from the ceiling or irrelevant background.
    - Contours are extracted, and only those larger than the `areaThreshold` are kept.
 
@@ -847,10 +847,10 @@ ______________________________________________________________________
 
 **Design Overview**
 
-Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry while also allowing components to remain centred on the chassis.
+Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry while also allowing components to remain centerd on the chassis.
 
 **Layout**
-The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the centre for ease of wiring.
+The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the center for ease of wiring.
 
 Our robot chassis was completely custom-designed in FreeCAD and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture and less warping compared to ABS, while also being lightweight and durable. Alongside the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that were fine-tuned during testing to achieve the correct alignment with other components. Other components, such as motor clamps and sensor brackets, are designed as independent printable components. The chassis was also designed with modularity in mind for replacements and upgrades, with reduced overhangs for printing ease.
 
@@ -1016,7 +1016,7 @@ chmod +x build.sh
 
 5. Executables are generated in the `build/` directory according to the CMake output settings.
 
-\*\*Note: \*\* To make builds faster and reproducible, we compile the Raspberry Pi binaries on a development machine using Docker. This avoids the need to install heavy build tools on the Pi itself.
+**Note:** To make builds faster and reproducible, we compile the Raspberry Pi binaries on a development machine using Docker. This avoids the need to install heavy build tools on the Pi itself.
 
 We follow the method from [rolandsdev.blog](https://rolandsdev.blog/posts/cross-compile-for-raspberry-pi-with-docker/).
 
@@ -1182,11 +1182,11 @@ The recommended settings can be found in the .gcode files. The recommended setti
 1. Attach the servo to the front plate using 2x M1.6 screws, using glue to attach the shaft to the T-bone linkage below.
 1. Fix the wheels in place using the wheel stoppers, securing them using 3x M3 screws on each side.
 
-### **Step 2: Assemble the powertrain**
+### **Step 2: Assemble the drivetrain**
 
 1. Attach the rear wheel axles to the connector using 2x M3 screws,
 1. Place a LEGO differential gear in between the rear wheel chassis walls, and insert the connector into the chassis wall, securing it using the stopper and 2x M3 screws on each side.
-1. Place the \*\*N20 motor \*\* into the motor plate. Secure the motor with the motor clamp using 2x M3 screws.
+1. Place the N20 motor into the motor plate. Secure the motor with the motor clamp using 2x M3 screws.
 1. Attach the 3D printed gear to the motor and secure the motor plate onto the chassis using 4x M3 screws.
 1. Attach the wheels to the axles using 3x M3 screws on each side.
 
