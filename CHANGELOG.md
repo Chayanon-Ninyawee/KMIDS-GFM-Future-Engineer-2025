@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.2...v0.1.3) (2025-10-05)
+
+
+### CI/CD
+
+* Fix Build cross-compile image do not cache when it should ([3f68c11](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/3f68c11013e12e49cdb94c5bd05000874614d191))
+
 ## [0.1.2](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.1...v0.1.2) (2025-10-05)
 
 
