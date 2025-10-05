@@ -60,22 +60,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build cross-compile image
-        id: docker-cross
-        continue-on-error: true
-        working-directory: ./code/raspberry-pi-5
-        run: |
-          docker buildx build \
-            -f Dockerfile.cross \
-            --tag ghcr.io/chayanon-ninyawee/gfm-future-engineer-cross-pi:latest \
-            --cache-from=type=gha,scope=cross-pi \
-            --cache-to=type=gha,scope=cross-pi,mode=max \
-            --push \
-            .
-
-      - name: Fail job if Dockerfile.cross build failed
-        if: steps.docker-cross.outcome == 'failure'
-        run: exit 1
+      - name: Build and push cross-compile image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./code/raspberry-pi-5
+          file: ./code/raspberry-pi-5/Dockerfile.cross
+          push: true
+          tags: ghcr.io/chayanon-ninyawee/gfm-future-engineer-cross-pi:latest
+          cache-from: type=gha,scope=cross-pi
+          cache-to: type=gha,scope=cross-pi,mode=max
 
       - name: Build project with compile image
         working-directory: ./code/raspberry-pi-5
