@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.1.2](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.1...v0.1.2) (2025-10-05)
+
+
+### Bug Fixes
+
+* Fix obstacle challenge ([6cd3a1e](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/6cd3a1eddd2aa1fcef109c3c50347701d5c9c1c7))
+* Make combineTraffixLightInfo more robust by using ray tracing algorithm ([84aa4b0](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/84aa4b03220b330a2d8ca8bf174834a2eb74af3c))
+* Make getTrafficLightPoints get the deltaPose to properly transpose the trafficLight points according the the data from the IMU ([57aebce](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/57aebce9f154749343c2359b11b67e36225c9172))
+* Obstacle challenge: make sure that there can't be outer traffic light in the starting section ([f5242a5](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/f5242a5a48089b11e92739c514d174395cca1585))
+* Remove robotDeltaPose from combineTrafficLightInfo so that the trafficLight point does not get transpose twice ([2284e31](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/2284e31a812e0865ba4937bc75da7bd696f85abe))
+* Set camera exposure time to be manual instead of auto ([aaeec12](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/aaeec126056323174500699093fdaf2b48711646))
+
+
+### Miscellaneous Tasks
+
+* Change camera HSV color mask ([adaaf51](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/adaaf517eecb2de688a8c1f458a08094a0e837ec))
+* Change camera HSV color mask ([e4631d7](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/e4631d7abc60d150468c65d48974d6024d88ac3a))
+* Change lidar filter ([6862b26](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/6862b2691ffeb8af4e35f84e03b4115b26cbf7dc))
+
+
+### CI/CD
+
+* Restore the correct cache key ([1db539f](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/1db539f4f3351ac3896e31bbabdcd57d9fef8b79))
+* Use Docker BuildKit’s built-in GitHub Actions cache ([c04cd26](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/c04cd26f19d3944ed7b921046e18b6183fc745ff))
+
 ## [0.1.1](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.0...v0.1.1) (2025-10-01)
 
 
