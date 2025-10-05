@@ -999,6 +999,18 @@ chmod +x build.sh
 
 5. Executables are generated in the `build/` directory according to the CMake output settings.
 
+**Note: ** To make builds faster and reproducible, we compile the Raspberry Pi binaries on a development machine using Docker. This avoids the need to install heavy build tools on the Pi itself.
+
+We follow the method from [rolandsdev.blog](https://rolandsdev.blog/posts/cross-compile-for-raspberry-pi-with-docker/).
+
+---
+
+#### Prerequisites
+Docker (≥ 19.03.13) installed
+Docker buildx plugin (≥ v0.4.1)
+A Dockerfile.cross configured for Raspberry Pi ARM64 toolchain
+
+
 ______________________________________________________________________
 
 #### Raspberry Pi Pico 2 Build & Upload
