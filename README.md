@@ -1165,6 +1165,40 @@ Before assembly, prepare the components listed above and print the 3D parts.
 **[Chassis](<Slicer-Files/Bambu_Lab_P1S_(Bambu_Slicer)/gcode-files>) - Bambu Lab P1S**
 
 **[Parts](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files>) - Creality Ender 3 V3 KE**
+
+<details>
+
+<summary> 
+After printing, you should have these parts:
+</summary>
+
+| Part Name                    | Quantity |
+|------------------------------|-----------|
+| Axle Holder                  | 3         |
+| Back Wheel Axle              | 2         |
+| Back Wheel Connector         | 2         |
+| Back Wheel Stopper           | 2         |
+| Chassis                      | 1         |
+| Front Cover                  | 1         |
+| Front Wheel Axle (Left)      | 1         |
+| Front Wheel Axle (Right)     | 1         |
+| Front Wheel Stopper          | 2         |
+| Lidar Plate                  | 1         |
+| Motor Gear                   | 1         |
+| Motor Holder                 | 1         |
+| Motor Plate                  | 1         |
+| T-Bone Linkage (Bottom)      | 1         |
+| T-Bone Linkage (Top)         | 1         |
+| Transfer Linkage (Left)      | 1         |
+| Transfer Linkage (Right)     | 1         |
+| Wheel Linkage (Bottom Left)  | 1         |
+| Wheel Linkage (Bottom Right) | 1         |
+| Wheel Linkage (Top Left)     | 1         |
+| Wheel Linkage (Top Right)    | 1         |
+
+
+</details>
+
 The recommended settings can be found in the .gcode files. The recommended settings are as follows:
 
 - Material: PLA
