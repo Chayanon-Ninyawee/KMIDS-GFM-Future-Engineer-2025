@@ -4,7 +4,7 @@
 
 # WRO - Future Engineers - Robotics Project Documentation
 
-## Team Members
+## Team Members 
 
 - **Chayanon Ninyawee (Garfield)**
 - **Supakorn Sunthonthammarat (Pleum)**
@@ -13,7 +13,7 @@
 We are a team of dedicated students with a passion for robotics and innovation. This repository documents our full engineering process, including design, components used, development, testing, and coding of our robot.
 
 ---
-
+<a name="top"></a>
 ## Table of Contents
 
 <!-- toc -->
@@ -66,7 +66,9 @@ Our goal is to design and build a reliable and efficient system that demonstrate
 
 Our robot is engineered using a custom modular chassis in a rear-wheel drive configuration, controlled using a Raspberry Pi 5 and a Raspberry Pi Pico 2. It utilises a combination of an LIDAR sensor and a fish-eye lens camera to provide an advanced system for obstacle detection and navigation.
 
-Our objective is to create an intelligent robot that is capable of navigating through obstacles with pinpoint precision and speed.
+Our objective is to create an intelligent robot that is capable of navigating through obstacles with pinpoint precision and speed. 
+
+
 
 ______________________________________________________________________
 
@@ -175,6 +177,9 @@ To make sure the steering angle performed correctly, we carried out an iterative
 
 **Considerations**
 While the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM.
+
+
+[▲ Back to Top](#top)
 
 ______________________________________________________________________
 
@@ -342,6 +347,7 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 <img src="./docs/resources/Wiring Diagram Revised.png" alt="Wiring diagram pic" >
 
+[▲ Back to Top](#top)
 ______________________________________________________________________
 
 ## 4. Obstacle Management
@@ -789,6 +795,7 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
 
 TBA. TODO:-->
 
+[▲ Back to Top](#top)
 ______________________________________________________________________
 
 ## 5. Robot Design
@@ -837,6 +844,7 @@ The layout of the chassis is made to fit the rear-mounted motors and front-mount
 
 Our robot chassis was completely custom-designed in FreeCAD and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture and less warping compared to ABS, while also being lightweight and durable. Alongside the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that were fine-tuned during testing to achieve the correct alignment with other components. Other components, such as motor clamps and sensor brackets, are designed as independent printable components. The chassis was also designed with modularity in mind for replacements and upgrades, with reduced overhangs for printing ease.
 
+[▲ Back to Top](#top)
 ______________________________________________________________________
 
 ## 6. Performance Video
@@ -847,6 +855,7 @@ ______________________________________________________________________
 
 #### | The video shows both the open and obstacle challenge
 
+[▲ Back to Top](#top)
 ______________________________________________________________________
 
 ## 7. Source Code
@@ -946,7 +955,6 @@ ______________________________________________________________________
 
 This section describes how to build and run the project on the **Raspberry Pi 5** and **Raspberry Pi Pico 2**, including all dependencies.
 
-______________________________________________________________________
 
 #### Dependencies
 
@@ -969,7 +977,6 @@ git submodule update --init --recursive
 - **Pico SDK** – Required for building Pico firmware.
 - **BNO08x_Pico_Library** – IMU library for Pico.
 
-______________________________________________________________________
 
 #### Raspberry Pi 5 Build
 
@@ -1003,15 +1010,6 @@ chmod +x build.sh
 
 We follow the method from [rolandsdev.blog](https://rolandsdev.blog/posts/cross-compile-for-raspberry-pi-with-docker/).
 
----
-
-#### Prerequisites
-Docker (≥ 19.03.13) installed
-Docker buildx plugin (≥ v0.4.1)
-A Dockerfile.cross configured for Raspberry Pi ARM64 toolchain
-
-
-______________________________________________________________________
 
 #### Raspberry Pi Pico 2 Build & Upload
 
@@ -1041,7 +1039,7 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 
 > Note: The UF2 file path should match the output name specified in the Pico CMakeLists.txt.
 
-
+[▲ Back to Top](#top)
 ______________________________________________________________________
 
 ## 8. List of Components
@@ -1071,9 +1069,8 @@ ______________________________________________________________________
 - [Bambu Lab P1S](https://asia.store.bambulab.com/products/p1s?p=W3sicHJvcGVydHlLZXkiOiJWYXJpYW50IiwicHJvcGVydHlWYWx1ZSI6IlAxUyBDb21ibyJ9LHsicHJvcGVydHlLZXkiOiJTaGlwIHRvIiwicHJvcGVydHlWYWx1ZSI6IiJ9LHsicHJvcGVydHlLZXkiOiJPcHRpb24iLCJwcm9wZXJ0eVZhbHVlIjoiQ29tYm8gd2l0aCBIdWIoU2hpcCBTZXBhcmF0ZWx5KSJ9XQ%3D%3D)  
 - [Creality Ender 3 V3 KE](https://store.creality.com/products/ender-3-v3-ke-3d-printer)
 
-
-
----
+  [▲ Back to Top](#top)
+______________________________________________________________________
 
 ## 9. STL and Slicer Files
 
@@ -1143,12 +1140,12 @@ Slicer files in .gcode format, which include the settings for both printers, can
 - [`Linkages`](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_Linkages.gcode)
 
 
-
+[▲ Back to Top](#top)
 ______________________________________________________________________
 
 ## 10. Building Instructions
 
----
+
 ### **Step 0: Print the 3D parts**
 
 Before assembly, prepare the components listed above and print the 3D parts. 
@@ -1201,10 +1198,14 @@ The recommended settings can be found in the .gcode files. The recommended setti
 2. Follow the steps listed in [7.2](72-Compilation-/-Upload-Instructions).
 
 #### **Ensure all components are connected, and power on the robot**
----
+
+[▲ Back to Top](#top)
+______________________________________________________________________
 ### 11. Extra Documentation
 
 [Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](docs/dhcp-server-on-ethernet-port.md)
 
-[How to Image Drive in Linux](docs/image-drive-linux.md)(
+[How to Image Drive in Linux](docs/image-drive-linux.md)
+
+[▲ Back to Top](#top)
 ______________________________________________________________________
