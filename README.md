@@ -843,6 +843,8 @@ ______________________________________________________________________
 
 [Watch on YouTube](https://youtu.be/hUqdMjxhbqM)
 
+[![video](http://img.youtube.com/vi/hUqdMjxhbqM/0.jpg)](http://www.youtube.com/watch?v=hUqdMjxhbqM "Performance video")
+
 #### | The video shows both the open and obstacle challenge
 
 ______________________________________________________________________
@@ -1027,6 +1029,7 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 
 > Note: The UF2 file path should match the output name specified in the Pico CMakeLists.txt.
 
+
 ______________________________________________________________________
 
 ## 8. List of Components
@@ -1138,13 +1141,14 @@ ______________________________________________________________________
 
 Before assembly, prepare the components listed above and print the 3D parts. 
 
-We used the Bambu Lab P1S to print the chassis, while the rest of the parts were printed using the Creality Ender 3 V3 KE. 
+**[Chassis](Slicer-Files/Bambu_Lab_P1S_(Bambu_Slicer)/gcode-files) - Bambu Lab P1S**
 
-The recommended settings we used for the robot are as follows: 
+**[Parts](Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files) - Creality Ender 3 V3 KE** 
+The recommended settings can be found in the .gcode files. The recommended settings are as follows:
 
 - Material: PLA
 - Layer height: 0.2mm
-- Infill: 15%
+- Infill: 25%
 - Supports: Yes
 - Adhesion type: Brim
   
