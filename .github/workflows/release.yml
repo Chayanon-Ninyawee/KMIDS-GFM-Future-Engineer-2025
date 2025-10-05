@@ -53,15 +53,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Cache Docker layers
-        uses: actions/cache/restore@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-cross-pi-${{ github.run_number }}
-          restore-keys: |
-            ${{ runner.os }}-docker-cross-pi-
-            ${{ runner.os }}-failed-docker-cross-pi-
-
       - name: Log in to GHCR
         uses: docker/login-action@v2
         with:
@@ -77,24 +68,10 @@ jobs:
           docker buildx build \
             -f Dockerfile.cross \
             --tag ghcr.io/chayanon-ninyawee/gfm-future-engineer-cross-pi:latest \
-            --cache-from=type=local,src=/tmp/.buildx-cache \
-            --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max \
+            --cache-from=type=gha,scope=cross-pi \
+            --cache-to=type=gha,scope=cross-pi,mode=max \
             --push \
             .
-
-      - name: Save Docker cache (success)
-        if: steps.docker-cross.outcome == 'success'
-        uses: actions/cache/save@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-cross-pi-${{ github.run_number }}
-
-      - name: Save Docker cache (failure)
-        if: steps.docker-cross.outcome == 'failure'
-        uses: actions/cache/save@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-failed-docker-cross-pi-${{ github.run_number }}
 
       - name: Fail job if Dockerfile.cross build failed
         if: steps.docker-cross.outcome == 'failure'
