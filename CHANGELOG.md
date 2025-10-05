@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.1.4](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.3...v0.1.4) (2025-10-05)
+
+
+### Documentation
+
+* Add docker reference to 7.2 upload instructions ([57b3ee5](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/57b3ee5c7915e74bac007470a825d82353379cf4))
+* Add links to gcode in step 0 in build instructions ([eb67782](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/eb677827036aec9cdfe113853c7ac18e85d82d91))
+* Add more detailed instructions on mounting electronics. ([c64c20a](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/c64c20a71c99d5bdd8fd51189494a97deeb27eee))
+* Add rough building instructions ([a2df991](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/a2df991b6f364adab4f91c61eda054e3dfc7a239))
+* Add settings for step 0 of building instruction ([f12dc55](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/f12dc55ec8e0a838fc21e67b4290b07742654c8e))
+* Add slicer files to section 9 ([82b4cd2](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/82b4cd2f8c99fe08654f15a04e1d5c7538108848))
+* Add youtube thumbnail, revise step 0 in building instructions ([93344e8](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/93344e87ae38808ff8154b777da821a253b11609))
+* Clarify details in step 3 and 4 and add amount specifications to screws ([0d9b6bb](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/0d9b6bb788ec16e06f6baeab1791e7a7567600a5))
+* Clarify instructions and components used for step 1 ([0bf8c0f](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/0bf8c0f9dc372334abd769c0dc24b9ef68b7311d))
+* Clarify instructions and components used for step 2 ([9713236](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/9713236e5ee11602b3c55054a4d9823093cb5b8f))
+* Format documentation ([4c93272](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/4c9327200f108f8f3dd8861bbfdbdc44ffce339e))
+* Format section 9 points ([d463f2e](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/d463f2efeac19e41bbc6483077a0cb600fb4b02f))
+* Make headings in section 9 smaller ([000036b](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/000036be7345818cc1135ae113e69698a026631b))
+* Remove part 5 ([bd8a42c](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/bd8a42ca6160a693866ba758f1b30297fd4481f0))
+* Remove redundant page lines and add back to top ([2c58b3f](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/2c58b3f67c8a28baf3618b977d6b919b9a518984))
+* Remove step 4 and 5 from building instructions ([ebf4530](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/ebf4530555f4672ec6d6e4cd039ddac2023610bb))
+* Revise building instruction 10 Step 3 ([2d383c5](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/2d383c50f395d0e84ce41b486eebb9bc3a44ec5c))
+* Revise building instructions step 1 ([881aaaa](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/881aaaa4667308d5a7e3340174082116c6951168))
+* Revise step 4 of build instructions ([c98e1ac](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/c98e1ac5de7580313c97c63cd48d7e18bc7efcca))
+* Specify 9.2 on gcode and settings ([d4a1ae5](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/d4a1ae53627eab244209a0736b67ad5bd9f4ec7a))
+
 ## [0.1.3](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.2...v0.1.3) (2025-10-05)
 
 
