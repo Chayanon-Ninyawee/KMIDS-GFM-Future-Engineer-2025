@@ -1089,23 +1089,23 @@ ______________________________________________________________________
 
 ## 9. STL and Slicer Files
 
-### 9.1 STL Files
+### STL Files
 
 The FreeCAD files can be found [here](./FreeCAD-Files)
 
-#### 9.1.1 Chassis & Core Structure
+ **Chassis & Core Structure**
 
 - [`Chassis_1x.stl`](FreeCAD-Files/Assembly/mesh_export/Chassis_1x.stl)
 - [`FrontCover_1x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontCover_1x.stl)
 - [`AxleHolder_3x.stl`](FreeCAD-Files/Assembly/mesh_export/AxleHolder_3x.stl)
 
-#### 9.1.2 Motor & Transmission
+ **Motor & Transmission**
 
 - [`MotorGear_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorGear_1x.stl)
 - [`MotorHolder_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorHolder_1x.stl)
 - [`MotorPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorPlate_1x.stl)
 
-#### 9.1.3 Wheel & Axle Components
+**Wheel & Axle Components**
 
 - [`BackWheelAxle_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelAxle_2x.stl)
 - [`BackWheelConnector_2x.stl`](FreeCAD-Files/Assembly/mesh_export/BackWheelConnector_2x.stl)
@@ -1114,7 +1114,7 @@ The FreeCAD files can be found [here](./FreeCAD-Files)
 - [`FrontWheelAxleRight_1x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontWheelAxleRight_1x.stl)
 - [`FrontWheelStopper_2x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontWheelStopper_2x.stl)
 
-#### 9.1.4 Steering Linkages
+**Steering Linkages**
 
 - [`TBoneLinkageBottom_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TBoneLinkageBottom_1x.stl)
 - [`TBoneLinkageTop_1x.stl`](FreeCAD-Files/Assembly/mesh_export/TBoneLinkageTop_1x.stl)
@@ -1125,15 +1125,15 @@ The FreeCAD files can be found [here](./FreeCAD-Files)
 - [`WheelLinkageTopLeft_1x.stl`](FreeCAD-Files/Assembly/mesh_export/WheelLinkageTopLeft_1x.stl)
 - [`WheelLinkageTopRight_1x.stl`](FreeCAD-Files/Assembly/mesh_export/WheelLinkageTopRight_1x.stl)
 
-#### 9.1.5 Miscellaneous
+**Miscellaneous**
 
 - [`LidarPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/LidarPlate_1x.stl)
 
-#### 9.2 Slicer Files
+### Slicer Files
 
 Slicer files in .gcode format, which include the settings for both printers, can be found [here](./Slicer-Files)
 
-#### 9.2.1 Chassis & Core Structure
+**Chassis & Core Structure**
 
 - [`Main chassis`](<Slicer-Files/Bambu_Lab_P1S_(Bambu_Slicer)/Chassis_1x.3mf>)
 
@@ -1145,12 +1145,12 @@ Slicer files in .gcode format, which include the settings for both printers, can
 
 - [`Lidar plate`](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_LidarPlate_1x.gcode>)
 
-#### 9.2.2 Motor & Gear Components
+**Motor & Gear Components**
 
 - [`Motor Gear`](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_MotorGear_1x.gcode>)
 - [`Motor holder`](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_AxleHolder_MotorHolder.gcode>)
 
-#### 9.2.3 Steering & Linkages
+**Steering & Linkages**
 
 - [`Linkages`](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_Linkages.gcode>)
 
@@ -1175,29 +1175,28 @@ After printing, you should have these parts:
 </summary>
 
 | Part Name                    | Quantity |
-|------------------------------|-----------|
-| Axle Holder                  | 3         |
-| Back Wheel Axle              | 2         |
-| Back Wheel Connector         | 2         |
-| Back Wheel Stopper           | 2         |
-| Chassis                      | 1         |
-| Front Cover                  | 1         |
-| Front Wheel Axle (Left)      | 1         |
-| Front Wheel Axle (Right)     | 1         |
-| Front Wheel Stopper          | 2         |
-| Lidar Plate                  | 1         |
-| Motor Gear                   | 1         |
-| Motor Holder                 | 1         |
-| Motor Plate                  | 1         |
-| T-Bone Linkage (Bottom)      | 1         |
-| T-Bone Linkage (Top)         | 1         |
-| Transfer Linkage (Left)      | 1         |
-| Transfer Linkage (Right)     | 1         |
-| Wheel Linkage (Bottom Left)  | 1         |
-| Wheel Linkage (Bottom Right) | 1         |
-| Wheel Linkage (Top Left)     | 1         |
-| Wheel Linkage (Top Right)    | 1         |
-
+| ---------------------------- | -------- |
+| Axle Holder                  | 3        |
+| Back Wheel Axle              | 2        |
+| Back Wheel Connector         | 2        |
+| Back Wheel Stopper           | 2        |
+| Chassis                      | 1        |
+| Front Cover                  | 1        |
+| Front Wheel Axle (Left)      | 1        |
+| Front Wheel Axle (Right)     | 1        |
+| Front Wheel Stopper          | 2        |
+| Lidar Plate                  | 1        |
+| Motor Gear                   | 1        |
+| Motor Holder                 | 1        |
+| Motor Plate                  | 1        |
+| T-Bone Linkage (Bottom)      | 1        |
+| T-Bone Linkage (Top)         | 1        |
+| Transfer Linkage (Left)      | 1        |
+| Transfer Linkage (Right)     | 1        |
+| Wheel Linkage (Bottom Left)  | 1        |
+| Wheel Linkage (Bottom Right) | 1        |
+| Wheel Linkage (Top Left)     | 1        |
+| Wheel Linkage (Top Right)    | 1        |
 
 </details>
 
@@ -1206,92 +1205,81 @@ The recommended settings can be found in the .gcode files. The recommended basic
 <details>
 <summary> Chassis </summary>
 
-|Setting|Value|
-|----|----|
-| Layer Height                | 0.3          |
-| Infill Density              | 25%       |
-| Infill Pattern              | Gyroid |
-| Support Type                | Tree                      |
-| Build Plate Adhesion Type   | None        |
-
+| Setting                   | Value  |
+| ------------------------- | ------ |
+| Layer Height              | 0.3    |
+| Infill Density            | 25%    |
+| Infill Pattern            | Gyroid |
+| Support Type              | Tree   |
+| Build Plate Adhesion Type | None   |
 
 </details>
 
 <details>
 <summary> Motor Gear</summary>
 
-|Setting|Value|
-|----|----|
-| Layer Height                | 0.2           |
-| Infill Density              | 20%       |
-| Infill Pattern              | Lines |
-| Support Type                | None                      |
-| Build Plate Adhesion Type   | Brim        |
-
+| Setting                   | Value |
+| ------------------------- | ----- |
+| Layer Height              | 0.2   |
+| Infill Density            | 20%   |
+| Infill Pattern            | Lines |
+| Support Type              | None  |
+| Build Plate Adhesion Type | Brim  |
 
 </details>
-
 
 <details>
 <summary> Axle holder </summary>
 
-|Setting|Value|
-|----|----|
-| Layer Height                | 0.2           |
-| Infill Density              | 20%       |
-| Infill Pattern              | Cubic |
-| Support Type                | None                      |
-| Build Plate Adhesion Type   | Brim        |
-
+| Setting                   | Value |
+| ------------------------- | ----- |
+| Layer Height              | 0.2   |
+| Infill Density            | 20%   |
+| Infill Pattern            | Cubic |
+| Support Type              | None  |
+| Build Plate Adhesion Type | Brim  |
 
 </details>
-
 
 <details>
 <summary> Linkage & Back Wheel Components </summary>
 
-|Setting|Value|
-|----|----|
-| Layer Height                | 0.2           |
-| Infill Density              | 20%       |
-| Infill Pattern              | Cubic |
-| Support Type                | Normal                      |
-| Build Plate Adhesion Type   | Brim        |
-
+| Setting                   | Value  |
+| ------------------------- | ------ |
+| Layer Height              | 0.2    |
+| Infill Density            | 20%    |
+| Infill Pattern            | Cubic  |
+| Support Type              | Normal |
+| Build Plate Adhesion Type | Brim   |
 
 </details>
-
 
 <details>
 <summary> Front Cover </summary>
 
-|Setting|Value|
-|----|----|
-| Layer Height                | 0.2           |
-| Infill Density              | 20%       |
-| Infill Pattern              | Cubic |
-| Support Type                | Normal                      |
-| Build Plate Adhesion Type   | None        |
-
+| Setting                   | Value  |
+| ------------------------- | ------ |
+| Layer Height              | 0.2    |
+| Infill Density            | 20%    |
+| Infill Pattern            | Cubic  |
+| Support Type              | Normal |
+| Build Plate Adhesion Type | None   |
 
 </details>
-
 
 <details>
 
 <summary> LIDAR Plate & Motor Plate</summary>
 
-|Setting|Value|
-|----|----|
-| Layer Height                | 0.2           |
-| Infill Density              | 20%       |
-| Infill Pattern              | Cubic |
-| Support Type                | Tree                      |
-| Build Plate Adhesion Type   | None        |
-
+| Setting                   | Value |
+| ------------------------- | ----- |
+| Layer Height              | 0.2   |
+| Infill Density            | 20%   |
+| Infill Pattern            | Cubic |
+| Support Type              | Tree  |
+| Build Plate Adhesion Type | None  |
 
 </details>
-
 
 ### **Step 1: Assemble the steering system**
 
