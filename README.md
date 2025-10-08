@@ -40,27 +40,9 @@ ______________________________________________________________________
 - [7. Source Code](#7-source-code)
   - [7.1 Code Structure](#71-code-structure)
   - [7.2 Compilation / Upload Instructions](#72-compilation--upload-instructions)
-    - [Dependencies](#dependencies)
-    - [Raspberry Pi 5 Build](#raspberry-pi-5-build)
-    - [Raspberry Pi Pico 2 Build & Upload](#raspberry-pi-pico-2-build--upload)
 - [8. List of Components](#8-list-of-components)
 - [9. STL and Slicer Files](#9-stl-and-slicer-files)
-  - [9.1 STL Files](#91-stl-files)
-    - [9.1.1 Chassis & Core Structure](#911-chassis--core-structure)
-    - [9.1.2 Motor & Transmission](#912-motor--transmission)
-    - [9.1.3 Wheel & Axle Components](#913-wheel--axle-components)
-    - [9.1.4 Steering Linkages](#914-steering-linkages)
-    - [9.1.5 Miscellaneous](#915-miscellaneous)
-    - [9.2 Slicer Files](#92-slicer-files)
-    - [9.2.1 Chassis & Core Structure](#921-chassis--core-structure)
-    - [9.2.2 Motor & Gear Components](#922-motor--gear-components)
-    - [9.2.3 Steering & Linkages](#923-steering--linkages)
 - [10. Building Instructions](#10-building-instructions)
-  - [**Step 0: Print the 3D parts**](#step-0-print-the-3d-parts)
-  - [**Step 1: Assemble the steering system**](#step-1-assemble-the-steering-system)
-  - [**Step 2: Assemble the drivetrain**](#step-2-assemble-the-drivetrain)
-  - [**Step 3: Mount electronics**](#step-3-mount-electronics)
-  - [**Step 4: Upload the software**](#step-4-upload-the-software)
 - [11. Extra Documentation](#11-extra-documentation)
 
 <!-- tocstop -->
@@ -969,7 +951,7 @@ ______________________________________________________________________
 
 This section describes how to build and run the project on the **Raspberry Pi 5** and **Raspberry Pi Pico 2**, including all dependencies.
 
-#### Dependencies
+**Dependencies**
 
 **Git Submodules (must initialise and update recursively):**
 
@@ -990,7 +972,7 @@ git submodule update --init --recursive
 - **Pico SDK** – Required for building Pico firmware.
 - **BNO08x_Pico_Library** – IMU library for Pico.
 
-#### Raspberry Pi 5 Build
+**Raspberry Pi 5 Build**
 
 1. Go to the Pi 5 project directory:
 
@@ -1022,7 +1004,7 @@ chmod +x build.sh
 
 We follow the method from [rolandsdev.blog](https://rolandsdev.blog/posts/cross-compile-for-raspberry-pi-with-docker/).
 
-#### Raspberry Pi Pico 2 Build & Upload
+**Raspberry Pi Pico 2 Build & Upload**
 
 1. Go to the Pico project directory:
 
