@@ -355,6 +355,8 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 <img src="./docs/resources/Wiring Diagram Revised.png" alt="Wiring diagram pic" >
 
+We had to decide on whether to do a PCB or use jumper wires to connect each component. In the end, we settled on using jumper wires as it gives us more flexibility during our development in case an error happens, and allows us to troubleshoot each part easily without having to redesign the circuit board.
+
 [▲ Back to Top](#top)
 
 ______________________________________________________________________
@@ -1201,12 +1203,34 @@ After printing, you should have these parts:
 
 The recommended settings can be found in the .gcode files. The recommended settings are as follows:
 
-- Material: PLA
-- Layer height: 0.2mm
-- Infill: 25%
-- Supports: Yes
-- Adhesion type: Brim
+<details>
+<summary> Chassis </summary>
 
+| Layer Height                | 0.2 mm (standard quality)                               |
+| Wall Line Count             | 2–3 lines                                               |
+| Top Layers                  | 4–6 layers                                              |
+| Bottom Layers               | 4–6 layers                                              |
+| Infill Density              | 15–25% (default)                                        |
+| Infill Pattern              | Grid / Gyroid / Trihexagon                              |
+| Printing Temperature        | 200 °C (PLA), 230 °C (PETG), 250 °C (ABS)              |
+| Build Plate Temperature     | 60 °C (PLA), 80 °C (PETG), 100 °C (ABS)                |
+| Print Speed                 | 50–60 mm/s (standard)                                  |
+| Travel Speed                | 120–150 mm/s                                            |
+| Retraction Distance         | 0.8–1.5 mm (direct drive), 3–6 mm (Bowden)             |
+| Retraction Speed            | 25–45 mm/s                                              |
+| Cooling Fan Speed           | 100% (PLA), 50% (PETG), 0% (ABS)                       |
+| Support Type                | Touching Buildplate / Everywhere                        |
+| Support Overhang Angle      | 50° (default)                                           |
+| Build Plate Adhesion Type   | Skirt / Brim / Raft (depends on model)                  |
+| Initial Layer Height        | 0.24–0.28 mm                                            |
+| Initial Layer Speed         | 20–25 mm/s                                              |
+| Flow Rate                   | 100% (default)                                          |
+| Z Hop When Retracted        | 0.2 mm                                                  |
+| Filament Diameter           | 1.75 mm (common), 2.85 mm (some printers)               |
+| Nozzle Diameter             | 0.4 mm (standard)                                       |
+
+
+</details>
 ### **Step 1: Assemble the steering system**
 
 1. At the front, combine the wheel linkage by connecting the wheel axle and steering linkage between the two wheel linkages
