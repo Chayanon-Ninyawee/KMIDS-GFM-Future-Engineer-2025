@@ -42,6 +42,8 @@ ______________________________________________________________________
   - [7.2 Compilation / Upload Instructions](#72-compilation--upload-instructions)
 - [8. List of Components](#8-list-of-components)
 - [9. STL and Slicer Files](#9-stl-and-slicer-files)
+  - [STL Files](#stl-files)
+  - [Slicer Files](#slicer-files)
 - [10. Building Instructions](#10-building-instructions)
 - [11. Extra Documentation](#11-extra-documentation)
 
@@ -1075,13 +1077,13 @@ ______________________________________________________________________
 
 The FreeCAD files can be found [here](./FreeCAD-Files)
 
- **Chassis & Core Structure**
+**Chassis & Core Structure**
 
 - [`Chassis_1x.stl`](FreeCAD-Files/Assembly/mesh_export/Chassis_1x.stl)
 - [`FrontCover_1x.stl`](FreeCAD-Files/Assembly/mesh_export/FrontCover_1x.stl)
 - [`AxleHolder_3x.stl`](FreeCAD-Files/Assembly/mesh_export/AxleHolder_3x.stl)
 
- **Motor & Transmission**
+**Motor & Transmission**
 
 - [`MotorGear_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorGear_1x.stl)
 - [`MotorHolder_1x.stl`](FreeCAD-Files/Assembly/mesh_export/MotorHolder_1x.stl)
@@ -1142,7 +1144,7 @@ ______________________________________________________________________
 
 ## 10. Building Instructions
 
-### **Step 0: Print the 3D parts**
+**Step 0: Print the 3D parts**
 
 Before assembly, prepare the components listed above and print the 3D parts.
 
@@ -1263,24 +1265,24 @@ The recommended settings can be found in the .gcode files. The recommended basic
 
 </details>
 
-### **Step 1: Assemble the steering system**
+**Step 1: Assemble the steering system**
 
 1. At the front, combine the wheel linkage by connecting the wheel axle and steering linkage between the two wheel linkages <img src="docs\resources\1.1.png" alt="1.1" >
 1. Attach the steering linkage to the T-bone linkage. <img src="docs\resources\1.2.png" alt="1.2">
-1. Glue the two T-bone linkage parts together using glue. 
-1. Mount the front plate on the chassis, while securing the wheel linkage in between the chassis and front plate using 2x M3 screws.<img src="docs\resources\1.5.png" alt="1.4">
+1. Glue the two T-bone linkage parts together using glue.
+1. Mount the front plate on the chassis, while securing the wheel linkage in between the chassis and front plate using 2x M3 screws.<img src="docs\resources\1.4.png" alt="1.4">
 1. Attach the servo to the front plate using 2x M1.6 screws, using glue to attach the shaft to the T-bone linkage below. <img src="docs\resources\1.5.png" alt="1.5">
 1. Fix the wheels in place using the wheel stoppers, securing them using 3x M3 screws on each side. <img src="docs\resources\1.6.png" alt="1.6">
 
-### **Step 2: Assemble the drivetrain**
+**Step 2: Assemble the drivetrain**
 
 1. Attach the rear wheel axles to the connector using 2x M3 screws, <img src="docs\resources\2.1.png" alt="2.1">
-1. Place a LEGO differential gear in between the rear wheel chassis walls, and insert the connector into the chassis wall, securing it using the stopper and 2x M3 screws on each side.  <img src="docs\resources\2.2.png" alt="2.2">
-1. Place the N20 motor into the motor plate. Secure the motor with the motor clamp using 2x M3 screws.  <img src="docs\resources\2.3.png" alt="2.3">
-1. Attach the 3D printed gear to the motor and secure the motor plate onto the chassis using 4x M3 screws.  <img src="docs\resources\2.4.png" alt="2.4">
-1. Attach the wheels to the axles using 3x M3 screws on each side.  <img src="docs\resources\2.5.png" alt="2.5">
+1. Place a LEGO differential gear in between the rear wheel chassis walls, and insert the connector into the chassis wall, securing it using the stopper and 2x M3 screws on each side. <img src="docs\resources\2.2.png" alt="2.2">
+1. Place the N20 motor into the motor plate. Secure the motor with the motor clamp using 2x M3 screws. <img src="docs\resources\2.3.png" alt="2.3">
+1. Attach the 3D printed gear to the motor and secure the motor plate onto the chassis using 4x M3 screws. <img src="docs\resources\2.4.png" alt="2.4">
+1. Attach the wheels to the axles using 3x M3 screws on each side. <img src="docs\resources\2.5.png" alt="2.5">
 
-### **Step 3: Mount electronics**
+**Step 3: Mount electronics**
 
 1. Attach the camera to the front plate using 4x M2 screws, ensuring the wire is threaded through the small gap in the front plate.
 1. Attach the UPS EP-0136 onto the Raspberry Pi 5, separated via 4x M2.5 standoffs, ensuring battery access at the bottom and the Raspberry Pi 5 facing upwards.
@@ -1290,7 +1292,7 @@ The recommended settings can be found in the .gcode files. The recommended basic
 1. Attach the button and RPLIDARS2 onto the LIDAR Plate, ensuring the LIDAR sensor module is above the motor plate.
 1. Organise the wiring for added components according to the [wiring diagram](#34-Circuit-Diagram)
 
-### **Step 4: Upload the software**
+**Step 4: Upload the software**
 
 1. Connect the Raspberry Pi 5 to your computer via SSH or a USB-C cable.
 1. Follow the steps listed in [7.2](72-Compilation-/-Upload-Instructions).
