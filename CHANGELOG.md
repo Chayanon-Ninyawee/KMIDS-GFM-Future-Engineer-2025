@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.1.5](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.4...v0.1.5) (2025-10-08)
+
+
+### Documentation
+
+* Add detailed build settings for each part ([599b20d](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/599b20d4a7740aa936c3569951161c15d32b13f4))
+* Add pictures to build instructions 1 and 2 ([e590e7e](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/e590e7ecd25fb36c9dfaec85c475b752ec59f770))
+* Add step 1 building instruction pics ([7952c55](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/7952c55b84d7470fdd5a4bac8349f7d009f7c4a5))
+* Add step 2 building instruction pics ([261c6cd](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/261c6cdfc5fa5743bc3ba7befe4e394326e637a7))
+* Add table of parts in step 0 of building instructions ([839d939](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/839d9392398777d01b835b6fef8596d37430fadb))
+* Addjustification for jumper wires in 3.4 ([b5b08ef](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/b5b08ef6e73aaa7c43a7016c7405c39e97cdd89d))
+* Change the filename of wiring diagram ([58439b1](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/58439b1e07b8f0ad7eaa64dcfb5516af9547daeb))
+* Change wording to ensure consistent wording ([b917324](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/b9173245313bc13a8a5007ee9ff1b6772ba1aeac))
+* Format table of contents ([fcd5466](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/fcd54661abd39eb1a1c79a33cf95ec935ebb3be0))
+* Remove numbering for STL and Slicer files ([dd9b4ce](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/dd9b4cecc3bd34d5f75783eb74916a2f06c3f8c0))
+* Remove redundant table of content sections ([d262324](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/d26232419e334353e47b3c6293f5753fc59b114b))
+* Update wiring diagram picture ([af80edf](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/af80edfd91f8ecf0d969b87f492c236a3e709adf))
+
 ## [0.1.4](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.3...v0.1.4) (2025-10-05)
 
 
