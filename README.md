@@ -12,7 +12,7 @@
 
 We are a team of dedicated students with a passion for robotics and innovation. This repository documents our full engineering process, including design, components used, development, testing, and coding of our robot.
 
-______________________________________________________________________
+
 
 <a name="top"></a>
 
@@ -49,7 +49,6 @@ ______________________________________________________________________
 
 <!-- tocstop -->
 
-______________________________________________________________________
 
 ## 1. About the Project
 
@@ -63,7 +62,6 @@ Our robot is engineered using a custom modular chassis in a rear-wheel drive con
 
 Our objective is to create an intelligent robot that is capable of navigating through obstacles with pinpoint precision and speed.
 
-______________________________________________________________________
 
 ## 2. Mobility Management
 
@@ -186,7 +184,7 @@ Our robot chassis was completely custom-designed in FreeCAD and 3D printed using
 
 [▲ Back to Top](#top)
 
-______________________________________________________________________
+
 
 ## 3. Power and Sense Management
 
@@ -356,7 +354,7 @@ We had to decide on whether to do a PCB or use jumper wires to connect each comp
 
 [▲ Back to Top](#top)
 
-______________________________________________________________________
+
 
 ## 4. Obstacle Management
 
@@ -805,7 +803,7 @@ TBA. TODO:-->
 
 [▲ Back to Top](#top)
 
-______________________________________________________________________
+
 
 ## 5. Robot Design
 
@@ -844,7 +842,7 @@ ______________________________________________________________________
 
 [▲ Back to Top](#top)
 
-______________________________________________________________________
+
 
 ## 6. Performance Video
 
@@ -856,7 +854,7 @@ The video shows both the open and obstacle challenge
 
 [▲ Back to Top](#top)
 
-______________________________________________________________________
+
 
 ## 7. Source Code
 
@@ -949,7 +947,7 @@ repo-root
 
 This structure allows Pi 5 and Pi Pico to share common code while keeping hardware-specific modules separate.
 
-______________________________________________________________________
+
 
 ### 7.2 Compilation / Upload Instructions
 
@@ -1038,7 +1036,7 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 
 [▲ Back to Top](#top)
 
-______________________________________________________________________
+
 
 ## 8. List of Components
 
@@ -1071,7 +1069,7 @@ ______________________________________________________________________
 
   [▲ Back to Top](#top)
 
-______________________________________________________________________
+
 
 ## 9. STL and Slicer Files
 
@@ -1142,7 +1140,7 @@ Slicer files in .gcode format, which include the settings for both printers, can
 
 [▲ Back to Top](#top)
 
-______________________________________________________________________
+
 
 ## 10. Building Instructions
 
@@ -1303,7 +1301,7 @@ The recommended settings can be found in the .gcode files. The recommended basic
 
 [▲ Back to Top](#top)
 
-______________________________________________________________________
+
 
 ## 11. Extra Documentation
 
@@ -1313,4 +1311,4 @@ ______________________________________________________________________
 
 [▲ Back to Top](#top)
 
-______________________________________________________________________
+
