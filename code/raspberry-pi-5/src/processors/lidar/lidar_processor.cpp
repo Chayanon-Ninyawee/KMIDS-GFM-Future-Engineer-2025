@@ -292,9 +292,12 @@ TimedLidarData filterLidarData(const TimedLidarData &timedLidarData, float minDi
     filteredLidarData.timestamp = timedLidarData.timestamp;
 
     for (const auto &node : timedLidarData.lidarData) {
-        if (node.distance >= minDistance) {
-            filteredLidarData.lidarData.push_back(node);
-        }
+        if (node.distance < minDistance) continue;
+        if (node.distance < 0.005) continue;
+        if (node.distance > 3.200) continue;
+        if ((node.angle > 340 || node.angle < 200) && node.distance > 0.700) continue;
+
+        filteredLidarData.lidarData.push_back(node);
     }
 
     return filteredLidarData;
@@ -315,11 +318,6 @@ std::vector<LineSegment> getLines(
     points.reserve(timedLidarData.lidarData.size());
 
     for (const auto &node : timedLidarData.lidarData) {
-        // TODO: Change this value to fit the actual robot
-        if (node.distance < 0.005) continue;
-        if (node.distance > 3.200) continue;
-        if ((node.angle > 340 || node.angle < 200) && node.distance > 0.700) continue;
-
         float rad = node.angle * static_cast<float>(M_PI) / 180.0f;
 
         float lidarX = node.distance * std::sin(rad);
