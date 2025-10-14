@@ -22,33 +22,32 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 
 - [1. About the Project](#1-about-the-project)
 - [2. Mobility Management](#2-mobility-management)
-  - [2.1 Drive System](#21-drive-system)
-  - [2.2 Steering](#22-steering)
+  * [2.1 Drive System](#21-drive-system)
+  * [2.2 Steering](#22-steering)
+  * [2.3 Chassis Design](#23-chassis-design)
 - [3. Power and Sense Management](#3-power-and-sense-management)
-  - [3.1 Power Source](#31-power-source)
-  - [3.2 Sensor and Camera](#32-sensor-and-camera)
-  - [3.3 Processing Units](#33-processing-units)
-  - [3.4 Circuit Diagram](#34-circuit-diagram)
+  * [3.1 Power Source](#31-power-source)
+  * [3.2 Sensor and Camera](#32-sensor-and-camera)
+  * [3.3 Processing Units](#33-processing-units)
+  * [3.4 Circuit Diagram](#34-circuit-diagram)
 - [4. Obstacle Management](#4-obstacle-management)
-  - [4.1 Open Challenge](#41-open-challenge)
-  - [4.2 Obstacle Challenge](#42-obstacle-challenge)
-  - [4.3 Parallel Parking](#43-parallel-parking)
+  * [4.1 Open Challenge](#41-open-challenge)
+  * [4.2 Obstacle Challenge](#42-obstacle-challenge)
+  * [4.3 Parallel Parking](#43-parallel-parking)
 - [5. Robot Design](#5-robot-design)
-  - [5.1 Robot Images](#51-robot-images)
-  - [5.2 Chassis Design](#52-chassis-design)
+  * [5.1 Robot Images](#51-robot-images)
 - [6. Performance Video](#6-performance-video)
 - [7. Source Code](#7-source-code)
-  - [7.1 Code Structure](#71-code-structure)
-  - [7.2 Compilation / Upload Instructions](#72-compilation--upload-instructions)
+  * [7.1 Code Structure](#71-code-structure)
+  * [7.2 Compilation / Upload Instructions](#72-compilation--upload-instructions)
 - [8. List of Components](#8-list-of-components)
 - [9. STL and Slicer Files](#9-stl-and-slicer-files)
-  - [STL Files](#stl-files)
-  - [Slicer Files](#slicer-files)
+  * [STL Files](#stl-files)
+  * [Slicer Files](#slicer-files)
 - [10. Building Instructions](#10-building-instructions)
 - [11. Extra Documentation](#11-extra-documentation)
 
 <!-- tocstop -->
-
 
 ## 1. About the Project
 
@@ -220,7 +219,7 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 
 ### 3.2 Sensor and Camera
 
-[RPLIDAR S2](https://www.slamtec.com/en/S2)
+[LIDAR Sensor: RPLIDAR S2](https://www.slamtec.com/en/S2)
 
 <table>
   <tr>
@@ -232,13 +231,14 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
       <ul>
         <li>Distance Range:
           <ul>
-            <li>White: 0.05~12m (70% Reflectivity)</li>
-            <li>Black: 0.05~6m (10% Reflectivity)</li>
+            <li>White: 0.05-30m（90% Reflection）</li>
+            <li>Black: 0.05-10m（10% Reflection）</li>
           </ul>
         </li>
-        <li>Angle Resolution: 0.72°</li>
-        <li>Sample Frequency: 8~12Hz (10Hz Typical)</li>
-        <li>Range Accuracy: 15mm</li>
+        <li>Angle Resolution: 0.1125°</li>
+        <li>Accuracy: ±30mm</li>
+        <li>Scan Rate: 10Hz</li>
+        <li>Distance Resolution: 13mm</li>
         <li>Discharge Rate: 30C</li>
         <br/><br/>
       </ul>
@@ -263,7 +263,7 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 
 - Mapping and determining initial orientation
 
-[Fish Eye Lens Raspberry Pi 5MP IR Camera](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822)
+[Camera: Fish Eye Lens Raspberry Pi 5MP IR Camera](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822)
 
 <table >
   <tr>
@@ -324,7 +324,7 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
   </tr>
 </table>
 
-[Raspberry Pi Pico 2](https://th.cytron.io/p-raspberry-pi-pico2-board)
+[Microcontroller: Raspberry Pi Pico 2](https://th.cytron.io/p-raspberry-pi-pico2-board)
 
 <table>
   <tr>
