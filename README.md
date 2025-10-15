@@ -122,23 +122,6 @@ To reach a faster speed, we can upgrade the N20 motor to the N30, which is the e
 
 ### 2.2 Steering
 
-We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behavior of real-world vehicles. Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
-
-The fundamental principle of Ackermann geometry involves positioning the steering linkage so that a line drawn through both front wheels intersects the rear axle of the robot.
-
-<img src="./docs/resources/ackermann_steering.png">
-
-While this steering geometry is complex to implement, we believe that the advantages it provides are important, especially in obstacle navigation and parking, where precise control and minimized turning radius are essential. It enables smoother maneuvering and accurate alignment in narrower spaces.
-
-Our implementation comes in the form of a custom 3D-printed Ackermann steering mechanism. Using CAD allowed us to experiment with different pivot points and steering angles iteratively. Although true Ackermann geometry is difficult to implement at our robot's scale, we tried to approximate the behavior iteratively by adjusting the servo horns and angles in CAD and prototyping by making smaller changes until it suits our desired behavior.
-
-**Calibration and Implementation**
-
-To make sure the steering angle performed correctly, we carried out an iterative calibration process:
-
-- We manually adjusted the servo horn angle and linkage positions step by step in FreeCAD until the wheels aligned at the desired steering angle.
-- After each adjustment, we observed whether the wheels tracked correctly in both directions.
-- Once the optimal angle is reached, we make sure to model the steering mechanism around the angle.
 
 <img src="./docs/resources/steering_gif.gif" alt="steering_gif.gif">
 
@@ -169,6 +152,30 @@ To make sure the steering angle performed correctly, we carried out an iterative
 - It has balanced speed and stability during turns and lane changes.
 - This servo is widely used in hobby robotics, and as such, there is much available documentation and mounting kits.
 
+We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behavior of real-world vehicles. 
+
+ Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
+
+The fundamental principle of Ackermann geometry involves positioning the steering linkage so that a line drawn through both front wheels intersects the rear axle of the robot.
+
+<img src="./docs/resources/ackermann_steering.png">
+
+hile this steering geometry is complex to implement, we believe that the advantages it provides are important — especially in obstacle navigation and parking, where precise control and a minimized turning radius are essential. It enables smoother maneuvering and accurate alignment in narrower spaces.
+
+Our implementation comes in the form of a custom 3D-printed Ackermann steering mechanism, which offers the following key aspects:
+
+- We used FreeCAD to experiment with different pivot points and steering angles step by step.  
+- Although true Ackermann geometry is difficult to achieve at our robot's small scale, we aimed to approximate the behavior through multiple design iterations.  
+- Adjustments were made to the servo horns and steering angles directly in CAD before testing.  
+
+**Calibration and Implementation**
+
+To make sure the steering angle performed correctly, we carried out an iterative calibration process:
+
+- We manually adjusted the servo horn angle and linkage positions step by step in FreeCAD until the wheels aligned at the desired steering angle.
+- After each adjustment, we observed whether the wheels tracked correctly in both directions.
+- Once the optimal angle is reached, we make sure to model the steering mechanism around the angle.
+
 **Mounting:**
 
 - Screwed directly into a platform plate in front of the chassis, connected to the steering mechanism.
@@ -185,6 +192,7 @@ While the servo used is adequate for the task, it can still be replaced with som
 Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry while also allowing components to remain centerd on the chassis.
 
 **Layout**
+
 The layout of the chassis is made to fit the rear-mounted motors and front-mounted steering mechanism. Meanwhile, electronics and sensors are mounted in the center for ease of wiring.
 
 Our robot chassis was completely custom-designed in FreeCAD and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture and less warping compared to ABS, while also being lightweight and durable. Alongside the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that were fine-tuned during testing to achieve the correct alignment with other components. Other components, such as motor clamps and sensor brackets, are designed as independent printable components. The chassis was also designed with modularity in mind for replacements and upgrades, with reduced overhangs for printing ease.
