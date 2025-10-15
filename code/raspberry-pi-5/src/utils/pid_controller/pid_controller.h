@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 
 /**
  * @brief Simple PID controller class.
@@ -32,6 +33,10 @@ public:
      * @brief Reset the integral and derivative state.
      */
     void reset();
+    void setActive(bool enable);
+    bool isActive() const {
+        return active_;
+    }
 
 private:
     double Kp_;        /**< Proportional gain */
@@ -41,4 +46,5 @@ private:
     double lastError_; /**< Previous error (for D component calculation) */
     double outputMin_; /**< Minimum allowed output (clamping) */
     double outputMax_; /**< Maximum allowed output (clamping) */
+    bool active_;
 };
