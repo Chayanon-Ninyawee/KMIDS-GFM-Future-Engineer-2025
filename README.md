@@ -20,7 +20,8 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 
 - [1. Overview](#1-overview)
   - [1.1 About the Project](#11-about-the-project)
-  - [1.2. Performance Video](#12-performance-video)
+  - [1.2 Robot Images](#12-robot-images)
+  - [1.3 Performance Video](#13-performance-video)
 - [2. Mobility Management](#2-mobility-management)
   - [2.1 Drive System](#21-drive-system)
   - [2.2 Steering](#22-steering)
@@ -34,16 +35,14 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [4.1 Open Challenge](#41-open-challenge)
   - [4.2 Obstacle Challenge](#42-obstacle-challenge)
   - [4.3 Parallel Parking](#43-parallel-parking)
-- [5. Robot Design](#5-robot-design)
-  - [5.1 Robot Images](#51-robot-images)
-- [7. Source Code](#7-source-code)
-  - [7.1 Code Structure](#71-code-structure)
-  - [7.2 Compilation / Upload Instructions](#72-compilation--upload-instructions)
-- [8. List of Components](#8-list-of-components)
-- [9. STL and Slicer Files](#9-stl-and-slicer-files)
+- [5. Source Code](#5-source-code)
+  - [5.1 Code Structure](#51-code-structure)
+  - [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
+- [6. List of Components](#6-list-of-components)
+- [7. STL and Slicer Files](#7-stl-and-slicer-files)
   - [STL Files](#stl-files)
   - [Slicer Files](#slicer-files)
-- [10. Building Instructions](#10-building-instructions)
+- [8. Building Instructions](#8-building-instructions)
 - [11. Extra Documentation](#11-extra-documentation)
 
 <!-- tocstop -->
@@ -62,7 +61,40 @@ Our robot is engineered using a custom modular chassis in a rear-wheel drive con
 
 Our objective is to create an intelligent robot that is capable of navigating through obstacles with pinpoint precision and speed.
 
-### 1.2. Performance Video
+### 1.2 Robot Images
+
+<table>
+  <tr>
+    <td align="center">
+      <b>Front View</b><br>
+      <img src="./docs/resources/frontview.jpg" width="300">
+    </td>
+    <td align="center">
+      <b>Back View</b><br>
+      <img src="./docs/resources/backview.jpg" width="300">
+    </td>
+    <td align="center">
+      <b>Left Side View</b><br>
+      <img src="./docs/resources/leftview.jpg" width="300">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <b>Right Side View</b><br>
+      <img src="./docs/resources/rightview.jpg" width="300">
+    </td>
+  <td align="center">
+  <b>Top View</b><br>
+  <img src="./docs/resources/topview.jpg" width="300">
+</td>
+    <td align="center">
+      <b>Bottom View</b><br>
+      <img src="./docs/resources/botview.jpg" width="300">
+    </td>
+  </tr>
+</table>
+
+### 1.3 Performance Video
 
 [Watch on YouTube](https://youtu.be/hUqdMjxhbqM)
 
@@ -122,7 +154,6 @@ To reach a faster speed, we can upgrade the N20 motor to the N30, which is the e
 
 ### 2.2 Steering
 
-
 <img src="./docs/resources/steering_gif.gif" alt="steering_gif.gif">
 
 [Servo: S0004m](https://shopee.co.th/%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%A7%E0%B8%94%E0%B8%B4%E0%B8%88%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%A5-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%A5%E0%B9%87%E0%B8%81-2-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-4.3-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-6-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-8-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7V-6.0V-DC-%E0%B8%AA%E0%B9%8D%E0%B8%B2%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%AB%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B9%8C-%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9A%E0%B8%B4%E0%B8%99%E0%B8%9A%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%B1%E0%B8%9A-1-%E0%B8%8A%E0%B8%B4%E0%B9%89%E0%B8%99-i.53028894.18020081677?is_from_login=true)
@@ -152,21 +183,21 @@ To reach a faster speed, we can upgrade the N20 motor to the N30, which is the e
 - It has balanced speed and stability during turns and lane changes.
 - This servo is widely used in hobby robotics, and as such, there is much available documentation and mounting kits.
 
-We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behavior of real-world vehicles. 
+We considered many steering systems, but following our design principle of precision, we decided to implement Ackermann steering geometry to better replicate the precise turning behavior of real-world vehicles.
 
- Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
+Unlike simpler systems, Ackermann steering has the advantage of smoother turns by moving each wheel at different angles in a turn, reducing the slippage of the tires and improving turn accuracy.
 
 The fundamental principle of Ackermann geometry involves positioning the steering linkage so that a line drawn through both front wheels intersects the rear axle of the robot.
 
 <img src="./docs/resources/ackermann_steering.png">
 
-hile this steering geometry is complex to implement, we believe that the advantages it provides are important — especially in obstacle navigation and parking, where precise control and a minimized turning radius are essential. It enables smoother maneuvering and accurate alignment in narrower spaces.
+While this steering geometry is complex to implement, we believe that the advantages it provides are important — especially in obstacle navigation and parking, where precise control and a minimized turning radius are essential. It enables smoother maneuvering and accurate alignment in narrower spaces.
 
 Our implementation comes in the form of a custom 3D-printed Ackermann steering mechanism, which offers the following key aspects:
 
-- We used FreeCAD to experiment with different pivot points and steering angles step by step.  
-- Although true Ackermann geometry is difficult to achieve at our robot's small scale, we aimed to approximate the behavior through multiple design iterations.  
-- Adjustments were made to the servo horns and steering angles directly in CAD before testing.  
+- We used FreeCAD to experiment with different pivot points and steering angles step by step.
+- Although true Ackermann geometry is difficult to achieve at our robot's small scale, we aimed to approximate the behavior through multiple design iterations.
+- Adjustments were made to the servo horns and steering angles directly in CAD before testing.
 
 **Calibration and Implementation**
 
@@ -815,46 +846,9 @@ TBA. TODO:-->
 
 [▲ Back to Top](#top)
 
-## 5. Robot Design
+## 5. Source Code
 
-### 5.1 Robot Images
-
-<table>
-  <tr>
-    <td align="center">
-      <b>Front View</b><br>
-      <img src="./docs/resources/frontview.jpg" width="300">
-    </td>
-    <td align="center">
-      <b>Back View</b><br>
-      <img src="./docs/resources/backview.jpg" width="300">
-    </td>
-    <td align="center">
-      <b>Left Side View</b><br>
-      <img src="./docs/resources/leftview.jpg" width="300">
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <b>Right Side View</b><br>
-      <img src="./docs/resources/rightview.jpg" width="300">
-    </td>
-  <td align="center">
-  <b>Top View</b><br>
-  <img src="./docs/resources/topview.jpg" width="300" style="transform: rotate(90deg); transform-origin: center;">
-</td>
-    <td align="center">
-      <b>Bottom View</b><br>
-      <img src="./docs/resources/botview.jpg" width="300">
-    </td>
-  </tr>
-</table>
-
-[▲ Back to Top](#top)
-
-## 7. Source Code
-
-### 7.1 Code Structure
+### 5.1 Code Structure
 
 All the code used in the robot can be found [here](code)
 
@@ -943,7 +937,7 @@ repo-root
 
 This structure allows Pi 5 and Pi Pico to share common code while keeping hardware-specific modules separate.
 
-### 7.2 Compilation / Upload Instructions
+### 5.2 Compilation / Upload Instructions
 
 This section describes how to build and run the project on the **Raspberry Pi 5** and **Raspberry Pi Pico 2**, including all dependencies.
 
@@ -1030,7 +1024,7 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 
 [▲ Back to Top](#top)
 
-## 8. List of Components
+## 6. List of Components
 
 | Component                   | Quantity | Source/Supplier |
 | --------------------------- | -------- | --------------- |
@@ -1061,7 +1055,7 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 
   [▲ Back to Top](#top)
 
-## 9. STL and Slicer Files
+## 7. STL and Slicer Files
 
 ### STL Files
 
@@ -1130,7 +1124,7 @@ Slicer files in .gcode format, which include the settings for both printers, can
 
 [▲ Back to Top](#top)
 
-## 10. Building Instructions
+## 8. Building Instructions
 
 **Step 0: Print the 3D parts**
 
