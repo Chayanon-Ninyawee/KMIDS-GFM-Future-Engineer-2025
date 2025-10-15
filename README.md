@@ -31,6 +31,7 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [3.2 Sensor and Camera](#32-sensor-and-camera)
   - [3.3 Processing Units](#33-processing-units)
   - [3.4 Circuit Diagram](#34-circuit-diagram)
+  - [3.5 Power Consumption](#35-power-consumption)
 - [4. Obstacle Management](#4-obstacle-management)
   - [4.1 Open Challenge](#41-open-challenge)
   - [4.2 Obstacle Challenge](#42-obstacle-challenge)
@@ -439,7 +440,20 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 We had to decide on whether to do a PCB or use jumper wires to connect each component. In the end, we settled on using jumper wires as it gives us more flexibility during our development in case an error happens, and allows us to troubleshoot each part easily without having to redesign the circuit board.
 
-[▲ Back to Top](#top)
+### 3.5 Power Consumption
+
+| Component                     | Supply (V) | Typical Current (A) | Peak Current (A) | Typical Power (W) |
+| ----------------------------- | ---------- | ------------------- | ---------------- | ----------------- |
+| Raspberry Pi 5                | 5          | 2.50                | 5.00             | 12.50             |
+| Raspberry Pi Pico 2           | 5          | 0.05                | 0.10             | 0.25              |
+| RPLIDAR S2                    | 5          | 0.45                | 0.60             | 2.25              |
+| 5MP Fish Eye Lens Camera      | 5          | 0.12                | 0.25             | 0.60              |
+| Micro Servo S0004m (steering) | 5          | 0.12                | 0.65             | 0.60              |
+| N20 DC Motor                  | 12         | 0.30                | 1.50             | 7.20              |
+| DRV8871 Motor Driver          | 12         | 0.01                | 0.04             | 0.24              |
+| Step-Up Converter             | —          | —                   | —                | η ≈ 88%           |
+
+[▲ Back to Top]
 
 ## 4. Obstacle Management
 
