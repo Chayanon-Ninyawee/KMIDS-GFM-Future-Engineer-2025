@@ -19,26 +19,26 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 <!-- toc -->
 
 - [1. Overview](#1-overview)
-  * [1.1 About the Project](#11-about-the-project)
-  * [1.2 Robot Images](#12-robot-images)
-  * [1.3 Performance Video](#13-performance-video)
+  - [1.1 About the Project](#11-about-the-project)
+  - [1.2 Robot Images](#12-robot-images)
+  - [1.3 Performance Video](#13-performance-video)
 - [2. Mobility Management](#2-mobility-management)
-  * [2.1 Drive System](#21-drive-system)
-  * [2.2 Steering](#22-steering)
-  * [2.3 Chassis Design](#23-chassis-design)
+  - [2.1 Drive System](#21-drive-system)
+  - [2.2 Steering](#22-steering)
+  - [2.3 Chassis Design](#23-chassis-design)
 - [3. Power and Sense Management](#3-power-and-sense-management)
-  * [3.1 Power Source](#31-power-source)
-  * [3.2 Sensor and Camera](#32-sensor-and-camera)
-  * [3.3 Processing Units](#33-processing-units)
-  * [3.4 Circuit Diagram](#34-circuit-diagram)
-  * [3.5 Power Consumption](#35-power-consumption)
+  - [3.1 Power Source](#31-power-source)
+  - [3.2 Sensor and Camera](#32-sensor-and-camera)
+  - [3.3 Processing Units](#33-processing-units)
+  - [3.4 Circuit Diagram](#34-circuit-diagram)
+  - [3.5 Power Consumption](#35-power-consumption)
 - [4. Obstacle Management](#4-obstacle-management)
-  * [4.1 Open Challenge](#41-open-challenge)
-  * [4.2 Obstacle Challenge](#42-obstacle-challenge)
-  * [4.3 Parallel Parking](#43-parallel-parking)
+  - [4.1 Open Challenge](#41-open-challenge)
+  - [4.2 Obstacle Challenge](#42-obstacle-challenge)
+  - [4.3 Parallel Parking](#43-parallel-parking)
 - [5. Source Code](#5-source-code)
-  * [5.1 Code Structure](#51-code-structure)
-  * [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
+  - [5.1 Code Structure](#51-code-structure)
+  - [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
 - [6. List of Components](#6-list-of-components)
 - [7. STL and Slicer Files](#7-stl-and-slicer-files)
 - [8. Building Instructions](#8-building-instructions)
@@ -388,6 +388,25 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
   </tr>
 </table>
 
+[Adapter Board: Raspberry Pi M.2 HAT+](<>)
+
+<table>
+  <tr>
+    <td align="center" width="300" >
+      <img src=".\docs\resources\m2hat.jpg" alt="INSERT m2hat" >
+    </td>
+    <td>
+      <h3>Specifications:</h3>
+      <ul>
+          <li>Interface: PCIe 2.0 x1 (via 16-pin FPC connector)</li>
+          <li>Supported Devices: NVMe M.2 M-key SSDs (2280/2242/2230 sizes)</li>
+          <li>Data Transfer Rate: Up to 5 Gbps</li>
+          <li>Power Supply: 3.3V from Raspberry Pi 5 (max 2A output)</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
 [Motor Driver: DRV8871](<>)
 
 <table>
@@ -449,6 +468,7 @@ We had to decide on whether to do a PCB or use jumper wires to connect each comp
 | Micro Servo S0004m (steering) | 5          | 0.12                | 0.65             | 0.60              |
 | N20 DC Motor                  | 12         | 0.30                | 1.50             | 7.20              |
 | DRV8871 Motor Driver          | 12         | 0.01                | 0.04             | 0.24              |
+| Raspberry Pi M.2 HAT+         |            |                     |                  |                   |
 | Step-Up Converter             | —          | —                   | —                | η ≈ 88%           |
 
 [▲ Back to Top]
