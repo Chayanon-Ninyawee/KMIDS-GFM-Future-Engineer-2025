@@ -68,14 +68,13 @@ float normalizeAngle(float angle) {
 class Robot
 {
 public:
-    // Using enum class for type safety
     enum class Mode
     {
-        Normal,
-        PreTurn,
-        Turning,
-        PreStop,
-        Stop
+        NORMAL,
+        PRE_TURN,
+        TURNING,
+        PRE_STOP,
+        STOP
     };
 
     Robot(LidarModule &lidar, Pico2Module &pico2)
@@ -106,24 +105,24 @@ public:
         do {
             instantUpdate = false;
             switch (mode_) {
-            case Mode::Normal:
-                std::cout << "[Mode::Normal]\n";
+            case Mode::NORMAL:
+                std::cout << "[Mode::NORMAL]\n";
                 instantUpdate = updateNormalState(robotData);
                 break;
-            case Mode::PreTurn:
-                std::cout << "[Mode::PreTurn]\n";
+            case Mode::PRE_TURN:
+                std::cout << "[Mode::PRE_TURN]\n";
                 instantUpdate = updatePreTurnState(robotData);
                 break;
-            case Mode::Turning:
-                std::cout << "[Mode::Turning]\n";
+            case Mode::TURNING:
+                std::cout << "[Mode::TURNING]\n";
                 instantUpdate = updateTurningState(robotData);
                 break;
-            case Mode::PreStop:
-                std::cout << "[Mode::PreStop]\n";
+            case Mode::PRE_STOP:
+                std::cout << "[Mode::PRE_STOP]\n";
                 instantUpdate = updatePreStopState(robotData);
                 break;
-            case Mode::Stop:
-                std::cout << "[Mode::Stop]\n";
+            case Mode::STOP:
+                std::cout << "[Mode::STOP]\n";
                 motorSpeed_ = 0.0f;
                 steeringPercent_ = 0.0f;
                 stop_flag = 1;
@@ -131,7 +130,7 @@ public:
             }
         } while (instantUpdate && !stop_flag);
 
-        if (mode_ != Mode::Stop) {
+        if (mode_ != Mode::STOP) {
             calculateSteering(dt, robotData);
         }
 
@@ -148,7 +147,7 @@ private:
     PIDController wallPid_;
 
     // Robot state
-    Mode mode_ = Mode::Normal;
+    Mode mode_ = Mode::NORMAL;
     int turnCount_ = 0;
     Direction headingDirection_ = Direction::NORTH;
     std::optional<float> initialHeading_;
@@ -226,7 +225,7 @@ private:
         motorSpeed_ = FORWARD_MOTOR_SPEED;
 
         if (turnCount_ >= TOTAL_TURNS_TO_FINISH) {
-            mode_ = Mode::PreStop;
+            mode_ = Mode::PRE_STOP;
             return true;  // Instant update
         }
 
@@ -234,7 +233,7 @@ private:
         bool cooldownOver = !lastPreTurnTimestamp_ || (now - *lastPreTurnTimestamp_ >= PRE_TURN_COOLDOWN);
 
         if (data.frontWall && data.frontWall->perpendicularDistance(0.0f, 0.0f) <= PRE_TURN_FRONT_WALL_DISTANCE && cooldownOver) {
-            mode_ = Mode::PreTurn;
+            mode_ = Mode::PRE_TURN;
             lastPreTurnTimestamp_ = now;
             return true;  // Instant update
         }
@@ -250,7 +249,7 @@ private:
             float nextHeading = std::fmod(headingDirection_.toHeading() + turnAngle + 360.0f, 360.0f);
             headingDirection_ = Direction::fromHeading(nextHeading);
 
-            mode_ = Mode::Turning;
+            mode_ = Mode::TURNING;
             return true;  // Instant update
         }
         return false;
@@ -264,7 +263,7 @@ private:
         if (std::abs(diff) <= HEADING_TOLERANCE_DEGREES) {
             turnCount_++;
             wallPid_.setActive(true);  // Re-activate wall following after the turn is complete.
-            mode_ = Mode::Normal;
+            mode_ = Mode::NORMAL;
             return true;  // Instant update
         }
         return false;
@@ -280,7 +279,7 @@ private:
         auto elapsed = std::chrono::steady_clock::now() - *preStopTimestamp_;
         if (data.frontWall && data.frontWall->perpendicularDistance(0.0f, 0.0f) <= STOP_FRONT_WALL_DISTANCE && elapsed >= STOP_DELAY) {
             preStopTimestamp_.reset();  // Clear timestamp
-            mode_ = Mode::Stop;
+            mode_ = Mode::STOP;
             return true;  // Instant update
         }
         return false;
