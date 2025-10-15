@@ -1,7 +1,9 @@
 #include "combined_processor.h"
 #include "lidar_module.h"
 #include "lidar_processor.h"
+#include "lidar_struct.h"
 #include "pico2_module.h"
+#include "pico2_struct.h"
 #include "pid_controller.h"
 
 #include <atomic>
@@ -52,35 +54,50 @@ struct State {
     Direction headingDirection = Direction::NORTH;
 };
 
-void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, float &outMotorSpeed, float &outSteeringPercent) {
-    std::vector<TimedLidarData> timedLidarDatas;
-    lidar.getAllTimedLidarData(timedLidarDatas);
-    if (timedLidarDatas.empty()) return;
+struct RobotData {
+    std::vector<TimedLidarData> lidarDatas;
+    TimedLidarData latestLidarData;
 
-    std::vector<TimedPico2Data> timedPico2Datas;
-    pico2.getAllTimedData(timedPico2Datas);
-    if (timedPico2Datas.empty()) return;
+    std::vector<TimedPico2Data> pico2Datas;
+    TimedPico2Data latestPico2Data;
 
-    auto &timedLidarData = timedLidarDatas[timedLidarDatas.size() - 1];
-    auto &timedPico2Data = timedPico2Datas[timedPico2Datas.size() - 1];
+    float heading;
 
-    auto now = std::chrono::steady_clock::now();
+    std::optional<lidar_processor::LineSegment> frontWall;
+    std::optional<lidar_processor::LineSegment> backWall;
+    std::optional<lidar_processor::LineSegment> outerWall;
+    std::optional<lidar_processor::LineSegment> innerWall;
+};
 
-    auto filteredLidarData = lidar_processor::filterLidarData(timedLidarData);
+struct StateReturn {
+    bool instantUpdate = false;
+    bool skipPid = false;
+    bool skipWallPid = false;
+};
 
-    auto deltaPose = combined_processor::aproximateRobotPose(filteredLidarData, timedPico2Datas);
+std::optional<RobotData> updateRobotData(float dt, LidarModule &lidar, Pico2Module &pico2, State &state) {
+    RobotData robotData;
+
+    lidar.getAllTimedLidarData(robotData.lidarDatas);
+    if (robotData.lidarDatas.size() < lidar.bufferSize()) return std::nullopt;
+
+    pico2.getAllTimedData(robotData.pico2Datas);
+    if (robotData.pico2Datas.size() < pico2.bufferSize()) return std::nullopt;
+
+    if (not state.initialHeading) state.initialHeading = robotData.pico2Datas.back().euler.h;
+    robotData.heading = robotData.pico2Datas.back().euler.h - state.initialHeading.value_or(0.0f);
+    robotData.heading = std::fmod(robotData.heading, 360.0f);
+    if (robotData.heading < 0.0f) robotData.heading += 360.0f;
+
+    auto filteredLidarData = lidar_processor::filterLidarData(robotData.lidarDatas.back());
+
+    auto deltaPose = combined_processor::aproximateRobotPose(filteredLidarData, robotData.pico2Datas);
 
     // std::cout << "[DeltaPose] ΔX: " << deltaPose.deltaX << " m, ΔY: " << deltaPose.deltaY << " m, ΔH: " << deltaPose.deltaH << " deg"
     //           << std::endl;
 
-    if (not state.initialHeading) state.initialHeading = timedPico2Data.euler.h;
-
-    float heading = timedPico2Data.euler.h - state.initialHeading.value_or(0.0f);
-    heading = std::fmod(heading, 360.0f);
-    if (heading < 0.0f) heading += 360.0f;
-
     auto lineSegments = lidar_processor::getLines(filteredLidarData, deltaPose, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
-    auto relativeWalls = lidar_processor::getRelativeWalls(lineSegments, state.headingDirection, heading, 0.30f, 25.0f, 0.22f);
+    auto relativeWalls = lidar_processor::getRelativeWalls(lineSegments, state.headingDirection, robotData.heading, 0.30f, 25.0f, 0.22f);
     auto resolveWalls = lidar_processor::resolveWalls(relativeWalls);
 
     // Set robotTurnDirection
@@ -89,137 +106,184 @@ void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, floa
         if (newRobotTurnDirection) state.robotTurnDirection = newRobotTurnDirection;
     }
 
-    bool pidWallErrorActive = true;
-
-    auto frontWall = resolveWalls.frontWall;
-    auto backWall = resolveWalls.backWall;
-
-    std::optional<lidar_processor::LineSegment> outerWall;
-    std::optional<lidar_processor::LineSegment> innerWall;
-
+    robotData.frontWall = resolveWalls.frontWall;
+    robotData.backWall = resolveWalls.backWall;
     if (state.robotTurnDirection) {
         if (*state.robotTurnDirection == RotationDirection::CLOCKWISE) {
-            outerWall = resolveWalls.leftWall;
-            innerWall = resolveWalls.rightWall;
+            robotData.outerWall = resolveWalls.leftWall;
+            robotData.innerWall = resolveWalls.rightWall;
         } else {
-            outerWall = resolveWalls.rightWall;
-            innerWall = resolveWalls.leftWall;
+            robotData.outerWall = resolveWalls.rightWall;
+            robotData.innerWall = resolveWalls.leftWall;
         }
     }
 
-instant_update:
-    switch (state.robotMode) {
-    default:
-        std::cout << "[OpenChallenge] Invalid Mode!" << std::endl;
-        stop_flag = 1;
-        return;
+    return robotData;
+}
 
-    case Mode::NORMAL: {
-        // std::cout << "[Mode::NORMAL]\n";
+StateReturn stateNormal(RobotData &robotData, State &state, float &outMotorSpeed, float &outSteeringPercent) {
+    StateReturn stateReturn;
 
-        outMotorSpeed = 4.5f;
+    auto now = std::chrono::steady_clock::now();
 
-        if (state.numberOfTurn == 12) {
-            state.robotMode = Mode::PRE_STOP;
-            goto instant_update;
-        }
+    // std::cout << "[Mode::NORMAL]\n";
 
-        static auto lastPreTurnTrigger = std::chrono::steady_clock::now() - PRE_TURN_COOLDOWN;
-        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= PRE_TURN_FRONT_WALL_DISTANCE &&
-            (now - lastPreTurnTrigger) >= PRE_TURN_COOLDOWN)
-        {
-            state.robotMode = Mode::PRE_TURN;
-            lastPreTurnTrigger = now;
-            goto instant_update;
-        }
-        break;
-    }
-    case Mode::PRE_TURN: {
-        // std::cout << "[Mode::PRE_TURN]\n";
+    outMotorSpeed = 4.5f;
 
-        outMotorSpeed = 4.5f;
+    if (state.numberOfTurn == 12) {
+        state.robotMode = Mode::PRE_STOP;
 
-        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= TURNING_FRONT_WALL_DISTANCE) {
-            Direction nextHeadingDirection;
-            if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
-                float nextHeading = state.headingDirection.toHeading() + 90.0f;
-                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
-                nextHeadingDirection = Direction::fromHeading(nextHeading);
-            } else {
-                float nextHeading = state.headingDirection.toHeading() - 90.0f;
-                nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
-                nextHeadingDirection = Direction::fromHeading(nextHeading);
-            }
-
-            state.headingDirection = nextHeadingDirection;
-
-            state.robotMode = Mode::TURNING;
-            goto instant_update;
-        }
-        break;
-    }
-    case Mode::TURNING: {
-        // std::cout << "[Mode::TURNING]\n";
-
-        outMotorSpeed = 4.5f;
-
-        pidWallErrorActive = false;
-
-        float diff = heading - state.headingDirection.toHeading();
-        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
-        if (std::abs(diff) <= 20.0f) {
-            state.numberOfTurn++;
-            state.robotMode = Mode::NORMAL;
-            goto instant_update;
-        }
-        break;
-    }
-    case Mode::PRE_STOP: {
-        // std::cout << "[Mode::PRE_STOP]\n";
-
-        outMotorSpeed = 4.5f;
-
-        static bool stopTimerActive = false;
-        static auto stopStartTime = std::chrono::steady_clock::now();
-        if (!stopTimerActive) {
-            stopTimerActive = true;
-            stopStartTime = std::chrono::steady_clock::now();
-        }
-
-        auto elapsed = std::chrono::steady_clock::now() - stopStartTime;
-        if (frontWall && frontWall->perpendicularDistance(0.0f, 0.0f) <= STOP_FRONT_WALL_DISTANCE && elapsed >= STOP_DELAY) {
-            stopTimerActive = false;
-
-            state.robotMode = Mode::STOP;
-            goto instant_update;
-        }
-        break;
-    }
-    case Mode::STOP: {
-        // std::cout << "[Mode::STOP]\n";
-        outMotorSpeed = 0.0f;
-        outSteeringPercent = 0.0f;
-
-        stop_flag = 1;
-        return;
-    }
+        stateReturn.instantUpdate = true;
+        return stateReturn;
     }
 
-    // NOTE: Use break and it will run the pid
-    // If don't want to run the pid then use return
+    static auto lastPreTurnTrigger = std::chrono::steady_clock::now() - PRE_TURN_COOLDOWN;
+    if (robotData.frontWall && robotData.frontWall->perpendicularDistance(0.0f, 0.0f) <= PRE_TURN_FRONT_WALL_DISTANCE &&
+        (now - lastPreTurnTrigger) >= PRE_TURN_COOLDOWN)
+    {
+        state.robotMode = Mode::PRE_TURN;
+        lastPreTurnTrigger = now;
+
+        stateReturn.instantUpdate = true;
+        return stateReturn;
+    }
+
+    return stateReturn;
+}
+
+StateReturn statePreTurn(RobotData &robotData, State &state, float &outMotorSpeed, float &outSteeringPercent) {
+    StateReturn stateReturn;
+
+    // std::cout << "[Mode::PRE_TURN]\n";
+
+    outMotorSpeed = 4.5f;
+
+    if (robotData.frontWall && robotData.frontWall->perpendicularDistance(0.0f, 0.0f) <= TURNING_FRONT_WALL_DISTANCE) {
+        Direction nextHeadingDirection;
+        if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
+            float nextHeading = state.headingDirection.toHeading() + 90.0f;
+            nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+            nextHeadingDirection = Direction::fromHeading(nextHeading);
+        } else {
+            float nextHeading = state.headingDirection.toHeading() - 90.0f;
+            nextHeading = std::fmod(nextHeading + 360.0f, 360.0f);
+            nextHeadingDirection = Direction::fromHeading(nextHeading);
+        }
+
+        state.headingDirection = nextHeadingDirection;
+
+        state.robotMode = Mode::TURNING;
+
+        stateReturn.instantUpdate = true;
+        return stateReturn;
+    }
+
+    return stateReturn;
+}
+
+StateReturn stateTurning(RobotData &robotData, State &state, float &outMotorSpeed, float &outSteeringPercent) {
+    StateReturn stateReturn;
+
+    // std::cout << "[Mode::TURNING]\n";
+
+    outMotorSpeed = 4.5f;
+
+    stateReturn.skipWallPid = true;
+
+    float diff = robotData.heading - state.headingDirection.toHeading();
+    diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+    if (std::abs(diff) <= 20.0f) {
+        state.numberOfTurn++;
+        state.robotMode = Mode::NORMAL;
+
+        stateReturn.instantUpdate = true;
+        return stateReturn;
+    }
+
+    return stateReturn;
+}
+
+StateReturn statePreStop(RobotData &robotData, State &state, float &outMotorSpeed, float &outSteeringPercent) {
+    StateReturn stateReturn;
+
+    // std::cout << "[Mode::PRE_STOP]\n";
+
+    outMotorSpeed = 4.5f;
+
+    static bool stopTimerActive = false;
+    static auto stopStartTime = std::chrono::steady_clock::now();
+    if (!stopTimerActive) {
+        stopTimerActive = true;
+        stopStartTime = std::chrono::steady_clock::now();
+    }
+
+    auto elapsed = std::chrono::steady_clock::now() - stopStartTime;
+    if (robotData.frontWall && robotData.frontWall->perpendicularDistance(0.0f, 0.0f) <= STOP_FRONT_WALL_DISTANCE && elapsed >= STOP_DELAY)
+    {
+        stopTimerActive = false;
+
+        state.robotMode = Mode::STOP;
+
+        stateReturn.instantUpdate = true;
+        return stateReturn;
+    }
+
+    return stateReturn;
+}
+
+void update(float dt, LidarModule &lidar, Pico2Module &pico2, State &state, float &outMotorSpeed, float &outSteeringPercent) {
+
+    auto robotDataOpt = updateRobotData(dt, lidar, pico2, state);
+    if (not robotDataOpt.has_value()) return;
+    RobotData robotData = robotDataOpt.value();
+
+    StateReturn stateReturn;
+    do {
+        StateReturn newStateReturn;
+        stateReturn = newStateReturn;
+
+        switch (state.robotMode) {
+        default:
+            std::cout << "[OpenChallenge] Invalid Mode!" << std::endl;
+            stop_flag = 1;
+            return;
+        case Mode::NORMAL:
+            stateReturn = stateNormal(robotData, state, outMotorSpeed, outSteeringPercent);
+            break;
+        case Mode::PRE_TURN:
+            stateReturn = statePreTurn(robotData, state, outMotorSpeed, outSteeringPercent);
+            break;
+        case Mode::TURNING:
+            stateReturn = stateTurning(robotData, state, outMotorSpeed, outSteeringPercent);
+            break;
+        case Mode::PRE_STOP:
+            stateReturn = statePreStop(robotData, state, outMotorSpeed, outSteeringPercent);
+            break;
+        case Mode::STOP:
+            // std::cout << "[Mode::STOP]\n";
+
+            outMotorSpeed = 0.0f;
+            outSteeringPercent = 0.0f;
+
+            stop_flag = 1;
+            return;
+        }
+    } while (stateReturn.instantUpdate);
+
+    if (stateReturn.skipPid) return;
 
     float wallError = 0.0f;
-    if (outerWall) {
-        wallError = outerWall->perpendicularDistance(0.0f, 0.0f) - TARGET_OUTER_WALL_DISTANCE;
+    if (robotData.outerWall) {
+        wallError = robotData.outerWall->perpendicularDistance(0.0f, 0.0f) - TARGET_OUTER_WALL_DISTANCE;
     }
     float headingErrorOffset = state.wallPid.update(wallError, dt);
 
-    float headingError = state.headingDirection.toHeading() - heading;
+    float headingError = state.headingDirection.toHeading() - robotData.heading;
     headingError = std::fmod(headingError + 180.0f, 360.0f);
     if (headingError < 0) headingError += 360.0f;
     headingError -= 180.0f;
 
-    if (pidWallErrorActive) {
+    if (not stateReturn.skipWallPid) {
         if (state.robotTurnDirection.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
             headingError -= headingErrorOffset;
         } else {
