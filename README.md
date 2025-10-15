@@ -19,32 +19,30 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 <!-- toc -->
 
 - [1. Overview](#1-overview)
-  - [1.1 About the Project](#11-about-the-project)
-  - [1.2 Robot Images](#12-robot-images)
-  - [1.3 Performance Video](#13-performance-video)
+  * [1.1 About the Project](#11-about-the-project)
+  * [1.2 Robot Images](#12-robot-images)
+  * [1.3 Performance Video](#13-performance-video)
 - [2. Mobility Management](#2-mobility-management)
-  - [2.1 Drive System](#21-drive-system)
-  - [2.2 Steering](#22-steering)
-  - [2.3 Chassis Design](#23-chassis-design)
+  * [2.1 Drive System](#21-drive-system)
+  * [2.2 Steering](#22-steering)
+  * [2.3 Chassis Design](#23-chassis-design)
 - [3. Power and Sense Management](#3-power-and-sense-management)
-  - [3.1 Power Source](#31-power-source)
-  - [3.2 Sensor and Camera](#32-sensor-and-camera)
-  - [3.3 Processing Units](#33-processing-units)
-  - [3.4 Circuit Diagram](#34-circuit-diagram)
-  - [3.5 Power Consumption](#35-power-consumption)
+  * [3.1 Power Source](#31-power-source)
+  * [3.2 Sensor and Camera](#32-sensor-and-camera)
+  * [3.3 Processing Units](#33-processing-units)
+  * [3.4 Circuit Diagram](#34-circuit-diagram)
+  * [3.5 Power Consumption](#35-power-consumption)
 - [4. Obstacle Management](#4-obstacle-management)
-  - [4.1 Open Challenge](#41-open-challenge)
-  - [4.2 Obstacle Challenge](#42-obstacle-challenge)
-  - [4.3 Parallel Parking](#43-parallel-parking)
+  * [4.1 Open Challenge](#41-open-challenge)
+  * [4.2 Obstacle Challenge](#42-obstacle-challenge)
+  * [4.3 Parallel Parking](#43-parallel-parking)
 - [5. Source Code](#5-source-code)
-  - [5.1 Code Structure](#51-code-structure)
-  - [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
+  * [5.1 Code Structure](#51-code-structure)
+  * [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
 - [6. List of Components](#6-list-of-components)
 - [7. STL and Slicer Files](#7-stl-and-slicer-files)
-  - [STL Files](#stl-files)
-  - [Slicer Files](#slicer-files)
 - [8. Building Instructions](#8-building-instructions)
-- [11. Extra Documentation](#11-extra-documentation)
+- [9. Extra Documentation](#9-extra-documentation)
 
 <!-- tocstop -->
 
@@ -1113,7 +1111,7 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 
 ## 7. STL and Slicer Files
 
-### STL Files
+**STL Files**
 
 The FreeCAD files can be found [here](./FreeCAD-Files)
 
@@ -1153,7 +1151,7 @@ The FreeCAD files can be found [here](./FreeCAD-Files)
 
 - [`LidarPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/LidarPlate_1x.stl)
 
-### Slicer Files
+**Slicer Files**
 
 Slicer files in .gcode format, which include the settings for both printers, can be found [here](./Slicer-Files)
 
@@ -1314,21 +1312,32 @@ The recommended settings can be found in the .gcode files. The recommended basic
 
 **Step 2: Assemble the drivetrain**
 
-1. Attach the rear wheel axles to the connector using 2x M3 screws, <img src="docs\resources\2.1.png" alt="2.1">
-1. Place a LEGO differential gear in between the rear wheel chassis walls, and insert the connector into the chassis wall, securing it using the stopper and 2x M3 screws on each side. <img src="docs\resources\2.2.png" alt="2.2">
-1. Place the N20 motor into the motor plate. Secure the motor with the motor clamp using 2x M3 screws. <img src="docs\resources\2.3.png" alt="2.3">
-1. Attach the 3D printed gear to the motor and secure the motor plate onto the chassis using 4x M3 screws. <img src="docs\resources\2.4.png" alt="2.4">
-1. Attach the wheels to the axles using 3x M3 screws on each side. <img src="docs\resources\2.5.png" alt="2.5">
+1. Attach the rear wheel axles to the connector using 2x M3 screws.
+   <img src="docs\resources\2.1.png" alt="2.1">
+1. Place a LEGO differential gear in between the rear wheel chassis walls, and insert the connector into the chassis wall, securing it using the stopper and 2x M3 screws on each side.
+   <img src="docs\resources\2.2.png" alt="2.2">
+1. Place the N20 motor into the motor plate. Secure the motor with the motor clamp using 2x M3 screws.
+   <img src="docs\resources\2.3.png" alt="2.3">
+1. Attach the 3D printed gear to the motor and secure the motor plate onto the chassis using 4x M3 screws.
+   <img src="docs\resources\2.4.png" alt="2.4">
+1. Attach the wheels to the axles using 3x M3 screws on each side.
+   <img src="docs\resources\2.5.png" alt="2.5">
 
 **Step 3: Mount electronics**
 
 1. Attach the camera to the front plate using 4x M2 screws, ensuring the wire is threaded through the small gap in the front plate.
+   <img src=".\docs\resources\cameraview.jpg" alt="camview">
 1. Attach the UPS EP-0136 onto the Raspberry Pi 5, separated via 4x M2.5 standoffs, ensuring battery access at the bottom and the Raspberry Pi 5 facing upwards.
 1. Attach the Raspberry Pi M.2 HAT+ to the Raspberry Pi 5 using M2.5 standoffs, and only connect using the ribbon cable.
 1. Stick the Raspberry Pi Pico 2, BNO085 IMU, and the step-up module using tape on the back of the chassis.
 1. Attach the LIDAR plate behind the Raspberry Pi, using 4x M2.5 standoffs and pillars to elevate the plate, ensuring the LIDAR is horizontal to the ground and has a 360-degree view around the robot by adjusting the standoffs.
 1. Attach the button and RPLIDARS2 onto the LIDAR Plate, ensuring the LIDAR sensor module is above the motor plate.
 1. Organise the wiring for added components according to the [wiring diagram](#34-Circuit-Diagram)
+
+> **The final result should look similar to this** <img src=".\docs\resources\circuitlayer.jpg" alt="stack">
+> *From top to bottom: Raspberry Pi M.2 HAT+, Raspberry Pi 5, UPS EP-0136*
+> <img src=".\docs\resources\circuitunzoom.jpg" alt="circuitunzoom">
+> *Figure: The component layout of the robot*
 
 **Step 4: Upload the software**
 
@@ -1339,7 +1348,7 @@ The recommended settings can be found in the .gcode files. The recommended basic
 
 [▲ Back to Top](#top)
 
-## 11. Extra Documentation
+## 9. Extra Documentation
 
 [Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](docs/dhcp-server-on-ethernet-port.md)
 
