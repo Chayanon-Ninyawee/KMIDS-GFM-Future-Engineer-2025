@@ -234,7 +234,7 @@ Our robot chassis was completely custom-designed in FreeCAD and 3D printed using
 
 ### 3.1 Power Source
 
-[18650 Lithium-Ion Battery](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery)
+[Battery: 18650 Lithium-Ion](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery)
 
 <table>
   <tr>
@@ -389,11 +389,53 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
   </tr>
 </table>
 
+[Motor Driver: DRV8871](<>)
+
+<table>
+  <tr>
+    <td align="center" width="300">
+      <img src="./docs/resources/driver.png" alt="mosfet.png" width="100%">
+    </td>
+    <td>
+      <h3>Specifications:</h3>
+      <ul>
+          <li></li>
+          <li> </li>
+          <li></li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+[Transistor: N-Channel MOSFET ](<>)
+
+<table>
+  <tr>
+    <td align="center" width="300">
+      <img src="./docs/resources/mosfet.png" alt="mosfet.png" width="100%">
+    </td>
+    <td>
+      <h3>Specifications:</h3>
+      <ul>
+          <li>Type: N-Channel Enhancement Mode MOSFET</li>
+          <li>Drain-Source Voltage (Vds): 30V ~ 60V </li>
+          <li>Continuous Drain Current (Id): 20A ~ 40A</li>
+          <li>Gate Threshold Voltage (Vgs(th)): 1V ~ 3V</li>
+          <li>R<sub>DS(On-Resistance)</sub>: 0.02Ω ~ 0.05Ω </li>
+          <li>Gate-Source Voltage (Vgs max): ±20V</li>
+          <li>Power Dissipation: 30W ~ 60W</li>
+          <li>Package Type: TO-220 / TO-247 (common formats)</li>
+          <li>Typical Applications: Motor drivers, power switching, DC-DC converters</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
 ### 3.4 Circuit Diagram
 
 **Wiring Diagram:**
 
-<img src="./docs/resources/Wiring Diagram Revised.png" alt="Wiring diagram pic" >
+<img src="docs\resources\wiring_diagram_v3.png" alt="Wiring diagram pic" >
 
 We had to decide on whether to do a PCB or use jumper wires to connect each component. In the end, we settled on using jumper wires as it gives us more flexibility during our development in case an error happens, and allows us to troubleshoot each part easily without having to redesign the circuit board.
 
