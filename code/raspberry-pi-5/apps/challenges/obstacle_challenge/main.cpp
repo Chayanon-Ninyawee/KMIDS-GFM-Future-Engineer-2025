@@ -592,7 +592,8 @@ private:
         targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE;
         wallPid_.setActive(false);
 
-        float diff = normalizeAngle(data.heading - headingDirection_.toHeading());
+        float diff = data.heading - headingDirection_.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
         if (std::abs(diff) <= HEADING_TOLERANCE_DEGREES_TURN) {
             turnCount_++;
             mode_ = Mode::NORMAL;
@@ -646,7 +647,8 @@ private:
         motorSpeed_ = FORWARD_MOTOR_SPEED;
         wallPid_.setActive(false);
 
-        float diff = normalizeAngle(data.heading - headingDirection_.toHeading());
+        float diff = data.heading - headingDirection_.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
         if (std::abs(diff) <= HEADING_TOLERANCE_DEGREES_UTURN) {
             float nextHeading = headingDirection_.toHeading() + 90.0f;
             headingDirection_ = Direction::fromHeading(std::fmod(nextHeading + 360.0f, 360.0f));
@@ -661,8 +663,9 @@ private:
         steeringPercent_ = 100.0f;
         wallPid_.setActive(false);
 
-        float diff = normalizeAngle(data.heading - headingDirection_.toHeading());
-        if (diff >= 2.0f) {
+        float diff = data.heading - headingDirection_.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+        if (diff <= HEADING_TOLERANCE_DEGREES_UTURN) {
             turnDirection_ = RotationDirection::CLOCKWISE;
             mode_ = Mode::CW_PRE_FIND_PARKING_1;
             wallPid_.setActive(true);  // Re-enable for the next state
@@ -745,7 +748,8 @@ private:
         motorSpeed_ = FORWARD_MOTOR_SPEED;
         wallPid_.setActive(false);
 
-        float diff = normalizeAngle(data.heading - headingDirection_.toHeading());
+        float diff = data.heading - headingDirection_.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
         if (std::abs(diff) <= HEADING_TOLERANCE_DEGREES_UTURN) {
             float nextHeading = headingDirection_.toHeading() - 90.0f;
             headingDirection_ = Direction::fromHeading(std::fmod(nextHeading + 360.0f, 360.0f));
@@ -759,7 +763,8 @@ private:
         motorSpeed_ = FORWARD_MOTOR_SPEED;
         wallPid_.setActive(false);
 
-        float diff = normalizeAngle(data.heading - headingDirection_.toHeading());
+        float diff = data.heading - headingDirection_.toHeading();
+        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
         if (std::abs(diff) <= HEADING_TOLERANCE_DEGREES_UTURN) {
             turnDirection_ = RotationDirection::COUNTER_CLOCKWISE;
             mode_ = Mode::CCW_PRE_FIND_PARKING;
