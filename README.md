@@ -412,7 +412,7 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 <table>
   <tr>
     <td align="center" width="300">
-      <img src="./docs/resources/driver.png" alt="mosfet.png" width="100%">
+      <img src="docs\resources\drv8871.jpg" alt="driver.png" width="100%">
     </td>
     <td>
       <h3>Specifications:</h3>
@@ -430,7 +430,7 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 <table>
   <tr>
     <td align="center" width="300">
-      <img src="./docs/resources/mosfet.png" alt="mosfet.png" width="100%">
+      <img src="docs\resources\N-Channel.webp" alt="mosfet.png" width="100%">
     </td>
     <td>
       <h3>Specifications:</h3>
