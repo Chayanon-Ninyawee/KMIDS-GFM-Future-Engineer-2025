@@ -297,11 +297,15 @@ private:
         // This will return 0.0 if the wall PID is inactive, effectively skipping it
         float headingErrorOffset = wallPid_.update(wallError, dt);
 
+        if (motorSpeed_ < 0) headingErrorOffset = -headingErrorOffset;
+
         if (turnDirection_.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
             headingError -= headingErrorOffset;
         } else {
             headingError += headingErrorOffset;
         }
+
+        if (motorSpeed_ < 0) headingError = -headingError;
 
         steeringPercent_ = headingPid_.update(headingError, dt);
     }
