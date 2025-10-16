@@ -377,6 +377,8 @@ private:
 
         float headingErrorOffset = wallPid_.update(wallError, dt);
 
+        if (motorSpeed_ < 0) headingErrorOffset = -headingErrorOffset;
+
         if (wallPid_.isActive()) {
             if (turnDirection_.value_or(RotationDirection::CLOCKWISE) == RotationDirection::CLOCKWISE) {
                 headingError -= headingErrorOffset;
