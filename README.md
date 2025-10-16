@@ -19,26 +19,26 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 <!-- toc -->
 
 - [1. Overview](#1-overview)
-  - [1.1 About the Project](#11-about-the-project)
-  - [1.2 Robot Images](#12-robot-images)
-  - [1.3 Performance Video](#13-performance-video)
+  * [1.1 About the Project](#11-about-the-project)
+  * [1.2 Robot Images](#12-robot-images)
+  * [1.3 Performance Video](#13-performance-video)
 - [2. Mobility Management](#2-mobility-management)
-  - [2.1 Drive System](#21-drive-system)
-  - [2.2 Steering](#22-steering)
-  - [2.3 Chassis Design](#23-chassis-design)
+  * [2.1 Drive System](#21-drive-system)
+  * [2.2 Steering](#22-steering)
+  * [2.3 Chassis Design](#23-chassis-design)
 - [3. Power and Sense Management](#3-power-and-sense-management)
-  - [3.1 Power Source](#31-power-source)
-  - [3.2 Sensor and Camera](#32-sensor-and-camera)
-  - [3.3 Processing Units](#33-processing-units)
-  - [3.4 Circuit Diagram](#34-circuit-diagram)
-  - [3.5 Power Consumption](#35-power-consumption)
+  * [3.1 Power Source](#31-power-source)
+  * [3.2 Sensor and Camera](#32-sensor-and-camera)
+  * [3.3 Processing Units](#33-processing-units)
+  * [3.4 Circuit Diagram](#34-circuit-diagram)
+  * [3.5 Power Consumption](#35-power-consumption)
 - [4. Obstacle Management](#4-obstacle-management)
-  - [4.1 Open Challenge](#41-open-challenge)
-  - [4.2 Obstacle Challenge](#42-obstacle-challenge)
-  - [4.3 Parallel Parking](#43-parallel-parking)
+  * [4.1 Open Challenge](#41-open-challenge)
+  * [4.2 Obstacle Challenge](#42-obstacle-challenge)
+  * [4.3 Parallel Parking](#43-parallel-parking)
 - [5. Source Code](#5-source-code)
-  - [5.1 Code Structure](#51-code-structure)
-  - [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
+  * [5.1 Code Structure](#51-code-structure)
+  * [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
 - [6. List of Components](#6-list-of-components)
 - [7. STL and Slicer Files](#7-stl-and-slicer-files)
 - [8. Building Instructions](#8-building-instructions)
@@ -216,6 +216,16 @@ To make sure the steering angle performed correctly, we carried out an iterative
 While the servo used is adequate for the task, it can still be replaced with something more precise. We plan to upgrade to a high-resolution digital servo with a narrower deadband and metal gears for more accurate movement. By also integrating a PWM driver such as the PCA9685, we gain 12-bit resolution control, which gives the robot the ability to make finer adjustments than the Raspberry Pi’s native PWM.
 
 ### 2.3 Chassis Design
+
+**Chassis Overview:**
+
+<img src="docs\resources\barechassis.png" alt="chassis" >
+
+| Dimensions: | Length (mm) |
+| ----------- | ----------- |
+| Width       | 244         |
+| Length      | 120         |
+| Height      | 59          |
 
 **Design Overview**
 
@@ -1323,12 +1333,17 @@ The recommended settings can be found in the .gcode files. The recommended basic
 
 **Step 1: Assemble the steering system**
 
-1. At the front, combine the wheel linkage by connecting the wheel axle and steering linkage between the two wheel linkages <img src="docs\resources\1.1.png" alt="1.1" >
-1. Attach the steering linkage to the T-bone linkage. <img src="docs\resources\1.2.png" alt="1.2">
+1. At the front, combine the wheel linkage by connecting the wheel axle and steering linkage between the two wheel linkages
+   <img src="docs\resources\1.1.png" alt="1.1" >
+1. Attach the steering linkage to the T-bone linkage.
+   <img src="docs\resources\1.2.png" alt="1.2">
 1. Glue the two T-bone linkage parts together using glue.
-1. Mount the front plate on the chassis, while securing the wheel linkage in between the chassis and front plate using 2x M3 screws.<img src="docs\resources\1.4.png" alt="1.4">
-1. Attach the servo to the front plate using 2x M1.6 screws, using glue to attach the shaft to the T-bone linkage below. <img src="docs\resources\1.5.png" alt="1.5">
-1. Fix the wheels in place using the wheel stoppers, securing them using 3x M3 screws on each side. <img src="docs\resources\1.6.png" alt="1.6">
+1. Mount the front plate on the chassis, while securing the wheel linkage in between the chassis and front plate using 2x M3 screws.
+   <img src="docs\resources\1.4.png" alt="1.4">
+1. Attach the servo to the front plate using 2x M1.6 screws, using glue to attach the shaft to the T-bone linkage below.
+   <img src="docs\resources\1.5.png" alt="1.5">
+1. Fix the wheels in place using the wheel stoppers, securing them using 3x M3 screws on each side.
+   <img src="docs\resources\1.6.png" alt="1.6">
 
 **Step 2: Assemble the drivetrain**
 
@@ -1354,7 +1369,8 @@ The recommended settings can be found in the .gcode files. The recommended basic
 1. Attach the button and RPLIDARS2 onto the LIDAR Plate, ensuring the LIDAR sensor module is above the motor plate.
 1. Organise the wiring for added components according to the [wiring diagram](#34-Circuit-Diagram)
 
-> **The final result should look similar to this** <img src=".\docs\resources\circuitlayer.jpg" alt="stack">
+> **The final result should look similar to this**
+> <img src=".\docs\resources\circuitlayer.jpg" alt="stack">
 > *From top to bottom: Raspberry Pi M.2 HAT+, Raspberry Pi 5, UPS EP-0136*
 > <img src=".\docs\resources\circuitunzoom.jpg" alt="circuitunzoom">
 > *Figure: The component layout of the robot*
