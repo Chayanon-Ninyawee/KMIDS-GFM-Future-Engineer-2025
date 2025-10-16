@@ -1336,8 +1336,10 @@ The recommended settings can be found in the .gcode files. The recommended basic
 **Step 1: Assemble the steering system**
 
 1. At the front, combine the wheel linkage by connecting the wheel axle and steering linkage between the two wheel linkages
+   
    <img src="docs\resources\1.1.png" alt="1.1" width="350">
 1. Attach the steering linkage to the T-bone linkage.
+   
    <img src="docs\resources\1.2.png" alt="1.2" width="350">
 1. Glue the two T-bone linkage parts together using glue.
 1. Mount the front plate on the chassis, while securing the wheel linkage in between the chassis and front plate using 2x M3 screws.
@@ -1351,14 +1353,17 @@ The recommended settings can be found in the .gcode files. The recommended basic
 **Step 2: Assemble the drivetrain**
 
 1. Attach the rear wheel axles to the connector using 2x M3 screws.
+   
    <img src="docs\resources\2.1.png" alt="2.1" width="350">
 1. Place a LEGO differential gear in between the rear wheel chassis walls, and insert the connector into the chassis wall, securing it using the stopper and 2x M3 screws on each side.
+   
    <img src="docs\resources\2.2.png" alt="2.2" width="375">
 1. Place the N20 motor into the motor plate. Secure the motor with the motor clamp using 2x M3 screws.
    <img src="docs\resources\2.3.png" alt="2.3" width="350">
 1. Attach the 3D printed gear to the motor and secure the motor plate onto the chassis using 4x M3 screws.
    <img src="docs\resources\2.4.png" alt="2.4" width="350">
 1. Attach the wheels to the axles using 3x M3 screws on each side.
+   
    <img src="docs\resources\2.5.png" alt="2.5" width="350">
 
 **Step 3: Mount electronics**
@@ -1373,9 +1378,13 @@ The recommended settings can be found in the .gcode files. The recommended basic
 1. Organise the wiring for added components according to the [wiring diagram](#34-Circuit-Diagram)
 
 > **The final result should look similar to this**
+> 
 > <img src=".\docs\resources\circuitlayer.jpg" alt="stack" width="350">
+>
 > *From top to bottom: Raspberry Pi M.2 HAT+, Raspberry Pi 5, UPS EP-0136*
+> 
 > <img src=".\docs\resources\circuitunzoom.jpg" alt="circuitunzoom" width="350">
+>
 > *Figure: The component layout of the robot*
 
 **Step 4: Upload the software**
