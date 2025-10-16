@@ -137,12 +137,36 @@ bool LidarModule::waitForData(TimedLidarData &outTimedLidarData) {
 }
 
 void LidarModule::scanLoop() {
+    int consecutiveFailures = 0;
     while (running_) {
         sl_lidar_response_measurement_node_hq_t nodes[8192];
         size_t count = sizeof(nodes) / sizeof(nodes[0]);
 
         if (SL_IS_FAIL(lidarDriver_->grabScanDataHq(nodes, count))) {
             std::cerr << "[LidarModule] Timeout error" << std::endl;
+            consecutiveFailures++;
+
+            if (consecutiveFailures >= 3) {
+                sl_lidar_response_device_health_t healthinfo;
+                if (SL_IS_OK(lidarDriver_->getHealth(healthinfo))) {
+                    std::cerr << "[LidarModule] Device Health Status: ";
+                    switch (healthinfo.status) {
+                    case SL_LIDAR_STATUS_OK:
+                        std::cerr << "OK" << std::endl;
+                        break;
+                    case SL_LIDAR_STATUS_WARNING:
+                        std::cerr << "Warning" << std::endl;
+                        break;
+                    case SL_LIDAR_STATUS_ERROR:
+                        std::cerr << "Error. Error Code: " << healthinfo.error_code << std::endl;
+                        break;
+                    }
+                } else {
+                    std::cerr << "[LidarModule] Failed to retrieve device health." << std::endl;
+                }
+            }
+        } else {
+            consecutiveFailures = 0;
         }
 
         lidarDriver_->ascendScanData(nodes, count);
