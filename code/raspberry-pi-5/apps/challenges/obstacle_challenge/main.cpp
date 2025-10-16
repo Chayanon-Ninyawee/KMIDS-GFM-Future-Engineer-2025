@@ -962,6 +962,7 @@ int main() {
 
         lidar.startLogging();
         pico2.startLogging();
+        camera.startLogging();
 
         const auto loopDuration = std::chrono::milliseconds(33);  // ~30 Hz
         auto lastTime = std::chrono::steady_clock::now();
