@@ -67,7 +67,7 @@ const float TARGET_OUTER_WALL_OUTER2_DISTANCE = 0.25;
 const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62;
 const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.78;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.31f;
-const float TARGET_OUTER_WALL_DISTANCE_PARKING_CW = 0.32f;
+const float TARGET_OUTER_WALL_DISTANCE_PARKING_CW = 0.31f;
 const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE = 0.85f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
@@ -121,6 +121,12 @@ class Robot
 public:
     enum class Mode
     {
+        CCW_UNPARK_1,
+        CCW_UNPARK_2,
+        CCW_UNPARK_3,
+        CCW_UNPARK_4,
+        CW_UNPARK_1,
+        CW_UNPARK_2,
         NORMAL,
         PRE_TURN,
         TURNING,
@@ -169,6 +175,30 @@ public:
         do {
             instantUpdate = false;
             switch (mode_) {
+            case Mode::CCW_UNPARK_1:
+                std::cout << "[Mode::CCW_UNPARK_1]\n";
+                instantUpdate = updateCcwUnpark1State(robotData);
+                break;
+            case Mode::CCW_UNPARK_2:
+                std::cout << "[Mode::CCW_UNPARK_2]\n";
+                instantUpdate = updateCcwUnpark2State(robotData);
+                break;
+            case Mode::CCW_UNPARK_3:
+                std::cout << "[Mode::CCW_UNPARK_3]\n";
+                instantUpdate = updateCcwUnpark3State(robotData);
+                break;
+            case Mode::CCW_UNPARK_4:
+                std::cout << "[Mode::CCW_UNPARK_4]\n";
+                instantUpdate = updateCcwUnpark4State(robotData);
+                break;
+            case Mode::CW_UNPARK_1:
+                std::cout << "[Mode::CW_UNPARK_1]\n";
+                instantUpdate = updateCwUnpark1State(robotData);
+                break;
+            case Mode::CW_UNPARK_2:
+                std::cout << "[Mode::CW_UNPARK_2]\n";
+                instantUpdate = updateCwUnpark2State(robotData);
+                break;
             case Mode::NORMAL:
                 std::cout << "[Mode::NORMAL]\n";
                 instantUpdate = updateNormalState(robotData);
@@ -245,8 +275,11 @@ public:
             }
         } while (instantUpdate && !stop_flag);
 
+        bool isUnparking =
+            (mode_ == Mode::CCW_UNPARK_1 || mode_ == Mode::CCW_UNPARK_2 || mode_ == Mode::CCW_UNPARK_3 || mode_ == Mode::CCW_UNPARK_4 ||
+             mode_ == Mode::CW_UNPARK_1 || mode_ == Mode::CW_UNPARK_2);
         bool isParking = (mode_ == Mode::PARKING_1 || mode_ == Mode::PARKING_2 || mode_ == Mode::PARKING_3);
-        if (mode_ != Mode::STOP && !isParking) {
+        if (mode_ != Mode::STOP && !isParking && !isUnparking) {
             calculateSteering(dt, robotData);
         }
 
@@ -261,11 +294,11 @@ private:
     PIDController wallPid_;
 
     // --- State Variables ---
-    Mode mode_ = Mode::NORMAL;
-    Direction headingDirection_ = Direction::NORTH;
-    std::optional<float> initialHeading_;
-    std::optional<RotationDirection> turnDirection_;
-    int turnCount_ = 0;
+    // Mode mode_ = Mode::NORMAL;
+    // Direction headingDirection_ = Direction::NORTH;
+    // std::optional<float> initialHeading_;
+    // std::optional<RotationDirection> turnDirection_;
+    // int turnCount_ = 0;
 
     // Mode mode_ = Mode::NORMAL;
     // Direction headingDirection_ = Direction::NORTH;
@@ -278,6 +311,20 @@ private:
     // std::optional<float> initialHeading_;
     // std::optional<RotationDirection> turnDirection_ = RotationDirection::COUNTER_CLOCKWISE;
     // int turnCount_ = 12;
+
+    // Mode mode_ = Mode::CCW_UNPARK_1;
+    // Direction headingDirection_ = Direction::NORTH;
+    // std::optional<float> initialHeading_;
+    // std::optional<RotationDirection> turnDirection_ = RotationDirection::COUNTER_CLOCKWISE;
+    // int turnCount_ = 0;
+
+    // TODO: Check the turnDirection when the robot is in the parking lot
+
+    Mode mode_ = Mode::CW_UNPARK_1;
+    Direction headingDirection_ = Direction::NORTH;
+    std::optional<float> initialHeading_;
+    std::optional<RotationDirection> turnDirection_ = RotationDirection::CLOCKWISE;
+    int turnCount_ = 0;
 
     float targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE;
     float turningFrontWallDistance_ = TURNING_FRONT_WALL_DISTANCE;
@@ -474,6 +521,90 @@ private:
         if (motorSpeed_ < 0) headingError = -headingError;
 
         steeringPercent_ = headingPid_.update(headingError, dt);
+    }
+
+    bool updateCcwUnpark1State(const RobotData &data) {
+        if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
+        motorSpeed_ = 1.0f;
+        steeringPercent_ = -100.0f;
+        float targetEncoderAngle = 400;
+        if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
+            startEncoderAngle_ = 0.0;
+            mode_ = Mode::CCW_UNPARK_2;
+            return true;
+        }
+        pico2_.setMovementInfo(motorSpeed_, steeringPercent_);
+        return false;
+    }
+
+    bool updateCcwUnpark2State(const RobotData &data) {
+        if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
+        motorSpeed_ = 1.0f;
+        steeringPercent_ = 100.0f;
+        float targetEncoderAngle = 270;
+        if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
+            startEncoderAngle_ = 0.0;
+            mode_ = Mode::CCW_UNPARK_3;
+            return true;
+        }
+        pico2_.setMovementInfo(motorSpeed_, steeringPercent_);
+        return false;
+    }
+
+    bool updateCcwUnpark3State(const RobotData &data) {
+        if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
+        motorSpeed_ = 1.0f;
+        steeringPercent_ = -100.0f;
+        float targetEncoderAngle = 80;
+        if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
+            startEncoderAngle_ = 0.0;
+            mode_ = Mode::CCW_UNPARK_4;
+            return true;
+        }
+        pico2_.setMovementInfo(motorSpeed_, steeringPercent_);
+        return false;
+    }
+
+    bool updateCcwUnpark4State(const RobotData &data) {
+        if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
+        motorSpeed_ = 1.0f;
+        steeringPercent_ = 0.0f;
+        float targetEncoderAngle = 100;
+        if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
+            startEncoderAngle_ = 0.0;
+            mode_ = Mode::NORMAL;
+            return true;
+        }
+        pico2_.setMovementInfo(motorSpeed_, steeringPercent_);
+        return false;
+    }
+
+    bool updateCwUnpark1State(const RobotData &data) {
+        if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
+        motorSpeed_ = 1.0f;
+        steeringPercent_ = 100.0f;
+        float targetEncoderAngle = 400;
+        if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
+            startEncoderAngle_ = 0.0;
+            mode_ = Mode::CW_UNPARK_2;
+            return true;
+        }
+        pico2_.setMovementInfo(motorSpeed_, steeringPercent_);
+        return false;
+    }
+
+    bool updateCwUnpark2State(const RobotData &data) {
+        if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
+        motorSpeed_ = 1.0f;
+        steeringPercent_ = -100.0f;
+        float targetEncoderAngle = 270;
+        if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
+            startEncoderAngle_ = 0.0;
+            mode_ = Mode::NORMAL;
+            return true;
+        }
+        pico2_.setMovementInfo(motorSpeed_, steeringPercent_);
+        return false;
     }
 
     bool updateNormalState(const RobotData &data) {
