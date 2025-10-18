@@ -35,7 +35,7 @@ const int BUTTON_PIN = 16;
 // Camera
 const uint32_t CAM_WIDTH = 1296;
 const uint32_t CAM_HEIGHT = 972;
-const float CAM_HFOV = 110.0f;
+const float CAM_HFOV = 104.0f;
 
 const auto cameraOptionCallback = [](lccv::PiCamera &cam) {
     libcamera::ControlList &camControls = cam.getControlList();
@@ -60,27 +60,39 @@ const auto cameraOptionCallback = [](lccv::PiCamera &cam) {
 };
 
 // Robot Control Parameters
-const float TARGET_OUTER_WALL_DISTANCE = 0.50f;
-const float TARGET_OUTER_WALL_OUTER1_DISTANCE = 0.43f;
-const float TARGET_OUTER_WALL_OUTER2_DISTANCE = 0.25f;
-const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62f;
-const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.78f;
+
+const float TARGET_OUTER_WALL_DISTANCE = 0.50;
+const float TARGET_OUTER_WALL_OUTER1_DISTANCE = 0.43;
+const float TARGET_OUTER_WALL_OUTER2_DISTANCE = 0.25;
+const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62;
+const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.78;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.29f;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CW = 0.32f;
 const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE = 0.85f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
-const float TURNING_FRONT_WALL_DISTANCE = 0.80f;  // Default, will be overridden
-const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.70f;
+const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
+
+const float TURNING_FRONT_WALL_DISTANCE = 0.80f;
+const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.67f;
 const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.50f;
 const float TURNING_FRONT_WALL_INNER1_DISTANCE = 1.08f;
 const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.11f;
-const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.65f;
+const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.63f;
 
+// Will just go and park EZ
 const float CCW_PRE_PARKING_FRONT_WALL_DISTANCE = 1.80f;
+const auto CCW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(500);
+// Will just go to uturn then go and use CW_PRE_PARKING
 const float CCW_UTURN_PRE_PARKING_FRONT_WALL_DISTANCE = 0.60f;
+const auto CCW_UTURN_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
+// Will go over then reverse the go over again to make sure that the car aligned
 const float CW_PRE_PARKING_FRONT_WALL_DISTANCE = 1.40f;
+const auto CW_PRE_FIND_PARKING_DELAY_1 = std::chrono::milliseconds(1000);
+const auto CW_PRE_FIND_PARKING_DELAY_2 = std::chrono::milliseconds(3000);
+// Will just go to uturn then go and use CCW_PRE_PARKING
 const float CW_UTURN_PRE_PARKING_FRONT_WALL_DISTANCE = 0.60f;
+const auto CW_UTURN_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
 
 const float FORWARD_MOTOR_SPEED = 2.5f;
 const float HEADING_TOLERANCE_DEGREES_TURN = 30.0f;
@@ -93,14 +105,6 @@ const double HEADING_PID_D = 0.0;
 const double WALL_PID_P = 180.0;
 const double WALL_PID_I = 0.0;
 const double WALL_PID_D = 0.0;
-
-// Timings
-const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
-const auto CCW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(500);
-const auto CCW_UTURN_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
-const auto CW_PRE_FIND_PARKING_DELAY_1 = std::chrono::milliseconds(1000);
-const auto CW_PRE_FIND_PARKING_DELAY_2 = std::chrono::milliseconds(3200);
-const auto CW_UTURN_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
 
 // --- Helper Functions ---
 float normalizeAngle(float angle) {
@@ -262,6 +266,12 @@ private:
     std::optional<RotationDirection> turnDirection_;
     int turnCount_ = 0;
 
+    // Mode mode_ = Mode::NORMAL;
+    // Direction headingDirection_ = Direction::NORTH;
+    // std::optional<float> initialHeading_;
+    // std::optional<RotationDirection> turnDirection_ = RotationDirection::CLOCKWISE;
+    // int turnCount_ = 12;
+
     float targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE;
     float turningFrontWallDistance_ = TURNING_FRONT_WALL_DISTANCE;
     double startEncoderAngle_ = 0.0;
@@ -285,6 +295,42 @@ private:
     };
 
     // --- Method Implementations ---
+
+    /**
+     * @brief Calculates the recent rate of heading change in degrees per second.
+     *
+     * It compares the latest heading measurement with one from a fixed number of samples
+     * in the past to determine the angular velocity.
+     *
+     * @param picoHistory The vector of recent pico2 data points.
+     * @return The angular velocity in degrees per second.
+     */
+    float calculateRecentHeadingRate(const std::vector<TimedPico2Data> &picoHistory) {
+        // The number of samples to look back for the calculation.
+        // (size - 1) vs (size - 13) is a 12-sample difference.
+        const size_t HEADING_RATE_LOOKBACK = 12;
+
+        if (picoHistory.size() < HEADING_RATE_LOOKBACK + 1) {
+            return 0.0f;  // Not enough data to compute
+        }
+
+        const auto &latestData = picoHistory.back();
+        const auto &olderData = picoHistory[picoHistory.size() - 1 - HEADING_RATE_LOOKBACK];
+
+        // Calculate the shortest angle difference (handles 360->0 wrap-around)
+        float headingChange_deg = normalizeAngle(latestData.euler.h - olderData.euler.h);
+
+        // Use std::chrono for a type-safe and readable time difference calculation
+        std::chrono::duration<float> timeElapsed = latestData.timestamp - olderData.timestamp;
+        float timeElapsed_s = timeElapsed.count();
+
+        // Avoid division by zero
+        if (timeElapsed_s <= 0.0f) {
+            return 0.0f;
+        }
+
+        return headingChange_deg / timeElapsed_s;
+    }
 
     std::optional<RobotData> updateRobotData(float dt) {
         std::vector<TimedLidarData> timedLidarDatas;
@@ -329,7 +375,8 @@ private:
             data.innerWall = (*turnDirection_ == RotationDirection::CLOCKWISE) ? resolvedWalls.rightWall : resolvedWalls.leftWall;
         }
 
-        if (mode_ != Mode::TURNING && turnDirection_) {
+        float headingRate = calculateRecentHeadingRate(timedPico2Datas);
+        if (mode_ != Mode::TURNING && turnDirection_ && headingRate <= 10.0f) {
             auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolvedWalls, deltaPose, turnDirection_);
             auto colorMasks = camera_processor::filterColors(timedFrame);
             auto blockAngles = camera_processor::computeBlockAngles(colorMasks, CAM_WIDTH, CAM_HFOV);
@@ -350,12 +397,42 @@ private:
                 if (history.size() > 2) history.erase(history.begin());
 
                 if (history.size() == 2) {
-                    bool allSame = (history[0].location.side == history[1].location.side) &&
-                                   (history[0].info.cameraBlock.color == history[1].info.cameraBlock.color);
+                    bool allSame = true;
+                    for (size_t i = 1; i < history.size(); ++i) {
+                        if (history[i].location.side != history[0].location.side ||
+                            history[i].info.cameraBlock.color != history[0].info.cameraBlock.color)
+                        {
+                            allSame = false;
+                            break;
+                        }
+                    }
                     if (allSame && trafficLightMap_.find(key) == trafficLightMap_.end()) {
-                        trafficLightMap_[key] = history[0];
+                        trafficLightMap_[key] = history[0];  // Commit once
                     }
                 }
+            }
+            std::cout << "Traffic Light Map contents:\n";
+            for (const auto &entry : trafficLightMap_) {
+                const auto &cl = entry.second;
+
+                std::string colorStr;
+                switch (cl.info.cameraBlock.color) {
+                case camera_processor::Color::RED:
+                    colorStr = "RED";
+                    break;
+                case camera_processor::Color::GREEN:
+                    colorStr = "GREEN";
+                    break;
+                default:
+                    colorStr = "UNKNOWN";
+                    break;
+                }
+
+                std::cout << "Traffic Light (" << colorStr << ") at LiDAR position (" << cl.info.lidarPosition.x << ", "
+                          << cl.info.lidarPosition.y << ")"
+                          << " mapped to Segment " << static_cast<int>(cl.location.segment) << ", Location "
+                          << static_cast<int>(cl.location.location) << ", WallSide "
+                          << (cl.location.side == WallSide::INNER ? "INNER" : "OUTER") << std::endl;
             }
         }
 
@@ -680,6 +757,7 @@ private:
 
     bool updateCwPreFindParking1State(const RobotData &data) {
         motorSpeed_ = 1.5f;
+        wallPid_.setGains(300.0, WALL_PID_I, WALL_PID_D);
         targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE_PARKING_CW;
 
         if (!timer_) {
@@ -691,6 +769,7 @@ private:
             elapsed >= CW_PRE_FIND_PARKING_DELAY_1)
         {
             timer_.reset();
+            wallPid_.setGains(WALL_PID_P, WALL_PID_I, WALL_PID_D);
             mode_ = Mode::CW_PRE_FIND_PARKING_2;
             return true;
         }
@@ -709,10 +788,9 @@ private:
         } else if (elapsed < CW_PRE_FIND_PARKING_DELAY_2) {
             motorSpeed_ = -1.5f;
             targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE_PARKING_CW;
-            // This part needs steering, so we call the calculator directly
-            calculateSteering(0.033f, data);  // Assume ~30Hz dt
-        } else {                              // elapsed is past the main delay
-            motorSpeed_ = 0.0f;               // Stop briefly before next state
+        } else {
+            // Stop briefly before next state
+            motorSpeed_ = 0.0f;
             steeringPercent_ = 0.0f;
             if (elapsed >= CW_PRE_FIND_PARKING_DELAY_2 + std::chrono::milliseconds(700)) {
                 timer_.reset();
@@ -720,8 +798,6 @@ private:
                 return true;
             }
         }
-
-        pico2_.setMovementInfo(motorSpeed_, steeringPercent_);
         return false;
     }
 
@@ -780,25 +856,61 @@ private:
         motorSpeed_ = 1.0f;
         targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE_PARKING_CCW;
 
-        if (data.parkingWalls.empty()) return false;
+        // if (data.parkingWalls.empty()) return false;
 
-        // ... Wall selection logic ...
-        std::optional<lidar_processor::LineSegment> backParkingWallOpt;
-        // ... (Full implementation of rules 1, 2, 3 to find the wall) ...
-        // This is a placeholder for the complex min/max element logic
-        if (!data.parkingWalls.empty()) backParkingWallOpt = data.parkingWalls.front();
+        // lidar_processor::LineSegment backParkingWall;
+        // std::vector<lidar_processor::LineSegment> frontWalls;
+        // std::vector<lidar_processor::LineSegment> backWalls;
 
-        if (backParkingWallOpt) {
-            auto &backParkingWall = *backParkingWallOpt;
-            float backParkingWallDir = backParkingWall.perpendicularDirection(0.0f, 0.0f);
-            float backParkingWallDist = -backParkingWall.y2;
-            float targetParkingWallDistance = 0.470f;
-            bool isBackParkingWallBehind = backParkingWallDir >= 240.0f && backParkingWallDir < 360.0f;
+        // for (auto &wall : data.parkingWalls) {
+        //     if (wall.perpendicularDistance(0.0f, 0.0f) >= 1.00f) continue;
 
-            if (isBackParkingWallBehind && backParkingWallDist >= targetParkingWallDistance) {
-                mode_ = Mode::PARKING_1;
-                return true;
-            }
+        //     float dir = wall.perpendicularDirection(0.0f, 0.0f);
+        //     if (dir >= 0.0f && dir < 180.0f) {
+        //         frontWalls.push_back(wall);
+        //     } else {
+        //         backWalls.push_back(wall);
+        //     }
+        // }
+
+        // if (!frontWalls.empty() && !backWalls.empty()) {
+        //     // Rule 1: if wall in front exists, pick closest back wall
+        //     backParkingWall = *std::min_element(backWalls.begin(), backWalls.end(), [](const auto &a, const auto &b) {
+        //         return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+        //     });
+        // } else if (!frontWalls.empty()) {
+        //     // Rule 2: only front walls → pick closest front wall
+        //     backParkingWall = *std::min_element(frontWalls.begin(), frontWalls.end(), [](const auto &a, const auto &b) {
+        //         return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+        //     });
+        // } else if (!backWalls.empty()) {
+        //     // Rule 3: only back walls → pick furthest back wall
+        //     backParkingWall = *std::max_element(backWalls.begin(), backWalls.end(), [](const auto &a, const auto &b) {
+        //         return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+        //     });
+        // } else {
+        //     return false;
+        // }
+
+        // float backParkingWallDir = backParkingWall.perpendicularDirection(0.0f, 0.0f);
+        // float backParkingWallDist = -backParkingWall.y2;
+        // float targetParkingWallDistance = 0.470f;
+        // bool isBackParkingWallBehind = backParkingWallDir >= 240.0f && backParkingWallDir < 360.0f;
+
+        // if (isBackParkingWallBehind && backParkingWallDist >= targetParkingWallDistance) {
+        //     mode_ = Mode::PARKING_1;
+        //     return true;
+        // }
+        // return false;
+
+        if (!data.frontWall.has_value()) return false;
+
+        float frontWallDist = data.frontWall->perpendicularDistance(0.0f, 0.0f);
+        float targetFrontWallDistance = 0.94f;
+
+        if (frontWallDist <= targetFrontWallDistance) {
+            mode_ = Mode::PARKING_1;
+            return true;
         }
         return false;
     }
@@ -806,26 +918,64 @@ private:
     bool updateCwFindParkingState(const RobotData &data) {
         motorSpeed_ = 1.0f;
         targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE_PARKING_CW;
+        wallPid_.setGains(300.0, WALL_PID_I, WALL_PID_D);
 
-        if (data.parkingWalls.empty()) return false;
+        // if (data.parkingWalls.empty()) return false;
 
-        // ... Wall selection logic ...
-        std::optional<lidar_processor::LineSegment> backParkingWallOpt;
-        // ... (Full implementation of rules 1, 2, 3 to find the wall) ...
-        // This is a placeholder for the complex min/max element logic
-        if (!data.parkingWalls.empty()) backParkingWallOpt = data.parkingWalls.front();
+        // lidar_processor::LineSegment backParkingWall;
+        // std::vector<lidar_processor::LineSegment> frontWalls;
+        // std::vector<lidar_processor::LineSegment> backWalls;
 
-        if (backParkingWallOpt) {
-            auto &backParkingWall = *backParkingWallOpt;
-            float backParkingWallDir = backParkingWall.perpendicularDirection(0.0f, 0.0f);
-            float backParkingWallDist = -backParkingWall.y2;
-            float targetParkingWallDistance = 0.435f;
-            bool isBackParkingWallBehind = backParkingWallDir >= 180.0f && backParkingWallDir < 300.0f;
+        // for (auto &wall : data.parkingWalls) {
+        //     if (wall.perpendicularDistance(0.0f, 0.0f) >= 1.00f) continue;
 
-            if (isBackParkingWallBehind && backParkingWallDist >= targetParkingWallDistance) {
-                mode_ = Mode::PARKING_1;
-                return true;
-            }
+        //     float dir = wall.perpendicularDirection(0.0f, 0.0f);
+        //     if (dir >= 0.0f && dir < 180.0f) {
+        //         frontWalls.push_back(wall);
+        //     } else {
+        //         backWalls.push_back(wall);
+        //     }
+        // }
+
+        // if (!frontWalls.empty() && !backWalls.empty()) {
+        //     // Rule 1: if wall in front exists, pick closest back wall
+        //     backParkingWall = *std::min_element(backWalls.begin(), backWalls.end(), [](const auto &a, const auto &b) {
+        //         return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+        //     });
+        // } else if (!frontWalls.empty()) {
+        //     // Rule 2: only front walls → pick closest front wall
+        //     backParkingWall = *std::min_element(frontWalls.begin(), frontWalls.end(), [](const auto &a, const auto &b) {
+        //         return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+        //     });
+        // } else if (!backWalls.empty()) {
+        //     // Rule 3: only back walls → pick furthest back wall
+        //     backParkingWall = *std::max_element(backWalls.begin(), backWalls.end(), [](const auto &a, const auto &b) {
+        //         return a.perpendicularDistance(0.0f, 0.0f) < b.perpendicularDistance(0.0f, 0.0f);
+        //     });
+        // } else {
+        //     return false;
+        // }
+
+        // float backParkingWallDir = backParkingWall.perpendicularDirection(0.0f, 0.0f);
+        // float backParkingWallDist = -backParkingWall.y2;
+        // float targetParkingWallDistance = 0.400f;
+        // bool isBackParkingWallBehind = backParkingWallDir >= 180.0f && backParkingWallDir < 300.0f;
+
+        // if (isBackParkingWallBehind && backParkingWallDist >= targetParkingWallDistance) {
+        //     mode_ = Mode::PARKING_1;
+        //     return true;
+        // }
+        // return false;
+
+        if (!data.frontWall.has_value()) return false;
+
+        float frontWallDist = data.frontWall->perpendicularDistance(0.0f, 0.0f);
+        float targetFrontWallDistance = 1.56f;
+
+        if (frontWallDist <= targetFrontWallDistance) {
+            wallPid_.setGains(WALL_PID_P, WALL_PID_I, WALL_PID_D);
+            mode_ = Mode::PARKING_1;
+            return true;
         }
         return false;
     }
@@ -844,7 +994,7 @@ private:
             if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
             motorSpeed_ = -1.0f;
             steeringPercent_ = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -100.0f : 100.0f;
-            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -470 : -530;
+            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -460 : -530;
             if (data.encoderAngle - startEncoderAngle_ <= targetEncoderAngle) {
                 timer_.reset();
                 startEncoderAngle_ = 0.0;
@@ -870,7 +1020,7 @@ private:
             if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
             motorSpeed_ = -1.0f;
             steeringPercent_ = (*turnDirection_ == RotationDirection::CLOCKWISE) ? 100.0f : -100.0f;
-            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -405 : -380;
+            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -380 : -380;
             if (data.encoderAngle - startEncoderAngle_ <= targetEncoderAngle) {
                 timer_.reset();
                 startEncoderAngle_ = 0.0;
@@ -896,7 +1046,7 @@ private:
             if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
             motorSpeed_ = 1.0f;
             steeringPercent_ = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -100.0f : 100.0f;
-            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? 115 : 92;
+            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? 80 : 92;
             if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
                 timer_.reset();
                 startEncoderAngle_ = 0.0;

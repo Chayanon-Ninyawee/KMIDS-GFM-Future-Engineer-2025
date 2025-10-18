@@ -29,10 +29,17 @@ void signalHandler(int signum) {
 const int BUTTON_PIN = 16;
 
 // Robot Control Parameters
+
 const float TARGET_OUTER_WALL_DISTANCE = 0.30f;
+
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
-const float TURNING_FRONT_WALL_DISTANCE = 0.68f;
+const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
+
+const float TURNING_FRONT_WALL_DISTANCE = 0.65f;
+
 const float STOP_FRONT_WALL_DISTANCE = 1.80f;
+const auto STOP_DELAY = std::chrono::milliseconds(100);
+
 const float HEADING_TOLERANCE_DEGREES = 20.0f;
 const float FORWARD_MOTOR_SPEED = 4.5f;
 const int TOTAL_TURNS_TO_FINISH = 12;
@@ -44,10 +51,6 @@ const double HEADING_PID_D = 0.0;
 const double WALL_PID_P = 180.0;
 const double WALL_PID_I = 0.0;
 const double WALL_PID_D = 0.0;
-
-// Timings
-const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
-const auto STOP_DELAY = std::chrono::milliseconds(100);
 
 // --- Helper Functions ---
 /**
