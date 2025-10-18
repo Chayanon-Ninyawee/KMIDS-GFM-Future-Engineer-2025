@@ -11,9 +11,19 @@ PIDController::PIDController(double Kp, double Ki, double Kd, double outputMin, 
     , active_(false) {}
 
 double PIDController::update(double error, double dt) {
-    if (!active_ || dt <= 0.0) return 0.0;  // inactive or invalid timestep → no control output
+    if (!active_ || dt <= 0.0) {
+        return 0.0;  // inactive or invalid timestep → no control output
+    }
 
     integral_ += error * dt;
+
+    // Prevent integral windup
+    if (Ki_ > 0) {
+        double maxIntegral = outputMax_ / Ki_;
+        double minIntegral = outputMin_ / Ki_;
+        integral_ = std::clamp(integral_, minIntegral, maxIntegral);
+    }
+
     double derivative = (error - lastError_) / dt;
     lastError_ = error;
 
@@ -32,4 +42,13 @@ void PIDController::setActive(bool enable) {
         reset();
     }
     active_ = enable;
+}
+
+void PIDController::setGains(double Kp, double Ki, double Kd) {
+    Kp_ = Kp;
+    Ki_ = Ki;
+    Kd_ = Kd;
+    // It's important to reset the state when gains change to prevent
+    // unpredictable output from the old integral/derivative terms.
+    reset();
 }

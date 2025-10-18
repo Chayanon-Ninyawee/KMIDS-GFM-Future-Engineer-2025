@@ -58,7 +58,8 @@ int main() {
 
                     // LidarModule::printScanData(timedLidarData.lidarData);
 
-                    auto filteredLidarData = lidar_processor::filterLidarData(timedLidarData);
+                    // auto filteredLidarData = lidar_processor::filterLidarData(timedLidarData);
+                    auto filteredLidarData = timedLidarData;
 
                     float heading = 0.0f;
 
