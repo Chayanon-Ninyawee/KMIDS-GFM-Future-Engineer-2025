@@ -33,10 +33,30 @@ public:
      * @brief Reset the integral and derivative state.
      */
     void reset();
+
+    /**
+     * @brief Enable or disable the PID controller.
+     * @param enable True to activate, false to deactivate.
+     */
     void setActive(bool enable);
+
+    /**
+     * @brief Check if the controller is active.
+     * @return True if active, false otherwise.
+     */
     bool isActive() const {
         return active_;
     }
+
+    /**
+     * @brief Set new gains for the PID controller.
+     *
+     * This will also reset the controller's internal state.
+     * @param Kp New proportional gain.
+     * @param Ki New integral gain.
+     * @param Kd New derivative gain.
+     */
+    void setGains(double Kp, double Ki, double Kd);
 
 private:
     double Kp_;        /**< Proportional gain */

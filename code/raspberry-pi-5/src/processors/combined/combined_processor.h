@@ -71,7 +71,7 @@ struct TrafficLightInfo {
 std::vector<TrafficLightInfo> combineTrafficLightInfo(
     const std::vector<camera_processor::BlockAngle> &blockAngles,
     const std::vector<cv::Point2f> &lidarPoints,
-    cv::Point2f cameraOffset = {0.0f, 0.15f},
+    cv::Point2f cameraOffset = {0.0f, 0.17f},
     float trafficLightRadius = 0.08f
 );
 
