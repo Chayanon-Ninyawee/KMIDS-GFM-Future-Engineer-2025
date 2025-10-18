@@ -30,13 +30,13 @@ const int ENCODER_PULSE_PER_REV = 28;
 const int ENCODER_GEAR_RATIO = 100;
 
 const uint SERVO_PIN = 15;
-const float SERVO_MAX_ANGLE = 90.0f;
-const uint16_t SERVO_MIN_PULSE_US = 1000;
-const uint16_t SERVO_MAX_PULSE_US = 2000;
-const uint16_t SERVO_FREQ_HZ = 50;
+const float SERVO_MAX_ANGLE = 180.0f;
+const uint16_t SERVO_MIN_PULSE_US = 550;
+const uint16_t SERVO_MAX_PULSE_US = 3000;
+const uint16_t SERVO_FREQ_HZ = 333;
 
-const float STEERING_MIN_ANGLE = 0.0f;
-const float STEERING_MAX_ANGLE = 86.5f;
+const float STEERING_MIN_ANGLE = 44.0f;
+const float STEERING_MAX_ANGLE = 136.0f;
 
 float toSteeringAngle(float steeringPercent) {
     const float inMin = -100.0f;
