@@ -19,26 +19,26 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 <!-- toc -->
 
 - [1. Overview](#1-overview)
-  - [1.1 About the Project](#11-about-the-project)
-  - [1.2 Robot Images](#12-robot-images)
-  - [1.3 Performance Video](#13-performance-video)
+  * [1.1 About the Project](#11-about-the-project)
+  * [1.2 Robot Images](#12-robot-images)
+  * [1.3 Performance Video](#13-performance-video)
 - [2. Mobility Management](#2-mobility-management)
-  - [2.1 Drive System](#21-drive-system)
-  - [2.2 Steering](#22-steering)
-  - [2.3 Chassis Design](#23-chassis-design)
+  * [2.1 Drive System](#21-drive-system)
+  * [2.2 Steering](#22-steering)
+  * [2.3 Chassis Design](#23-chassis-design)
 - [3. Power and Sense Management](#3-power-and-sense-management)
-  - [3.1 Power Source](#31-power-source)
-  - [3.2 Sensor and Camera](#32-sensor-and-camera)
-  - [3.3 Processing Units](#33-processing-units)
-  - [3.4 Circuit Diagram](#34-circuit-diagram)
-  - [3.5 Power Consumption](#35-power-consumption)
+  * [3.1 Power Source](#31-power-source)
+  * [3.2 Sensor and Camera](#32-sensor-and-camera)
+  * [3.3 Processing Units](#33-processing-units)
+  * [3.4 Circuit Diagram](#34-circuit-diagram)
+  * [3.5 Power Consumption](#35-power-consumption)
 - [4. Obstacle Management](#4-obstacle-management)
-  - [4.1 Open Challenge](#41-open-challenge)
-  - [4.2 Obstacle Challenge](#42-obstacle-challenge)
-  - [4.3 Parallel Parking](#43-parallel-parking)
+  * [4.1 Open Challenge](#41-open-challenge)
+  * [4.2 Obstacle Challenge](#42-obstacle-challenge)
+  * [4.3 Parallel Parking](#43-parallel-parking)
 - [5. Source Code](#5-source-code)
-  - [5.1 Code Structure](#51-code-structure)
-  - [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
+  * [5.1 Code Structure](#51-code-structure)
+  * [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
 - [6. List of Components](#6-list-of-components)
 - [7. STL and Slicer Files](#7-stl-and-slicer-files)
 - [8. Building Instructions](#8-building-instructions)
@@ -400,6 +400,21 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 - Track path lines and boundaries.
 
+**Gyro: BNO085**
+
+<table>
+  <tr>
+    <td align="center" width="300">
+      <img src="docs\resources\bno085.png" alt="bno085.png" width="100%">
+    </td>
+    <td>
+      <h3>Specifications:</h3>
+      <ul>
+      </ul>
+    </td>
+  </tr>
+</table>
+
 ### 3.3 Processing Units
 
 Single Board Computer: Raspberry Pi 5
@@ -483,7 +498,7 @@ We had to decide on whether to do a PCB or use jumper wires to connect each comp
 | Raspberry Pi M.2 HAT+         |            |                     |                  |                   |
 | Step-Up Converter             | —          | —                   | —                | η ≈ 88%           |
 
-[▲ Back to Top]
+[▲ Back to Top](#top)
 
 ## 4. Obstacle Management
 
@@ -1186,28 +1201,25 @@ The FreeCAD files can be found [here](./FreeCAD-Files)
 
 **Slicer Files**
 
-Slicer files in .gcode format, which include the settings for both printers, can be found [here](./Slicer-Files)
+Slicer files (.3mf) can be found [here](./Slicer-Files)
 
 **Chassis & Core Structure**
 
 - [`Main chassis`](<Slicer-Files/Bambu_Lab_P1S_(Bambu_Slicer)/Chassis_1x.3mf>)
 
-- [`Front cover (for camera and steering)`](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_FrontCover_1x.gcode>)
+- [`Front cover (for camera and steering)`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_FrontCover_1x.3mf>)
 
-- [`Rear wheel mounts`](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_BackWheelStuff.gcode>)
+- [`Rear wheel mounts`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_BackWheelStuff.3mf>)
 
-- [`Motor plate`](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_MotorPlate_1x.gcode>)
+- [`Motor plate`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_MotorPlate_1x.3mf>)
 
-- [`Lidar plate`](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_LidarPlate_1x.gcode>)
+- [`Lidar plate`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_LidarPlate_1x.3mf>)
 
 **Motor & Gear Components**
 
-- [`Motor Gear`](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_MotorGear_1x.gcode>)
-- [`Motor holder`](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_AxleHolder_MotorHolder.gcode>)
-
-**Steering & Linkages**
-
-- [`Linkages`](<Slicer-Files/Ender_3_V3_KE_(Cura_Slicer)/gcode-files/CE3V3KE_Linkages.gcode>)
+- [`Motor Gear`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_MotorGear_1x.3mf>)
+- [`Motor holder`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_AxleHolder_MotorHolder.3mf>)
+- [`Linkage parts`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_Linkages.3mf>)
 
 [▲ Back to Top](#top)
 
@@ -1253,8 +1265,7 @@ After printing, you should have these parts:
 
 </details>
 
-The recommended settings can be found in the .gcode files. The recommended basic settings are as follows:
-
+**The recommended settings can be found in the slicer files. The recommended basic settings are as follows:**
 <details>
 <summary> Chassis </summary>
 
