@@ -66,7 +66,7 @@ const float TARGET_OUTER_WALL_OUTER1_DISTANCE = 0.43;
 const float TARGET_OUTER_WALL_OUTER2_DISTANCE = 0.25;
 const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62;
 const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.78;
-const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.29f;
+const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.31f;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CW = 0.32f;
 const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE = 0.85f;
 
@@ -78,6 +78,7 @@ const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.67f;
 const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.50f;
 const float TURNING_FRONT_WALL_INNER1_DISTANCE = 1.08f;
 const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.11f;
+const float TURNING_FRONT_WALL_CCW_PARKING_DISTANCE = 0.63f;
 const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.63f;
 
 // Will just go and park EZ
@@ -87,7 +88,7 @@ const auto CCW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(500);
 const float CCW_UTURN_PRE_PARKING_FRONT_WALL_DISTANCE = 0.60f;
 const auto CCW_UTURN_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
 // Will go over then reverse the go over again to make sure that the car aligned
-const float CW_PRE_PARKING_FRONT_WALL_DISTANCE = 1.40f;
+const float CW_PRE_PARKING_FRONT_WALL_DISTANCE = 1.80f;
 const auto CW_PRE_FIND_PARKING_DELAY_1 = std::chrono::milliseconds(1000);
 const auto CW_PRE_FIND_PARKING_DELAY_2 = std::chrono::milliseconds(3000);
 // Will just go to uturn then go and use CCW_PRE_PARKING
@@ -270,6 +271,12 @@ private:
     // Direction headingDirection_ = Direction::NORTH;
     // std::optional<float> initialHeading_;
     // std::optional<RotationDirection> turnDirection_ = RotationDirection::CLOCKWISE;
+    // int turnCount_ = 12;
+
+    // Mode mode_ = Mode::NORMAL;
+    // Direction headingDirection_ = Direction::NORTH;
+    // std::optional<float> initialHeading_;
+    // std::optional<RotationDirection> turnDirection_ = RotationDirection::COUNTER_CLOCKWISE;
     // int turnCount_ = 12;
 
     float targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE;
@@ -585,6 +592,7 @@ private:
 
     bool updatePreTurnState(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
+        turningFrontWallDistance_ = TURNING_FRONT_WALL_DISTANCE;
 
         if (turnDirection_) {
             // --- Compute next segment ---
@@ -640,7 +648,9 @@ private:
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER1_DISTANCE;
                         }
                     } else {  // RED
-                        if (isInner) {
+                        if (turnCount_ == 11) {
+                            turningFrontWallDistance_ = TURNING_FRONT_WALL_CCW_PARKING_DISTANCE;
+                        } else if (isInner) {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER1_DISTANCE;
                         } else {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER2_DISTANCE;
@@ -649,7 +659,11 @@ private:
                 }
             } else {
                 if (turnCount_ == 11) {
-                    turningFrontWallDistance_ = TURNING_FRONT_WALL_CW_PARKING_DISTANCE;
+                    if (*turnDirection_ == RotationDirection::CLOCKWISE) {
+                        turningFrontWallDistance_ = TURNING_FRONT_WALL_CW_PARKING_DISTANCE;
+                    } else {
+                        turningFrontWallDistance_ = TURNING_FRONT_WALL_CCW_PARKING_DISTANCE;
+                    }
                 }
             }
         }
@@ -770,7 +784,8 @@ private:
         {
             timer_.reset();
             wallPid_.setGains(WALL_PID_P, WALL_PID_I, WALL_PID_D);
-            mode_ = Mode::CW_PRE_FIND_PARKING_2;
+            // mode_ = Mode::CW_PRE_FIND_PARKING_2;
+            mode_ = Mode::CW_FIND_PARKING;
             return true;
         }
         return false;
@@ -855,6 +870,7 @@ private:
     bool updateCcwFindParkingState(const RobotData &data) {
         motorSpeed_ = 1.0f;
         targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE_PARKING_CCW;
+        wallPid_.setGains(300.0, WALL_PID_I, WALL_PID_D);
 
         // if (data.parkingWalls.empty()) return false;
 
@@ -906,9 +922,10 @@ private:
         if (!data.frontWall.has_value()) return false;
 
         float frontWallDist = data.frontWall->perpendicularDistance(0.0f, 0.0f);
-        float targetFrontWallDistance = 0.94f;
+        float targetFrontWallDistance = 0.96f;
 
         if (frontWallDist <= targetFrontWallDistance) {
+            wallPid_.setGains(WALL_PID_P, WALL_PID_I, WALL_PID_D);
             mode_ = Mode::PARKING_1;
             return true;
         }
@@ -970,7 +987,7 @@ private:
         if (!data.frontWall.has_value()) return false;
 
         float frontWallDist = data.frontWall->perpendicularDistance(0.0f, 0.0f);
-        float targetFrontWallDistance = 1.56f;
+        float targetFrontWallDistance = 1.565f;
 
         if (frontWallDist <= targetFrontWallDistance) {
             wallPid_.setGains(WALL_PID_P, WALL_PID_I, WALL_PID_D);
@@ -994,7 +1011,7 @@ private:
             if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
             motorSpeed_ = -1.0f;
             steeringPercent_ = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -100.0f : 100.0f;
-            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -460 : -530;
+            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -460 : -460;
             if (data.encoderAngle - startEncoderAngle_ <= targetEncoderAngle) {
                 timer_.reset();
                 startEncoderAngle_ = 0.0;
@@ -1046,7 +1063,7 @@ private:
             if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
             motorSpeed_ = 1.0f;
             steeringPercent_ = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -100.0f : 100.0f;
-            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? 80 : 92;
+            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? 80 : 80;
             if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
                 timer_.reset();
                 startEncoderAngle_ = 0.0;
