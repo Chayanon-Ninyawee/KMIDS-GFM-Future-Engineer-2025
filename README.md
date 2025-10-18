@@ -400,20 +400,20 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 
 - Track path lines and boundaries.
 
-**Gyro: BNO085**
+**Gyroscope and Orientation Sensor: BNO085**
 
-<table>
-  <tr>
-    <td align="center" width="300">
-      <img src="docs\resources\bno085.png" alt="bno085.png" width="100%">
-    </td>
-    <td>
-      <h3>Specifications:</h3>
-      <ul>
-      </ul>
-    </td>
-  </tr>
-</table>
+To enhance the robot’s spatial awareness and steering precision, we integrated the BNO085 into the system as the primary orientation and motion-tracking component.  
+This sensor was chosen for its built-in sensor fusion algorithms, which combine data from its accelerometer, gyroscope, and magnetometer to provide stable and drift-compensated orientation feedback.
+
+The integration process began with connecting the BNO085 to the Raspberry Pi Pico 2 via the*I²C interface, using the standard SDA and SCL lines for communication. The sensor was powered through the 3.3V rail, ensuring consistent performance and preventing overvoltage damage.  
+
+We then configured the software side by importing the appropriate BNO085 libraries and drivers, allowing the Pico to read orientation data in quaternion or Euler format. Calibration was performed by rotating the robot slowly on all axes to let the internal algorithms stabilize and eliminate bias. Once calibrated, the sensor continuously outputs accurate yaw, pitch, and roll data, which is used by the steering control algorithm to maintain direction and orientation.
+
+We mounted the sensor at the center of the chassis. 
+
+<p align="center">
+  <img src="docs/resources/bno085.png" alt="bno085.png" width="200">
+</p>
 
 ### 3.3 Processing Units
 
@@ -486,17 +486,18 @@ We had to decide on whether to do a PCB or use jumper wires to connect each comp
 
 ### 3.5 Power Consumption
 
-| Component                     | Supply (V) | Typical Current (A) | Peak Current (A) | Typical Power (W) |
-| ----------------------------- | ---------- | ------------------- | ---------------- | ----------------- |
-| Raspberry Pi 5                | 5          | 2.50                | 5.00             | 12.50             |
-| Raspberry Pi Pico 2           | 5          | 0.05                | 0.10             | 0.25              |
-| RPLIDAR S2                    | 5          | 0.45                | 0.60             | 2.25              |
-| 5MP Fish Eye Lens Camera      | 5          | 0.12                | 0.25             | 0.60              |
-| Micro Servo S0004m (steering) | 5          | 0.12                | 0.65             | 0.60              |
-| N20 DC Motor                  | 12         | 0.30                | 1.50             | 7.20              |
-| DRV8871 Motor Driver          | 12         | 0.01                | 0.04             | 0.24              |
-| Raspberry Pi M.2 HAT+         |            |                     |                  |                   |
-| Step-Up Converter             | —          | —                   | —                | η ≈ 88%           |
+| Component | Supply (V) | Typical Current (A) | Peak Current (A) | Typical Power (W) |
+|------------|------------|---------------------|------------------|-------------------|
+| Raspberry Pi 5 | 5 | 2.50 | 5.00 | 12.50 |
+| Raspberry Pi Pico 2 | 5 | 0.05 | 0.10 | 0.25 |
+| RPLIDAR S2 | 5 | 0.45 | 0.60 | 2.25 |
+| 5MP Fish Eye Lens Camera | 5 | 0.12 | 0.25 | 0.60 |
+| BNO085 IMU | 3.3 | 0.015 | 0.025 | 0.05 |
+| Micro Servo S0004m (steering) | 5 | 0.12 | 0.65 | 0.60 |
+| N20 DC Motor | 12 | 0.30 | 1.50 | 7.20 |
+| DRV8871 Motor Driver | 12 | 0.01 | 0.04 | 0.24 |
+| Raspberry Pi M.2 HAT+ | 3.3 | 0.25 | 1.00 | 3.30 |
+| Step-Up Converter | — | — | — | η ≈ 88% |
 
 [▲ Back to Top](#top)
 
@@ -1126,28 +1127,28 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 [▲ Back to Top](#top)
 
 ## 6. List of Components
+| Component | Quantity | Source/Supplier |
+|------------|-----------|----------------|
+| Raspberry Pi 5 | 1 | [Gammaco](https://gammaco.com/gammaco/Raspberry_Pi_GB_89RD014.html) |
+| Raspberry Pi Pico 2 | 1 | [Cytron](https://th.cytron.io/p-raspberry-pi-pico2-board) |
+| UPS EP-0136 | 1 | [52Pi](https://52pi.com/products/52pi-ups-board-with-rtc-coulometer-for-raspberry-pi) |
+| 18650 Lithium-Ion Battery | 2 | [Cytron](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery) |
+| RPLidar S2 | 1 | [SLAMTEC](https://www.slamtec.com/en/S2) |
+| 5MP Fish Eye Camera | 1 | [Cytron](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822) |
+| BNO085 IMU | 1 | [Shopee](https://shopee.co.th/%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5-AR-VR-BNO055-BNO085-BNO086-%E0%B8%8A%E0%B8%B4%E0%B8%9E%E0%B9%81%E0%B8%97%E0%B9%89-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99-Halley-9-DOF-IMU-Sensor-Bosch-CEVA-Massmore-i.5641091.24661859112) |
+| S0004m Servo | 1 | [Shopee](https://shopee.co.th/%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%A7%E0%B8%94%E0%B8%B4%E0%B8%88%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%A5-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%A5%E0%B9%87%E0%B8%81-2-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-4.3-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-6-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-8-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7V-6.0V-DC-%E0%B8%AA%E0%B9%8D%E0%B8%B2%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%AB%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B9%8C-%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9A%E0%B8%B4%E0%B8%99%E0%B8%9A%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%B1%E0%B8%9A-1-%E0%B8%8A%E0%B8%B4%E0%B9%89%E0%B8%99-i.53028894.18020081677?is_from_login=true) |
+| N20 DC Motor + Encoder | 2 | [Shopee](https://shopee.co.th/product/627316253/26413874397?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkWVp3RFo3Mkw5czd4Z0hzdEF1WVFibXlBTE5VQ0pKTTRUMjllaFljblI4VVUzZVlWanM3K21aUFJRVnpoZE9HY3Y0bnAxT3daaXVtOUhoZXZ2ZDJzRzNkcmkzQ3VRNjdSUU5oNGRQZzIwbEE3UDA5LzQ3K2JpMWZKeEtQbHVsS2FnPT0&gad_campaignid=17496928273) |
+| Raspberry Pi M.2 HAT+ | 1 | [Shopee](https://shopee.co.th/product/1157514659/25882329690?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkVHQ3ZkZSUTMrR3pBWmZZNzdrcnRBM3hoa2xoUTJ1NnV3KytZYXhoSFV2OUlmR2NCUU02MDczVVhUUkNVdUNNNVVYd0VxL2dVd05wZkFxdnZIcFh4SC9uMmFOWHhKdFpuSCthU3Juc0xCMGltNDR1YWEyQ3VncVhIUWFRR2N3RlBRPT0&gad_campaignid=22728093025) |
+| DRV8871 Motor Driver | 1 | [Shopee](https://shopee.co.th/product/1032045852/43908925373?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkVHQ3ZkZSUTMrR3pBWmZZNzdrcnRBMjkrZnU4MUU2YzU2T3QvM3grWWtKSzVQS0cyNXFvME00NWhneVloM2lIRHZzcE5wUlVlOFNTVE10T2VzUUxudUJLSW96blRWcERzeWJNSWF3YTdIREhURjFCclNpT0E3ZXhqRlhHU3lSQ05nPT0) |
+| DC-DC Boost Step-Up Module | 1 | N/A |
+| N-Channel MOSFET Transistor | 1 | N/A |
+| 4.4 kΩ Resistor | 1 | N/A |
+| Wires | Various | N/A |
+| eSUN PLA+ Spool | 1–3 | [eSUN](https://www.esun3d.com/pla-pro-product/) |
+| Screws (M2 & M2.6 & M3) | Various | N/A |
+| Tape | Various | N/A |
+| Lithium Grease | Small | N/A |
 
-| Component                   | Quantity | Source/Supplier                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| --------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Raspberry Pi 5              | 1        | [Gammaco](https://gammaco.com/gammaco/Raspberry_Pi_GB_89RD014.html)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Raspberry Pi Pico 2         | 1        | [Cytron](https://th.cytron.io/p-raspberry-pi-pico2-board)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| UPS EP-0136                 | 1        | [52Pi](https://52pi.com/products/52pi-ups-board-with-rtc-coulometer-for-raspberry-pi)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| 18650 Lithium-Ion Battery   | 2        | [Cytron](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| RPLidar S2                  | 1        | [SLAMTEC](https://www.slamtec.com/en/S2)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| 5MP Fish Eye Camera         | 1        | [Cytron](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| BNO085 IMU                  | 1        | [Shopee](https://shopee.co.th/%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5-AR-VR-BNO055-BNO085-BNO086-%E0%B8%8A%E0%B8%B4%E0%B8%9E%E0%B9%81%E0%B8%97%E0%B9%89-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99-Halley-9-DOF-IMU-Sensor-Bosch-CEVA-Massmore-i.5641091.24661859112)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| S0004m Servo                | 1        | [Shopee](https://shopee.co.th/%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%A7%E0%B8%94%E0%B8%B4%E0%B8%88%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%A5-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%A5%E0%B9%87%E0%B8%81-2-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-4.3-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-6-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-8-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7V-6.0V-DC-%E0%B8%AA%E0%B9%8D%E0%B8%B2%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%AB%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B9%8C-%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9A%E0%B8%B4%E0%B8%99%E0%B8%9A%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%B1%E0%B8%9A-1-%E0%B8%8A%E0%B8%B4%E0%B9%89%E0%B8%99-i.53028894.18020081677?is_from_login=true) |
-| N20 DC Motor + Encoder      | 2        | [Shopee](https://shopee.co.th/product/627316253/26413874397?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkWVp3RFo3Mkw5czd4Z0hzdEF1WVFibXlBTE5VQ0pKTTRUMjllaFljblI4VVUzZVlWanM3K21aUFJRVnpoZE9HY3Y0bnAxT3daaXVtOUhoZXZ2ZDJzRzNkcmkzQ3VRNjdSUU5oNGRQZzIwbEE3UDA5LzQ3K2JpMWZKeEtQbHVsS2FnPT0&gad_campaignid=17496928273)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Raspberry Pi M.2 HAT+       | 1        | [Shopee](https://shopee.co.th/product/1157514659/25882329690?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkVHQ3ZkZSUTMrR3pBWmZZNzdrcnRBM3hoa2xoUTJ1NnV3KytZYXhoSFV2OUlmR2NCUU02MDczVVhUUkNVdUNNNVVYd0VxL2dVd05wZkFxdnZIcFh4SC9uMmFOWHhKdFpuSCthU3Juc0xCMGltNDR1YWEyQ3VncVhIUWFRR2N3RlBRPT0&gad_campaignid=22728093025)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| DRV8871 Motor Driver        | 1        | [Shopee](https://shopee.co.th/product/1032045852/43908925373?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkVHQ3ZkZSUTMrR3pBWmZZNzdrcnRBMjkrZnU4MUU2YzU2T3QvM3grWWtKSzVQS0cyNXFvME00NWhneVloM2lIRHZzcE5wUlVlOFNTVE10T2VzUUxudUJLSW96blRWcERzeWJNSWF3YTdIREhURjFCclNpT0E3ZXhqRlhHU3lSQ05nPT0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| DC-DC Boost Step-Up Module  | 1        | N/A                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| N-Channel MOSFET Transistor | 1        | N/A                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 4.4 kΩ Resistor             | 1        | N/A                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Wires                       | Various  | N/A                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| eSUN PLA+ Spool             | 1–3      | [eSUN](https://www.esun3d.com/pla-pro-product/)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Screws (M2 & M2.6 & M3)     | Various  | N/A                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Tape                        | Various  | N/A                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Lithium Grease              | Small    | N/A                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 **Printers Used:**
 
@@ -1201,25 +1202,21 @@ The FreeCAD files can be found [here](./FreeCAD-Files)
 
 **Slicer Files**
 
-Slicer files (.3mf) can be found [here](./Slicer-Files)
+All slicer project files (`.3mf`) used for printing the robot’s components can be found [here](./Slicer-Files).  
+These files contain optimized slicing settings such as layer height, infill, support, and print orientation for each part.
 
-**Chassis & Core Structure**
+**Chassis**
 
 - [`Main chassis`](<Slicer-Files/Bambu_Lab_P1S_(Bambu_Slicer)/Chassis_1x.3mf>)
-
 - [`Front cover (for camera and steering)`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_FrontCover_1x.3mf>)
-
-- [`Rear wheel mounts`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_BackWheelStuff.3mf>)
-
-- [`Motor plate`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_MotorPlate_1x.3mf>)
-
 - [`Lidar plate`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_LidarPlate_1x.3mf>)
 
-**Motor & Gear Components**
-
+**Mobility and Steering**
 - [`Motor Gear`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_MotorGear_1x.3mf>)
 - [`Motor holder`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_AxleHolder_MotorHolder.3mf>)
 - [`Linkage parts`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_Linkages.3mf>)
+- [`Motor plate`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_MotorPlate_1x.3mf>)
+- [`Rear wheel mounts`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_BackWheelStuff.3mf>)
 
 [▲ Back to Top](#top)
 
