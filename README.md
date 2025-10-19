@@ -454,7 +454,7 @@ We mounted the BNO085 near the center of the chassis. It communicates with the R
 
 The Raspberry Pi 5 serves as the robot’s main processing unit, responsible for high-level decision-making, image processing, and sensor data integration.  
 With its powerful quad-core Arm Cortex-A76 CPU with 8GB RAM, it can efficiently handle real-time LIDAR and camera data for tasks such as mapping, obstacle avoidance, and path planning.  
-Its small size ALLOWS easy mounting on the chassis without adding significant weight.
+Its small size allows easy mounting on the chassis without adding significant weight.
 
 **Microcontroller: Raspberry Pi Pico 2**
 
@@ -579,7 +579,8 @@ The robot determines which direction to turn by analysing the walls detected aro
    - If no rules match, returns `std::nullopt`, indicating that the turn direction cannot be determined.
 
 <details>
-<summary>Click here to show C++ code</summary>
+<summary><b><span style="font-size:1.2em; background-color:#f2f2f2; padding:4px 8px; border-radius:5px;"> Click here to show C++ code</span></b></summary>
+
 
 getTurnDirection code (from [lidar_processor.h](code/raspberry-pi-5/src/processors/lidar/lidar_processor.h) / [lidar_processor.cpp](code/raspberry-pi-5/src/processors/lidar/lidar_processor.cpp))
 
@@ -1274,8 +1275,8 @@ Before assembly, prepare the components listed above and print the 3D parts.
 
 <details>
 
-<summary> 
-After printing, you should have these parts:
+<summary> <b><span style="font-size:1.1em; background-color:#f2f2f2; padding:4px 8px; border-radius:5px;">Click here to show the 3D printed parts used in the building process</span></b></summary>
+
 </summary>
 
 | Part Name                    | Quantity |
