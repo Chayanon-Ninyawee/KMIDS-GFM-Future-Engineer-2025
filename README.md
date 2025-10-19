@@ -37,13 +37,14 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   * [4.2 Obstacle Challenge](#42-obstacle-challenge)
   * [4.3 Parallel Parking](#43-parallel-parking)
 - [5. Source Code](#5-source-code)
-  * [5.1 Code Structure](#51-code-structure)
-  * [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
+  * [5.1 API Documentation](#51-api-documentation)
+  * [5.2 Code Structure](#52-code-structure)
+  * [5.3 Compilation / Upload Instructions](#53-compilation--upload-instructions)
 - [6. List of Components](#6-list-of-components)
 - [7. 3D Model Files](#7-3d-model-files)
-  * [7.1 FreeCAD Files](#freecad-files)
-  * [7.2 STL Files](#stl-files)
-  * [7.3 Slicer Files](#slicer-files)
+  * [7.1 FreeCAD Files](#71-freecad-files)
+  * [7.2 STL Files](#72-stl-files)
+  * [7.3 Slicer Files](#73-slicer-files)
 - [8. Building Instructions](#8-building-instructions)
 - [9. Extra Documentation](#9-extra-documentation)
 
@@ -982,7 +983,18 @@ TBA. TODO:-->
 
 ## 5. Source Code
 
-### 5.1 Code Structure
+
+### 5.1 API Documentation
+
+
+[paragraph]
+link
+
+
+
+
+
+### 5.2 Code Structure
 
 All the code used in the robot can be found [here](code)
 
@@ -1071,7 +1083,7 @@ repo-root
 
 This structure allows Pi 5 and Pi Pico to share common code while keeping hardware-specific modules separate.
 
-### 5.2 Compilation / Upload Instructions
+### 5.3 Compilation / Upload Instructions
 
 This section describes how to build and run the project on the **Raspberry Pi 5** and **Raspberry Pi Pico 2**, including all dependencies.
 
