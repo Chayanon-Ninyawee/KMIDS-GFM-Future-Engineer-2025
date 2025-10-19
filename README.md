@@ -452,6 +452,10 @@ We mounted the BNO085 near the center of the chassis. It communicates with the R
   </tr>
 </table>
 
+The Raspberry Pi 5 serves as the robot’s main processing unit, responsible for high-level decision-making, image processing, and sensor data integration.  
+With its powerful quad-core Arm Cortex-A76 CPU with 8GB RAM, it can efficiently handle real-time LIDAR and camera data for tasks such as mapping, obstacle avoidance, and path planning.  
+Its small size ALLOWS easy mounting on the chassis without adding significant weight.
+
 **Microcontroller: Raspberry Pi Pico 2**
 
 <table>
@@ -472,6 +476,10 @@ We mounted the BNO085 near the center of the chassis. It communicates with the R
   </tr>
 </table>
 
+The Raspberry Pi Pico 2 acts as the robot’s low-level controller, managing tasks such as motor control, servo steering, and sensor input.  
+It communicates with the Raspberry Pi 5 via UART, and devides high-level processing and precise hardware control.  
+It provides reliable and responsive control for driving and steering functions, ensuring smoother and more accurate movement.
+
 **Adapter Board: Raspberry Pi M.2 HAT+**
 
 <table>
@@ -490,6 +498,10 @@ We mounted the BNO085 near the center of the chassis. It communicates with the R
     </td>
   </tr>
 </table>
+
+The Raspberry Pi M.2 HAT+ extends the system’s capabilities by enabling high-speed PCIe 2.0 connectivity for M.2 NVMe SSDs.  
+This allows the robot to store and access large volumes of sensor and mapping data quickly, especially with the LIDAR sensor, improving runtime performance and reducing data bottlenecks during complex operations.  
+
 
 ### 3.4 Circuit Diagram
 
