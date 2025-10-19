@@ -103,7 +103,7 @@ Our objective is to create an intelligent robot that is capable of navigating th
 
 [![video](http://img.youtube.com/vi/hUqdMjxhbqM/0.jpg)](http://www.youtube.com/watch?v=hUqdMjxhbqM "Performance video")
 
-The video shows both the open and obstacle challenge
+The video shows both the Open and Obstacle Challenges.
 
 <p align="right">
   <a href="#top">Back To Top</a>
@@ -161,7 +161,7 @@ To reach a faster speed, we can upgrade the N20 motor to the N30, which is the e
 
 <img src="./docs/resources/steering_gif.gif" alt="steering_gif.gif">
 
-**Servo: S0004m**
+**Servo: S0004M**
 
 <table>
   <tr>
@@ -227,7 +227,7 @@ While the servo used is adequate for the task, it can still be replaced with som
 
 <img src="docs\resources\barechassis.png" alt="chassis" >
 
-| Dimensions: | Length (mm) |
+| Dimension   | Value (mm)  |
 | ----------- | ----------- |
 | Width       | 244         |
 | Length      | 120         |
@@ -235,7 +235,7 @@ While the servo used is adequate for the task, it can still be replaced with som
 
 **Design Overview**
 
-Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry while also allowing components to remain centerd on the chassis.
+Our chassis was designed with a focus on weight and modularity. The goal is for our chassis to be a stable platform on which we can implement the steering geometry while also allowing components to remain centered on the chassis.
 
 **Layout**
 
@@ -251,7 +251,7 @@ Our robot chassis was completely custom-designed in FreeCAD and 3D printed using
 
 ### 3.1 Power Source
 
-**Battery: 18650 Lithium-Ion**
+**Battery: 18650 Lithium-ion**
 
 <table>
   <tr>
@@ -270,7 +270,7 @@ Our robot chassis was completely custom-designed in FreeCAD and 3D printed using
   </tr>
 </table>
 
-The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, our vehicle is powered by an [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply), with 2x 18650 Lithium-Ion as the energy source. The UPS maintains a stable 5V output to the Raspberry Pi 5 even during fluctuations. It also has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected.
+The power and sensor systems are crucial to the vehicle's ability to navigate the challenges of the competition. For this project, our vehicle is powered by an [EP-0136 Raspberry Pi UPS](https://wiki.52pi.com/index.php?title=EP-0136) (Uninterruptible Power Supply), with 2x 18650 Lithium-ion as the energy source. The UPS maintains a stable 5V output to the Raspberry Pi 5 even during fluctuations. It also has built-in charging and voltage regulation circuits, allowing continuous operation while also recharging the batteries when external power is connected.
 The batteries are connected in series to provide a nominal voltage of 7.4V and a combined capacity of around 4000 mAh, depending on the cells used. This setup is capable of delivering a continuous current of around 20 Amps, which is sufficient to supply to the robot for various tasks. This setup ensures that the Raspberry Pi won't shut down unexpectedly, allowing uninterrupted data processing and decision-making throughout the run.
 
 The motors, however, require a higher voltage — at least 6V, and to ensure reliable performance, the N20 motor power is supplied through a step-up converter that increases 5V to 12V. Because the motor power is separate from the Raspberry Pi, the standard on/off switch could not fully control the system. To solve this, a MOSFET and a 4.4 kΩ resistor were added between the gate and source, with the drain connected to the negative side of the step-up converter. This allows the robot to be safely powered on and off while supplying sufficient power to both the Raspberry Pi and the motors.
@@ -365,11 +365,11 @@ The onboard processing unit, the Raspberry Pi 5, serves as the vehicle's brain. 
 
 - Obstacle detection
 
-- Identify parking space and assist in the parallel parking manoeuvre
+- Identify parking spaces and assist with parallel parking.
 
 - Mapping and determining initial orientation
 
-**Camera: Fish Eye Lens Raspberry Pi 5MP IR Camera**
+**Camera: Fish-Eye Lens Raspberry Pi 5MP IR Camera**
 
 <table >
   <tr>
@@ -478,7 +478,7 @@ Its small size allows easy mounting on the chassis without adding significant we
 </table>
 
 The Raspberry Pi Pico 2 acts as the robot’s low-level controller, managing tasks such as motor control, servo steering, and sensor input.  
-It communicates with the Raspberry Pi 5 via UART, and devides high-level processing and precise hardware control.  
+It communicates with the Raspberry Pi 5 via UART, and divides high-level processing and precise hardware control.  
 It provides reliable and responsive control for driving and steering functions, ensuring smoother and more accurate movement.
 
 **Adapter Board: Raspberry Pi M.2 HAT+**
@@ -519,9 +519,9 @@ We had to decide on whether to do a PCB or use jumper wires to connect each comp
 | Raspberry Pi 5 | 5 | 2.50 | 5.00 | 12.50 |
 | Raspberry Pi Pico 2 | 5 | 0.05 | 0.10 | 0.25 |
 | RPLIDAR S2 | 5 | 0.45 | 0.60 | 2.25 |
-| 5MP Fish Eye Lens Camera | 5 | 0.12 | 0.25 | 0.60 |
+| 5MP Fish-Eye Lens Camera | 5 | 0.12 | 0.25 | 0.60 |
 | BNO085 IMU | 3.3 | 0.015 | 0.025 | 0.05 |
-| Micro Servo S0004m (steering) | 5 | 0.12 | 0.65 | 0.60 |
+| Micro Servo S0004M (steering) | 5 | 0.12 | 0.65 | 0.60 |
 | N20 DC Motor | 12 | 0.30 | 1.50 | 7.20 |
 | DRV8871 Motor Driver | 12 | 0.01 | 0.04 | 0.24 |
 | Raspberry Pi M.2 HAT+ | 3.3 | 0.25 | 1.00 | 3.30 |
@@ -544,7 +544,7 @@ We divide the strategy into three phases:
 
 - Open Challenge
 - Obstacle Challenge
-- Parallel Parking Manoeuvre
+- Parallel Parking Maneuver
 
 ### 4.1 Open Challenge
 
@@ -688,16 +688,16 @@ std::optional<RotationDirection> getTurnDirection(const RelativeWalls &walls) {
 
 *Figure: Example of the robot detecting traffic lights.*
 
-The Obstacle Challenge requires the robot to navigate the arena while avoiding obstacles and detecting traffic lights. The robot combines LiDAR and camera data to make real-time decisions. The main processing steps are:
+The Obstacle Challenge requires the robot to navigate the arena while avoiding obstacles and detecting traffic lights. The robot combines LIDAR and camera data to make real-time decisions. The main processing steps are:
 
 1. **Determine turn direction**
 
    - Uses the same algorithm as in the Open Challenge to decide whether to turn CLOCKWISE or COUNTER_CLOCKWISE based on the surrounding walls.
    - If no clear direction is detected, the default is CLOCKWISE.
 
-1. **Convert LiDAR data to Cartesian coordinates**
+1. **Convert LIDAR data to Cartesian coordinates**
 
-   - LiDAR points that are too close (< 0.005 m), too far (> 3.2 m), or outside the forward scanning range are ignored.
+   - LIDAR points that are too close (< 0.005 m), too far (> 3.2 m), or outside the forward scanning range are ignored.
    - Converts polar coordinates (distance, angle) to Cartesian coordinates relative to the robot.
 
 1. **Filter points based on walls and turn direction**
@@ -705,7 +705,7 @@ The Obstacle Challenge requires the robot to navigate the arena while avoiding o
    - Depending on the current turn direction, left, right, and far walls are used to remove points that are too close to obstacles.
    - Thresholds (`outerEdge = 0.30 m`, `innerEdge = 0.70 m`) define valid regions for candidate traffic lights.
 
-1. **Cluster nearby LiDAR points**
+1. **Cluster nearby LIDAR points**
 
    - Points within `distanceThreshold` (default 0.05 m) are grouped together.
    - Each cluster is averaged to generate a candidate traffic light location.
@@ -717,11 +717,11 @@ The Obstacle Challenge requires the robot to navigate the arena while avoiding o
    - The top 50% of the frame is blacked out to reduce noise from the ceiling or irrelevant background.
    - Contours are extracted, and only those larger than the `areaThreshold` are kept.
 
-1. **Combine camera and LiDAR data**
+1. **Combine camera and LIDAR data**
 
-   - For each detected camera block (red/green), find the closest LiDAR point within a maximum allowed horizontal angle difference.
+   - For each detected camera block (red/green), find the closest LIDAR point within a maximum allowed horizontal angle difference.
    - Only the nearest point along the ray is matched to prevent duplicate detections.
-   - Returns a vector of `TrafficLightInfo` containing both the LiDAR location and the camera block information.
+   - Returns a vector of `TrafficLightInfo` containing both the LIDAR location and the camera block information.
 
 1. **Decision making**
 
@@ -735,9 +735,9 @@ getTrafficLightPoints code (from [lidar_processor.h](code/raspberry-pi-5/src/pro
 
 ```cpp
 /**
- * @brief Detect traffic light points from LiDAR data and resolved walls.
+ * @brief Detect traffic light points from LIDAR data and resolved walls.
  *
- * @param timedLidarData LiDAR scan data with timestamps.
+ * @param timedLidarData LIDAR scan data with timestamps.
  * @param resolveWalls Resolved walls around the robot.
  * @param turnDirection Optional turn direction of the robot (if has no value, assume CLOCKWISE).
  * @param distanceThreshold Maximum distance between points to cluster into a single traffic light point.
@@ -906,17 +906,17 @@ combineTrafficLightInfo code (from [lidar_processor.h](code/raspberry-pi-5/src/p
 
 ```cpp
 /**
- * @brief Combine camera block angles and LiDAR traffic light points.
+ * @brief Combine camera block angles and LIDAR traffic light points.
  *
  * Only returns traffic lights that have a matching camera block based on horizontal angle.
- * The LiDAR points are assumed to be in the LiDAR coordinate frame, and the camera may be
- * offset relative to the LiDAR. The function accounts for this offset when computing angles.
+ * The LIDAR points are assumed to be in the LIDAR coordinate frame, and the camera may be
+ * offset relative to the LIDAR. The function accounts for this offset when computing angles.
  *
  * @param blockAngles Vector of camera BlockAngle (red/green blocks).
- * @param lidarPoints Vector of 2D points from LiDAR (traffic lights), in LiDAR coordinates.
- * @param cameraOffset Position of the camera relative to the LiDAR (x, y) in LiDAR coordinates.
+ * @param lidarPoints Vector of 2D points from LIDAR (traffic lights), in LIDAR coordinates.
+ * @param cameraOffset Position of the camera relative to the LIDAR (x, y) in LIDAR coordinates.
  * @param maxAngleDiff Maximum allowed difference in angle (radians) to consider a camera block
- *                     as corresponding to a LiDAR point.
+ *                     as corresponding to a LIDAR point.
  * @return std::vector<TrafficLightInfo> Combined information for traffic lights that have
  *                                      matching camera blocks.
  */
@@ -934,7 +934,7 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
         float smallestDiff = std::numeric_limits<float>::max();
         float closestDistance = std::numeric_limits<float>::max();
 
-        // Loop over all available LiDAR points
+        // Loop over all available LIDAR points
         for (size_t i = 0; i < availableLidar.size(); ++i) {
             const auto &lp = availableLidar[i];
             float dx = lp.x - cameraOffset.x;
@@ -946,7 +946,7 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
             float angleDiff = std::abs(90.0f - block.angle - lidarAngleDeg);
 
             if (angleDiff <= maxAngleDiff) {
-                float distanceAlongRay = std::sqrt(dx * dx + dy * dy);  // distance from camera to LiDAR point
+                float distanceAlongRay = std::sqrt(dx * dx + dy * dy);  // distance from camera to LIDAR point
 
                 // Pick the closest along the ray (smallest distance)
                 if (distanceAlongRay < closestDistance || angleDiff < smallestDiff) {
@@ -998,7 +998,7 @@ link
 
 All the code used in the robot can be found [here](code)
 
-The project codebase is organised to separate different components, challenges, and hardware targets. The main folders are `raspberry-pi-5`, `raspberry-pi-pico-2`, and `shared`. The `shared` folder contains code used by both hardware targets.
+The project codebase is organized to separate different components, challenges, and hardware targets. The main folders are `raspberry-pi-5`, `raspberry-pi-pico-2`, and `shared`. The `shared` folder contains code used by both hardware targets.
 
 ```txt
 repo-root
@@ -1078,7 +1078,7 @@ repo-root
 - **`src/processors/`**: Data processing pipelines (camera, LIDAR, combined sensors).
 - **`src/types/`**: Data structure headers for the local target.
 - **`src/utils/`**: Utility classes (PID controllers, logging, ring buffers).
-- **`shared/`**: Code reused by both `raspberry-pi-5` and `raspberry-pi-pico-2` (I2C handling, types).
+- **`shared/`**: Code reused by both `raspberry-pi-5` and `raspberry-pi-pico-2` (I²C handling, types).
 - **`build.sh` & `CMakeLists.txt`**: Build scripts for each hardware target.
 
 This structure allows Pi 5 and Pi Pico to share common code while keeping hardware-specific modules separate.
@@ -1178,11 +1178,11 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 | Raspberry Pi 5 | 1 | [Gammaco](https://gammaco.com/gammaco/Raspberry_Pi_GB_89RD014.html) |
 | Raspberry Pi Pico 2 | 1 | [Cytron](https://th.cytron.io/p-raspberry-pi-pico2-board) |
 | UPS EP-0136 | 1 | [52Pi](https://52pi.com/products/52pi-ups-board-with-rtc-coulometer-for-raspberry-pi) |
-| 18650 Lithium-Ion Battery | 2 | [Cytron](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery) |
+| 18650 Lithium-ion Battery | 2 | [Cytron](https://th.cytron.io/p-3.7v-2000mah-li-ion-battery) |
 | RPLidar S2 | 1 | [SLAMTEC](https://www.slamtec.com/en/S2) |
-| 5MP Fish Eye Camera | 1 | [Cytron](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822) |
+| 5MP Fish-Eye Camera | 1 | [Cytron](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822) |
 | BNO085 IMU | 1 | [Shopee](https://shopee.co.th/%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5-AR-VR-BNO055-BNO085-BNO086-%E0%B8%8A%E0%B8%B4%E0%B8%9E%E0%B9%81%E0%B8%97%E0%B9%89-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99-Halley-9-DOF-IMU-Sensor-Bosch-CEVA-Massmore-i.5641091.24661859112) |
-| S0004m Servo | 1 | [Shopee](https://shopee.co.th/%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%A7%E0%B8%94%E0%B8%B4%E0%B8%88%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%A5-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%A5%E0%B9%87%E0%B8%81-2-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-4.3-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-6-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-8-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7V-6.0V-DC-%E0%B8%AA%E0%B9%8D%E0%B8%B2%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%AB%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B9%8C-%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9A%E0%B8%B4%E0%B8%99%E0%B8%9A%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%B1%E0%B8%9A-1-%E0%B8%8A%E0%B8%B4%E0%B9%89%E0%B8%99-i.53028894.18020081677?is_from_login=true) |
+| S0004M Servo | 1 | [Shopee](https://shopee.co.th/%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%A7%E0%B8%94%E0%B8%B4%E0%B8%88%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%A5-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%A5%E0%B9%87%E0%B8%81-2-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-4.3-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-6-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-8-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7V-6.0V-DC-%E0%B8%AA%E0%B9%8D%E0%B8%B2%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%AB%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B9%8C-%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9A%E0%B8%B4%E0%B8%99%E0%B8%9A%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%B1%E0%B8%9A-1-%E0%B8%8A%E0%B8%B4%E0%B9%89%E0%B8%99-i.53028894.18020081677?is_from_login=true) |
 | N20 DC Motor + Encoder | 2 | [Shopee](https://shopee.co.th/product/627316253/26413874397?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkWVp3RFo3Mkw5czd4Z0hzdEF1WVFibXlBTE5VQ0pKTTRUMjllaFljblI4VVUzZVlWanM3K21aUFJRVnpoZE9HY3Y0bnAxT3daaXVtOUhoZXZ2ZDJzRzNkcmkzQ3VRNjdSUU5oNGRQZzIwbEE3UDA5LzQ3K2JpMWZKeEtQbHVsS2FnPT0&gad_campaignid=17496928273) |
 | Raspberry Pi M.2 HAT+ | 1 | [Shopee](https://shopee.co.th/product/1157514659/25882329690?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkVHQ3ZkZSUTMrR3pBWmZZNzdrcnRBM3hoa2xoUTJ1NnV3KytZYXhoSFV2OUlmR2NCUU02MDczVVhUUkNVdUNNNVVYd0VxL2dVd05wZkFxdnZIcFh4SC9uMmFOWHhKdFpuSCthU3Juc0xCMGltNDR1YWEyQ3VncVhIUWFRR2N3RlBRPT0&gad_campaignid=22728093025) |
 | DRV8871 Motor Driver | 1 | [Shopee](https://shopee.co.th/product/1032045852/43908925373?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkVHQ3ZkZSUTMrR3pBWmZZNzdrcnRBMjkrZnU4MUU2YzU2T3QvM3grWWtKSzVQS0cyNXFvME00NWhneVloM2lIRHZzcE5wUlVlOFNTVE10T2VzUUxudUJLSW96blRWcERzeWJNSWF3YTdIREhURjFCclNpT0E3ZXhqRlhHU3lSQ05nPT0) |
@@ -1447,8 +1447,8 @@ Before assembly, prepare the components listed above and print the 3D parts.
 1. Attach the Raspberry Pi M.2 HAT+ to the Raspberry Pi 5 using M2.5 standoffs, and only connect using the ribbon cable.
 1. Stick the Raspberry Pi Pico 2, BNO085 IMU, and the step-up module using tape on the back of the chassis.
 1. Attach the LIDAR plate behind the Raspberry Pi, using 4x M2.5 standoffs and pillars to elevate the plate, ensuring the LIDAR is horizontal to the ground and has a 360-degree view around the robot by adjusting the standoffs.
-1. Attach the button and RPLIDARS2 onto the LIDAR Plate, ensuring the LIDAR sensor module is above the motor plate.
-1. Organise the wiring for added components according to the [wiring diagram](#34-Circuit-Diagram)
+1. Attach the button and RPLIDAR S2 onto the LIDAR Plate, ensuring the LIDAR sensor module is above the motor plate.
+1. Organize the wiring for added components according to the [wiring diagram](#34-Circuit-Diagram)
 
 > **The final result should look similar to this**
 >
@@ -1463,7 +1463,7 @@ Before assembly, prepare the components listed above and print the 3D parts.
 **Step 4: Upload the software**
 
 1. Connect the Raspberry Pi 5 to your computer via SSH or a USB-C cable.
-1. Follow the steps listed in [7.2](72-Compilation-/-Upload-Instructions).
+1. Follow the steps listed in [5.3](53-Compilation-/-Upload-Instructions).
 
 > **Ensure all components are connected, and power on the robot**
 
