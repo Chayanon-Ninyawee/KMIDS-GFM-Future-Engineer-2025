@@ -40,7 +40,10 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   * [5.1 Code Structure](#51-code-structure)
   * [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
 - [6. List of Components](#6-list-of-components)
-- [7. STL and Slicer Files](#7-stl-and-slicer-files)
+- [7. 3D Model Files](#7-3d-model-files)
+  * [FreeCAD Files](#freecad-files)
+  * [STL Files](#stl-files)
+  * [Slicer Files](#slicer-files)
 - [8. Building Instructions](#8-building-instructions)
 - [9. Extra Documentation](#9-extra-documentation)
 
@@ -401,23 +404,31 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 - Track path lines and boundaries.
 
 **Gyroscope and Orientation Sensor: BNO085**
+<table>
+  <tr>
+    <td align="center" width="300">
+      <img src="./docs/resources/bno085.png" alt="bno085.png" width="100%">
+    </td>
+    <td>
+      <h3>Specifications:</h3>
+      <ul>
+        <li>Sensor Type: 9-axis IMU (3-axis accelerometer, 3-axis gyroscope, 3-axis magnetometer)</li>
+        <li>Processor: ARM Cortex-M0 with integrated CEVA SH-2 sensor fusion firmware</li>
+        <li>Interfaces: I²C, SPI, UART (RVC Mode)</li>
+        <li>Operating Voltage: 3.3V </li>
+        <li>Key Features: Absolute orientation, linear acceleration, gravity vector, motion and step detection</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
-To enhance the robot’s spatial awareness and steering precision, we integrated the BNO085 into the system as the primary orientation and motion-tracking component.  
-This sensor was chosen for its built-in sensor fusion algorithms, which combine data from its accelerometer, gyroscope, and magnetometer to provide stable and drift-compensated orientation feedback.
+The BNO085 is a compact 9-axis IMU sensor that combines an accelerometer, gyroscope, and magnetometer with an onboard processor running advanced sensor fusion algorithms. It provides stable and drift-compensated orientation data, including rotation vectors, linear acceleration, and gravity direction without requiring complex external calculations.
 
-The integration process began with connecting the BNO085 to the Raspberry Pi Pico 2 via the*I²C interface, using the standard SDA and SCL lines for communication. The sensor was powered through the 3.3V rail, ensuring consistent performance and preventing overvoltage damage.  
-
-We then configured the software side by importing the appropriate BNO085 libraries and drivers, allowing the Pico to read orientation data in quaternion or Euler format. Calibration was performed by rotating the robot slowly on all axes to let the internal algorithms stabilize and eliminate bias. Once calibrated, the sensor continuously outputs accurate yaw, pitch, and roll data, which is used by the steering control algorithm to maintain direction and orientation.
-
-We mounted the sensor at the center of the chassis. 
-
-<p align="center">
-  <img src="docs/resources/bno085.png" alt="bno085.png" width="200">
-</p>
+We mounted the BNO085 near the center of the chassis. It communicates with the Raspberry Pi Pico 2 via the I²C interface, continuously providing real-time orientation and angular velocity data. This helps the robot maintain correct heading, and smooth out steering adjustments which are crucial especially during obstacle navigation.
 
 ### 3.3 Processing Units
 
-Single Board Computer: Raspberry Pi 5
+**Single Board Computer: Raspberry Pi 5**
 
 <table>
   <tr>
@@ -1158,11 +1169,13 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 
   [▲ Back to Top](#top)
 
-## 7. STL and Slicer Files
+## 7. 3D Model Files
 
-**STL Files**
+### 7.1 FreeCAD Files
 
-The FreeCAD files can be found [here](./FreeCAD-Files)
+We used FreeCAD to design the 3D models used to make the robot. The files can be found [here](./FreeCAD-Files)
+
+### 7.2 STL Files
 
 **Chassis & Core Structure**
 
@@ -1200,7 +1213,7 @@ The FreeCAD files can be found [here](./FreeCAD-Files)
 
 - [`LidarPlate_1x.stl`](FreeCAD-Files/Assembly/mesh_export/LidarPlate_1x.stl)
 
-**Slicer Files**
+### 7.3 Slicer Files
 
 All slicer project files (`.3mf`) used for printing the robot’s components can be found [here](./Slicer-Files).  
 These files contain optimized slicing settings such as layer height, infill, support, and print orientation for each part.
