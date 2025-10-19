@@ -41,9 +41,9 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   * [5.2 Compilation / Upload Instructions](#52-compilation--upload-instructions)
 - [6. List of Components](#6-list-of-components)
 - [7. 3D Model Files](#7-3d-model-files)
-  * [FreeCAD Files](#freecad-files)
-  * [STL Files](#stl-files)
-  * [Slicer Files](#slicer-files)
+  * [7.1 FreeCAD Files](#freecad-files)
+  * [7.2 STL Files](#stl-files)
+  * [7.3 Slicer Files](#slicer-files)
 - [8. Building Instructions](#8-building-instructions)
 - [9. Extra Documentation](#9-extra-documentation)
 
@@ -1174,6 +1174,9 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 ### 7.1 FreeCAD Files
 
 We used FreeCAD to design the 3D models used to make the robot. The files can be found [here](./FreeCAD-Files)
+
+- [**Assembly Files**](FreeCAD-Files/Assembly) - contains the full robot assembly including the part placements.  
+- [**Individual Parts**](FreeCAD-Files/Parts) - includes each 3D component separately.
 
 ### 7.2 STL Files
 
