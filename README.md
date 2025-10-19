@@ -104,7 +104,9 @@ Our objective is to create an intelligent robot that is capable of navigating th
 
 The video shows both the open and obstacle challenge
 
-[▲ Back to Top](#top)
+<p align="right">
+  <a href="#top">Back To Top</a>
+</p>
 
 ## 2. Mobility Management
 
@@ -240,7 +242,9 @@ The layout of the chassis is made to fit the rear-mounted motors and front-mount
 
 Our robot chassis was completely custom-designed in FreeCAD and 3D printed using [esun PLA+](https://esun3dstore.com/products/pla-pro), which we found is easy to print with, offering a smoother texture and less warping compared to ABS, while also being lightweight and durable. Alongside the main chassis, the drivetrain and steering modules are mounted on our 3D-printed detachable plates that were fine-tuned during testing to achieve the correct alignment with other components. Other components, such as motor clamps and sensor brackets, are designed as independent printable components. The chassis was also designed with modularity in mind for replacements and upgrades, with reduced overhangs for printing ease.
 
-[▲ Back to Top](#top)
+<p align="right">
+  <a href="#top">Back To Top</a>
+</p>
 
 ## 3. Power and Sense Management
 
@@ -510,7 +514,9 @@ We had to decide on whether to do a PCB or use jumper wires to connect each comp
 | Raspberry Pi M.2 HAT+ | 3.3 | 0.25 | 1.00 | 3.30 |
 | Step-Up Converter | — | — | — | η ≈ 88% |
 
-[▲ Back to Top](#top)
+<p align="right">
+  <a href="#top">Back To Top</a>
+</p>
 
 ## 4. Obstacle Management
 
@@ -957,7 +963,9 @@ std::vector<TrafficLightInfo> combineTrafficLightInfo(
 
 TBA. TODO:-->
 
-[▲ Back to Top](#top)
+<p align="right">
+  <a href="#top">Back To Top</a>
+</p>
 
 ## 5. Source Code
 
@@ -1135,7 +1143,9 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 
 > Note: The UF2 file path should match the output name specified in the Pico CMakeLists.txt.
 
-[▲ Back to Top](#top)
+<p align="right">
+  <a href="#top">Back To Top</a>
+</p>
 
 ## 6. List of Components
 | Component | Quantity | Source/Supplier |
@@ -1167,7 +1177,9 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 
 - [Creality Ender 3 V3 KE](https://store.creality.com/products/ender-3-v3-ke-3d-printer)
 
-  [▲ Back to Top](#top)
+  <p align="right">
+  <a href="#top">Back To Top</a>
+</p>
 
 ## 7. 3D Model Files
 
@@ -1234,7 +1246,9 @@ These files contain optimized slicing settings such as layer height, infill, sup
 - [`Motor plate`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_MotorPlate_1x.3mf>)
 - [`Rear wheel mounts`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_BackWheelStuff.3mf>)
 
-[▲ Back to Top](#top)
+<p align="right">
+  <a href="#top">Back To Top</a>
+</p>
 
 ## 8. Building Instructions
 
@@ -1428,7 +1442,9 @@ After printing, you should have these parts:
 
 > **Ensure all components are connected, and power on the robot**
 
-[▲ Back to Top](#top)
+<p align="right">
+  <a href="#top">Back To Top</a>
+</p>
 
 ## 9. Extra Documentation
 
@@ -1436,4 +1452,6 @@ After printing, you should have these parts:
 
 [How to Image Drive in Linux](docs/image-drive-linux.md)
 
-[▲ Back to Top](#top)
+<p align="right">
+  <a href="#top">Back To Top</a>
+</p>
