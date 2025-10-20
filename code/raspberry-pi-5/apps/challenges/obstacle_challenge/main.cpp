@@ -68,7 +68,8 @@ const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62;
 const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.78;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.31f;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CW = 0.31f;
-const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE = 0.85f;
+const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE_CCW = 0.75f;
+const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE_CW = 0.75f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
 const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
@@ -76,26 +77,33 @@ const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
 const float TURNING_FRONT_WALL_DISTANCE = 0.80f;
 const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.67f;
 const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.50f;
-const float TURNING_FRONT_WALL_INNER1_DISTANCE = 1.08f;
-const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.11f;
-const float TURNING_FRONT_WALL_CCW_PARKING_DISTANCE = 0.63f;
-const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.63f;
+const float TURNING_FRONT_WALL_INNER1_DISTANCE = 0.97f;
+const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.07f;
+const float TURNING_FRONT_WALL_CCW_PARKING_DISTANCE = 0.60f;
+const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.60f;
+
+const float TURNING_FRONT_WALL_DISTANCE_PUSH = 0.80f;
+const float TURNING_FRONT_WALL_OUTER1_DISTANCE_PUSH = 0.76f;
+const float TURNING_FRONT_WALL_OUTER2_DISTANCE_PUSH = 0.59f;
+const float TURNING_FRONT_WALL_INNER1_DISTANCE_PUSH = 1.06f;
+const float TURNING_FRONT_WALL_INNER2_DISTANCE_PUSH = 1.16f;
 
 // Will just go and park EZ
-const float CCW_PRE_PARKING_FRONT_WALL_DISTANCE = 1.80f;
+const float CCW_PRE_PARKING_FRONT_WALL_DISTANCE = 1.20f;
 const auto CCW_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(500);
 // Will just go to uturn then go and use CW_PRE_PARKING
-const float CCW_UTURN_PRE_PARKING_FRONT_WALL_DISTANCE = 0.60f;
+const float CCW_UTURN_PRE_PARKING_FRONT_WALL_DISTANCE = 0.80f;
 const auto CCW_UTURN_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
 // Will go over then reverse the go over again to make sure that the car aligned
 const float CW_PRE_PARKING_FRONT_WALL_DISTANCE = 1.80f;
 const auto CW_PRE_FIND_PARKING_DELAY_1 = std::chrono::milliseconds(1000);
 const auto CW_PRE_FIND_PARKING_DELAY_2 = std::chrono::milliseconds(3000);
 // Will just go to uturn then go and use CCW_PRE_PARKING
-const float CW_UTURN_PRE_PARKING_FRONT_WALL_DISTANCE = 0.60f;
+const float CW_UTURN_PRE_PARKING_FRONT_WALL_DISTANCE = 1.00f;
 const auto CW_UTURN_PRE_FIND_PARKING_DELAY = std::chrono::milliseconds(1000);
 
-const float FORWARD_MOTOR_SPEED = 2.5f;
+const float FORWARD_MOTOR_SPEED = 3.0f;
+const float FORWARD_MOTOR_SPEED_PUSH = 4.5f;
 const float HEADING_TOLERANCE_DEGREES_TURN = 30.0f;
 const float HEADING_TOLERANCE_DEGREES_UTURN = 40.0f;
 
@@ -525,7 +533,7 @@ private:
 
     bool updateCcwUnpark1State(const RobotData &data) {
         if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
-        motorSpeed_ = 1.0f;
+        motorSpeed_ = 1.5f;
         steeringPercent_ = -100.0f;
         float targetEncoderAngle = 400;
         if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
@@ -539,7 +547,7 @@ private:
 
     bool updateCcwUnpark2State(const RobotData &data) {
         if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
-        motorSpeed_ = 1.0f;
+        motorSpeed_ = 1.5f;
         steeringPercent_ = 100.0f;
         float targetEncoderAngle = 270;
         if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
@@ -553,7 +561,7 @@ private:
 
     bool updateCcwUnpark3State(const RobotData &data) {
         if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
-        motorSpeed_ = 1.0f;
+        motorSpeed_ = 1.5f;
         steeringPercent_ = -100.0f;
         float targetEncoderAngle = 80;
         if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
@@ -567,7 +575,7 @@ private:
 
     bool updateCcwUnpark4State(const RobotData &data) {
         if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
-        motorSpeed_ = 1.0f;
+        motorSpeed_ = 1.5f;
         steeringPercent_ = 0.0f;
         float targetEncoderAngle = 100;
         if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
@@ -581,7 +589,7 @@ private:
 
     bool updateCwUnpark1State(const RobotData &data) {
         if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
-        motorSpeed_ = 1.0f;
+        motorSpeed_ = 1.5f;
         steeringPercent_ = 100.0f;
         float targetEncoderAngle = 400;
         if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
@@ -595,7 +603,7 @@ private:
 
     bool updateCwUnpark2State(const RobotData &data) {
         if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
-        motorSpeed_ = 1.0f;
+        motorSpeed_ = 1.5f;
         steeringPercent_ = -100.0f;
         float targetEncoderAngle = 270;
         if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
@@ -609,6 +617,7 @@ private:
 
     bool updateNormalState(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
+        if (turnCount_ >= 5) motorSpeed_ = FORWARD_MOTOR_SPEED_PUSH;
 
         Segment currentSegment = Segment::fromDirection(headingDirection_);
 
@@ -723,6 +732,7 @@ private:
 
     bool updatePreTurnState(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
+        if (turnCount_ >= 4 && turnCount_ < 11) motorSpeed_ = FORWARD_MOTOR_SPEED_PUSH;
         turningFrontWallDistance_ = TURNING_FRONT_WALL_DISTANCE;
 
         if (turnDirection_) {
@@ -761,30 +771,38 @@ private:
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_CW_PARKING_DISTANCE;
                         } else if (isInner) {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER1_DISTANCE;
+                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER1_DISTANCE_PUSH;
                         } else {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER2_DISTANCE;
+                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER2_DISTANCE_PUSH;
                         }
                     } else {  // RED
                         if (isInner) {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER2_DISTANCE;
+                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER2_DISTANCE_PUSH;
                         } else {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER1_DISTANCE;
+                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER1_DISTANCE_PUSH;
                         }
                     }
                 } else {  // COUNTER_CLOCKWISE
                     if (isGreen) {
                         if (isInner) {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER2_DISTANCE;
+                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER2_DISTANCE_PUSH;
                         } else {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER1_DISTANCE;
+                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER1_DISTANCE_PUSH;
                         }
                     } else {  // RED
                         if (turnCount_ == 11) {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_CCW_PARKING_DISTANCE;
                         } else if (isInner) {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER1_DISTANCE;
+                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER1_DISTANCE_PUSH;
                         } else {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER2_DISTANCE;
+                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER2_DISTANCE_PUSH;
                         }
                     }
                 }
@@ -813,6 +831,7 @@ private:
 
     bool updateTurningState(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
+        if (turnCount_ >= 4 && turnCount_ < 11) motorSpeed_ = FORWARD_MOTOR_SPEED_PUSH;
         targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE;
         wallPid_.setActive(false);
 
@@ -829,6 +848,7 @@ private:
 
     bool updateCcwPreFindParkingState(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
+        wallPid_.setGains(300.0, WALL_PID_I, WALL_PID_D);
         targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE_PARKING_CCW;
 
         if (!timer_) {
@@ -840,6 +860,7 @@ private:
             elapsed >= CCW_PRE_FIND_PARKING_DELAY)
         {
             timer_.reset();
+            wallPid_.setGains(WALL_PID_P, WALL_PID_I, WALL_PID_D);
             mode_ = Mode::CCW_FIND_PARKING;
             return true;
         }
@@ -848,7 +869,7 @@ private:
 
     bool updateCcwUturnPreFindParking1State(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
-        targetOuterWallDistance_ = TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE;
+        targetOuterWallDistance_ = TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE_CCW;
 
         if (!timer_) {
             timer_ = std::chrono::steady_clock::now();
@@ -869,6 +890,7 @@ private:
 
     bool updateCcwUturnPreFindParking2State(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
+        headingPid_.setGains(6.0, HEADING_PID_I, HEADING_PID_D);
         wallPid_.setActive(false);
 
         float diff = data.heading - headingDirection_.toHeading();
@@ -876,6 +898,7 @@ private:
         if (std::abs(diff) <= HEADING_TOLERANCE_DEGREES_UTURN) {
             float nextHeading = headingDirection_.toHeading() + 90.0f;
             headingDirection_ = Direction::fromHeading(std::fmod(nextHeading + 360.0f, 360.0f));
+            headingPid_.setGains(HEADING_PID_P, HEADING_PID_I, HEADING_PID_D);
             mode_ = Mode::CCW_UTURN_PRE_FIND_PARKING_3;
             return true;
         }
@@ -884,19 +907,19 @@ private:
 
     bool updateCcwUturnPreFindParking3State(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
-        steeringPercent_ = 100.0f;
+        headingPid_.setGains(6.0, HEADING_PID_I, HEADING_PID_D);
         wallPid_.setActive(false);
 
-        float diff = data.heading - headingDirection_.toHeading();
-        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
-        if (diff <= HEADING_TOLERANCE_DEGREES_UTURN) {
+        // float diff = data.heading - headingDirection_.toHeading();
+        // diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+        // if (diff <= HEADING_TOLERANCE_DEGREES_UTURN) {
+        if (data.heading >= 170.0f && data.heading <= 270.0f) {
             turnDirection_ = RotationDirection::CLOCKWISE;
+            headingPid_.setGains(HEADING_PID_P, HEADING_PID_I, HEADING_PID_D);
             mode_ = Mode::CW_PRE_FIND_PARKING_1;
             wallPid_.setActive(true);  // Re-enable for the next state
             return true;
         }
-        // This state has custom steering, so we bypass the main PID calculation by setting it directly
-        pico2_.setMovementInfo(motorSpeed_, steeringPercent_);
         return false;
     }
 
@@ -949,7 +972,7 @@ private:
 
     bool updateCwUturnPreFindParking1State(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
-        targetOuterWallDistance_ = TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE;
+        targetOuterWallDistance_ = TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE_CW;
 
         if (!timer_) {
             timer_ = std::chrono::steady_clock::now();
@@ -970,6 +993,7 @@ private:
 
     bool updateCwUturnPreFindParking2State(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
+        headingPid_.setGains(6.0, HEADING_PID_I, HEADING_PID_D);
         wallPid_.setActive(false);
 
         float diff = data.heading - headingDirection_.toHeading();
@@ -977,6 +1001,7 @@ private:
         if (std::abs(diff) <= HEADING_TOLERANCE_DEGREES_UTURN) {
             float nextHeading = headingDirection_.toHeading() - 90.0f;
             headingDirection_ = Direction::fromHeading(std::fmod(nextHeading + 360.0f, 360.0f));
+            headingPid_.setGains(HEADING_PID_P, HEADING_PID_I, HEADING_PID_D);
             mode_ = Mode::CW_UTURN_PRE_FIND_PARKING_3;
             return true;
         }
@@ -985,12 +1010,15 @@ private:
 
     bool updateCwUturnPreFindParking3State(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
+        headingPid_.setGains(6.0, HEADING_PID_I, HEADING_PID_D);
         wallPid_.setActive(false);
 
-        float diff = data.heading - headingDirection_.toHeading();
-        diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
-        if (std::abs(diff) <= HEADING_TOLERANCE_DEGREES_UTURN) {
+        // float diff = data.heading - headingDirection_.toHeading();
+        // diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
+        // if (std::abs(diff) <= HEADING_TOLERANCE_DEGREES_UTURN) {
+        if (data.heading <= 190.0f && data.heading >= 90.0f) {
             turnDirection_ = RotationDirection::COUNTER_CLOCKWISE;
+            headingPid_.setGains(HEADING_PID_P, HEADING_PID_I, HEADING_PID_D);
             mode_ = Mode::CCW_PRE_FIND_PARKING;
             wallPid_.setActive(true);
             return true;
@@ -1257,8 +1285,8 @@ int main() {
     }
 
     if (!stop_flag) {
-        std::cout << "Starting in 1.5 seconds..." << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+        std::cout << "Starting in 1.0 seconds..." << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         lidar.startLogging();
         pico2.startLogging();
