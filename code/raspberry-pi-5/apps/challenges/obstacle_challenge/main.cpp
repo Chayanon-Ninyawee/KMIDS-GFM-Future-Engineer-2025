@@ -80,9 +80,9 @@ const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.50f;
 const float TURNING_FRONT_WALL_INNER1_DISTANCE = 0.97f;
 const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.07f;
 const float TURNING_FRONT_WALL_CCW_PARKING_DISTANCE = 0.60f;
-const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.60f;
+const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.59f;
 
-const float TURNING_FRONT_WALL_DISTANCE_PUSH = 0.80f;
+const float TURNING_FRONT_WALL_DISTANCE_PUSH = 0.89f;
 const float TURNING_FRONT_WALL_OUTER1_DISTANCE_PUSH = 0.76f;
 const float TURNING_FRONT_WALL_OUTER2_DISTANCE_PUSH = 0.59f;
 const float TURNING_FRONT_WALL_INNER1_DISTANCE_PUSH = 1.06f;
@@ -129,6 +129,7 @@ class Robot
 public:
     enum class Mode
     {
+        UNKNOWN,
         CCW_UNPARK_1,
         CCW_UNPARK_2,
         CCW_UNPARK_3,
@@ -183,6 +184,11 @@ public:
         do {
             instantUpdate = false;
             switch (mode_) {
+            case Mode::UNKNOWN:
+                std::cout << "[Mode::UNKNOWN]\n";
+                instantUpdate = false;
+                pico2_.setMovementInfo(0.0f, 0.0f);
+                return;
             case Mode::CCW_UNPARK_1:
                 std::cout << "[Mode::CCW_UNPARK_1]\n";
                 instantUpdate = updateCcwUnpark1State(robotData);
@@ -302,11 +308,11 @@ private:
     PIDController wallPid_;
 
     // --- State Variables ---
-    // Mode mode_ = Mode::NORMAL;
-    // Direction headingDirection_ = Direction::NORTH;
-    // std::optional<float> initialHeading_;
-    // std::optional<RotationDirection> turnDirection_;
-    // int turnCount_ = 0;
+    Mode mode_ = Mode::UNKNOWN;
+    Direction headingDirection_ = Direction::NORTH;
+    std::optional<float> initialHeading_;
+    std::optional<RotationDirection> turnDirection_;
+    int turnCount_ = 0;
 
     // Mode mode_ = Mode::NORMAL;
     // Direction headingDirection_ = Direction::NORTH;
@@ -326,13 +332,11 @@ private:
     // std::optional<RotationDirection> turnDirection_ = RotationDirection::COUNTER_CLOCKWISE;
     // int turnCount_ = 0;
 
-    // TODO: Check the turnDirection when the robot is in the parking lot
-
-    Mode mode_ = Mode::CW_UNPARK_1;
-    Direction headingDirection_ = Direction::NORTH;
-    std::optional<float> initialHeading_;
-    std::optional<RotationDirection> turnDirection_ = RotationDirection::CLOCKWISE;
-    int turnCount_ = 0;
+    // Mode mode_ = Mode::CW_UNPARK_1;
+    // Direction headingDirection_ = Direction::NORTH;
+    // std::optional<float> initialHeading_;
+    // std::optional<RotationDirection> turnDirection_ = RotationDirection::CLOCKWISE;
+    // int turnCount_ = 0;
 
     float targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE;
     float turningFrontWallDistance_ = TURNING_FRONT_WALL_DISTANCE;
@@ -428,7 +432,22 @@ private:
         auto relativeWalls = lidar_processor::getRelativeWalls(lineSegments, headingDirection_, data.heading, 0.30f, 25.0f, 0.22f);
         auto resolvedWalls = lidar_processor::resolveWalls(relativeWalls);
 
-        if (!turnDirection_) turnDirection_ = lidar_processor::getTurnDirection(relativeWalls);
+        // TODO: Test this more extensively
+        if (!turnDirection_) {
+            auto unfilteredLineSegments = lidar_processor::getLines(timedLidarData, deltaPose, 0.05f, 10, 0.10f, 0.10f, 18.0f, 0.20f);
+            auto unfilteredRelativeWalls =
+                lidar_processor::getRelativeWalls(unfilteredLineSegments, headingDirection_, data.heading, 0.30f, 25.0f, 0.22f);
+            turnDirection_ = lidar_processor::getTurnDirection(unfilteredRelativeWalls);
+        }
+        if (!turnDirection_) return std::nullopt;
+
+        if (mode_ == Mode::UNKNOWN) {
+            if (*turnDirection_ == RotationDirection::CLOCKWISE) {
+                mode_ = Mode::CW_UNPARK_1;
+            } else {
+                mode_ = Mode::CCW_UNPARK_1;
+            }
+        }
 
         data.frontWall = resolvedWalls.frontWall;
         data.backWall = resolvedWalls.backWall;
@@ -732,8 +751,11 @@ private:
 
     bool updatePreTurnState(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
-        if (turnCount_ >= 4 && turnCount_ < 11) motorSpeed_ = FORWARD_MOTOR_SPEED_PUSH;
         turningFrontWallDistance_ = TURNING_FRONT_WALL_DISTANCE;
+        if (turnCount_ >= 4 && turnCount_ < 11) {
+            motorSpeed_ = FORWARD_MOTOR_SPEED_PUSH;
+            turningFrontWallDistance_ = TURNING_FRONT_WALL_DISTANCE_PUSH;
+        }
 
         if (turnDirection_) {
             // --- Compute next segment ---
@@ -771,38 +793,38 @@ private:
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_CW_PARKING_DISTANCE;
                         } else if (isInner) {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER1_DISTANCE;
-                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER1_DISTANCE_PUSH;
+                            if (turnCount_ >= 4 && turnCount_ < 11) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER1_DISTANCE_PUSH;
                         } else {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER2_DISTANCE;
-                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER2_DISTANCE_PUSH;
+                            if (turnCount_ >= 4 && turnCount_ < 11) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER2_DISTANCE_PUSH;
                         }
                     } else {  // RED
                         if (isInner) {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER2_DISTANCE;
-                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER2_DISTANCE_PUSH;
+                            if (turnCount_ >= 4 && turnCount_ < 11) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER2_DISTANCE_PUSH;
                         } else {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER1_DISTANCE;
-                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER1_DISTANCE_PUSH;
+                            if (turnCount_ >= 4 && turnCount_ < 11) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER1_DISTANCE_PUSH;
                         }
                     }
                 } else {  // COUNTER_CLOCKWISE
                     if (isGreen) {
                         if (isInner) {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER2_DISTANCE;
-                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER2_DISTANCE_PUSH;
+                            if (turnCount_ >= 4 && turnCount_ < 11) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER2_DISTANCE_PUSH;
                         } else {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER1_DISTANCE;
-                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER1_DISTANCE_PUSH;
+                            if (turnCount_ >= 4 && turnCount_ < 11) turningFrontWallDistance_ = TURNING_FRONT_WALL_INNER1_DISTANCE_PUSH;
                         }
                     } else {  // RED
                         if (turnCount_ == 11) {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_CCW_PARKING_DISTANCE;
                         } else if (isInner) {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER1_DISTANCE;
-                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER1_DISTANCE_PUSH;
+                            if (turnCount_ >= 4 && turnCount_ < 11) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER1_DISTANCE_PUSH;
                         } else {
                             turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER2_DISTANCE;
-                            if (turnCount_ >= 4) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER2_DISTANCE_PUSH;
+                            if (turnCount_ >= 4 && turnCount_ < 11) turningFrontWallDistance_ = TURNING_FRONT_WALL_OUTER2_DISTANCE_PUSH;
                         }
                     }
                 }
