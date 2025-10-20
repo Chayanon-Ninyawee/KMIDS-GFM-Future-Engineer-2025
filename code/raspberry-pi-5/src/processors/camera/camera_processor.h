@@ -14,7 +14,7 @@ const cv::Scalar upperRed1Light(1, 230, 255);
 const cv::Scalar lowerRed2Light(166, 70, 170);
 const cv::Scalar upperRed2Light(180, 230, 255);
 
-const cv::Scalar lowerGreen1Light(45, 110, 120);
+const cv::Scalar lowerGreen1Light(45, 110, 100);
 const cv::Scalar upperGreen1Light(85, 230, 200);
 // If a second green range is required
 const cv::Scalar lowerGreen2Light(85, 230, 200);

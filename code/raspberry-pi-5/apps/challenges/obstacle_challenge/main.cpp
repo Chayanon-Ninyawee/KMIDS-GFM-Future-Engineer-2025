@@ -384,7 +384,8 @@ private:
         const auto &olderData = picoHistory[picoHistory.size() - 1 - HEADING_RATE_LOOKBACK];
 
         // Calculate the shortest angle difference (handles 360->0 wrap-around)
-        float headingChange_deg = normalizeAngle(latestData.euler.h - olderData.euler.h);
+        float diff_deg = latestData.euler.h - olderData.euler.h;
+        diff_deg = std::fmod(diff_deg + 180.0f, 360.0f) - 180.0f;
 
         // Use std::chrono for a type-safe and readable time difference calculation
         std::chrono::duration<float> timeElapsed = latestData.timestamp - olderData.timestamp;
@@ -395,7 +396,7 @@ private:
             return 0.0f;
         }
 
-        return headingChange_deg / timeElapsed_s;
+        return diff_deg / timeElapsed_s;
     }
 
     std::optional<RobotData> updateRobotData(float dt) {
@@ -457,7 +458,7 @@ private:
         }
 
         float headingRate = calculateRecentHeadingRate(timedPico2Datas);
-        if (mode_ != Mode::TURNING && turnDirection_ && headingRate <= 10.0f) {
+        if (mode_ != Mode::TURNING && turnDirection_ && abs(headingRate) <= 10.0f) {
             auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolvedWalls, deltaPose, turnDirection_);
             auto colorMasks = camera_processor::filterColors(timedFrame);
             auto blockAngles = camera_processor::computeBlockAngles(colorMasks, CAM_WIDTH, CAM_HFOV);
@@ -470,14 +471,36 @@ private:
             );
 
             for (const auto &cl : classifiedLights) {
+                // +++ DEBUG +++
+                std::string clColorStr = (cl.info.cameraBlock.color == camera_processor::Color::RED)     ? "RED"
+                                         : (cl.info.cameraBlock.color == camera_processor::Color::GREEN) ? "GREEN"
+                                                                                                         : "UNKNOWN";
+                std::string clSideStr = (cl.location.side == WallSide::INNER ? "INNER" : "OUTER");
+                std::cout << "\n--- Processing cl: Seg=" << static_cast<int>(cl.location.segment)
+                          << ", Loc=" << static_cast<int>(cl.location.location) << ", Side=" << clSideStr << ", Color=" << clColorStr
+                          << std::endl;
+                // +++++++++++++
+
                 if (cl.location.segment == Segment::A && cl.location.side == WallSide::OUTER) continue;
                 std::pair<Segment, SegmentLocation> key = {cl.location.segment, cl.location.location};
                 auto &history = detectionHistory_[key];
                 history.push_back(cl);
 
-                if (history.size() > 2) history.erase(history.begin());
+                if (history.size() > 3) history.erase(history.begin());
 
-                if (history.size() == 2) {
+                // +++ DEBUG: This is the "cout history" part +++
+                std::cout << "Current History (size=" << history.size() << "): [";
+                for (const auto &item : history) {
+                    std::string itemColor = (item.info.cameraBlock.color == camera_processor::Color::RED)     ? "R"
+                                            : (item.info.cameraBlock.color == camera_processor::Color::GREEN) ? "G"
+                                                                                                              : "U";
+                    std::string itemSide = (item.location.side == WallSide::INNER ? "I" : "O");
+                    std::cout << "{S:" << itemSide << ",C:" << itemColor << "} ";
+                }
+                std::cout << "]" << std::endl;
+                // +++++++++++++++++++++++++++++++++++++++++++++++
+
+                if (history.size() == 3) {
                     bool allSame = true;
                     for (size_t i = 1; i < history.size(); ++i) {
                         if (history[i].location.side != history[0].location.side ||

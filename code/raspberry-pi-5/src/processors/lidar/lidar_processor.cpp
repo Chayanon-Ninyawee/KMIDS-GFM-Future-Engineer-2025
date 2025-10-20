@@ -595,11 +595,6 @@ std::vector<cv::Point2f> getTrafficLightPoints(
     points.reserve(timedLidarData.lidarData.size());
 
     for (const auto &node : timedLidarData.lidarData) {
-        // TODO: Change this value to fit the actual robot
-        if (node.distance < 0.005) continue;
-        if (node.distance > 3.200) continue;
-        if (node.angle > 5 && node.angle < 175 && node.distance > 0.700) continue;
-
         float rad = node.angle * static_cast<float>(M_PI) / 180.0f;
 
         float lidarX = node.distance * std::sin(rad);
