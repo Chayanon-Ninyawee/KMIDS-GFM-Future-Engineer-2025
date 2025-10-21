@@ -729,7 +729,7 @@ The Obstacle Challenge requires the robot to navigate the arena while avoiding o
    - Integrates turn direction, obstacle positions, and traffic light locations to navigate safely and efficiently.
 
 <details>
-<summary>Click here to show C++ code for Obstacle Challenge processing</summary>
+<summary><b><span style="font-size:1.2em; background-color:#f2f2f2; padding:4px 8px; border-radius:5px;"> Click here to show C++ code for Obstacle Challenge processing</span></b></summary>
 
 getTrafficLightPoints code (from [lidar_processor.h](code/raspberry-pi-5/src/processors/lidar/lidar_processor.h) / [lidar_processor.cpp](code/raspberry-pi-5/src/processors/lidar/lidar_processor.cpp)) <!--TODO: Add link to the actual file-->
 
