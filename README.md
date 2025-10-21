@@ -1477,6 +1477,8 @@ Before assembly, prepare the components listed above and print the 3D parts.
 
 [How to Image Drive in Linux](docs/image-drive-linux.md)
 
+[Our Custom Randomiser Software](docs/randomizer.md)
+
 <p align="right">
   <a href="#top">Back To Top</a>
 </p>
