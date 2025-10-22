@@ -145,6 +145,10 @@ The video shows both the Open and Obstacle Challenges.
 The N20 motor is equipped with an encoder to provide precise motion feedback, ensuring the robot’s movements are accurate. The motor drives the rear wheels through a LEGO differential gear system, which allows the robot to maintain smooth and balanced turns even at higher speeds. By distributing torque between the two wheels, the differential minimizes wheel slip and ensures stability during sharp maneuvers.
 The integration of encoders with the N20 motors provides real-time feedback for closed-loop control, enabling precise speed regulation and consistent lap performance. Although the torque of the N20 is modest, the combination with the differential gear makes it well-suited for the flat and predictable competition arena, striking a balance between efficiency, stability, and mechanical simplicity.
 
+**Differential Gear:**
+
+We used a LEGO differential gear system on our robot which allows the left and right rear wheels to rotate at different speeds while turning, preventing tire drag and ensuring smoother turning. This setup enhances maneuverability and stability, especially during tight turns in the obstacle challenge and during parallel parking.
+
 **Mounting:**
 
 - Installed using 3D-printed motor clamps screwed to a detachable motor plate that is placed above the differential gear compartment. This will allow for future changes to accommodate bigger motors and gears. [Motor Clamp](./FreeCAD-Files/Assembly/mesh_export/MotorHolder_1x.stl) [Motor Plate](./FreeCAD-Files/Assembly/mesh_export/MotorPlate_1x.stl)
