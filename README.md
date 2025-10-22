@@ -112,7 +112,7 @@ The video shows both the Open and Obstacle Challenges.
 ## 2. Mobility Management
 
 - **Drive System:** 2-wheel differential drive (rear wheels).
-- **Steering:** Front-wheel steering using S0004m servo.
+- **Steering:** Front-wheel steering using S0009m servo.
 
 ### 2.1 Drive System
 
@@ -161,7 +161,7 @@ To reach a faster speed, we can upgrade the N20 motor to the N30, which is the e
 
 <img src="./docs/resources/steering_gif.gif" alt="steering_gif.gif">
 
-**Servo: S0004M**
+**Servo: S0009M**
 
 <table>
   <tr>
@@ -171,10 +171,10 @@ To reach a faster speed, we can upgrade the N20 motor to the N30, which is the e
     <td> 
       <h3>Specifications:</h3>
       <ul>
-          <li>Rated Torque: 0.6kgf-cm</li>
-          <li>Speed: 0.09sec/60°</li>
+          <li>Rated Torque: 1.1kgf/cm</li>
+          <li>Speed: 0.15sec/60°</li>
           <li>Voltage: 5V</li>
-          <li>Gearing: Plastic</li>
+          <li>Gearing: Metal</li>
           <li>Type: Digital </li>
       </ul>
     </td>
@@ -521,7 +521,7 @@ We had to decide on whether to do a PCB or use jumper wires to connect each comp
 | RPLIDAR S2 | 5 | 0.45 | 0.60 | 2.25 |
 | 5MP Fish-Eye Lens Camera | 5 | 0.12 | 0.25 | 0.60 |
 | BNO085 IMU | 3.3 | 0.015 | 0.025 | 0.05 |
-| Micro Servo S0004M (steering) | 5 | 0.12 | 0.65 | 0.60 |
+| Micro Servo S0009M (steering) | 5 | 0.12 | 0.65 | 0.60 |
 | N20 DC Motor | 12 | 0.30 | 1.50 | 7.20 |
 | DRV8871 Motor Driver | 12 | 0.01 | 0.04 | 0.24 |
 | Raspberry Pi M.2 HAT+ | 3.3 | 0.25 | 1.00 | 3.30 |
@@ -1182,7 +1182,7 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 | RPLidar S2 | 1 | [SLAMTEC](https://www.slamtec.com/en/S2) |
 | 5MP Fish-Eye Camera | 1 | [Cytron](https://th.cytron.io/p-fish-eye-lense-raspberry-pi-5mp-ir-camera?r=1&language=en-gb&gad_campaignid=18809653822) |
 | BNO085 IMU | 1 | [Shopee](https://shopee.co.th/%E0%B9%82%E0%B8%A1%E0%B8%94%E0%B8%B9%E0%B8%A5-AR-VR-BNO055-BNO085-BNO086-%E0%B8%8A%E0%B8%B4%E0%B8%9E%E0%B9%81%E0%B8%97%E0%B9%89-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99-Halley-9-DOF-IMU-Sensor-Bosch-CEVA-Massmore-i.5641091.24661859112) |
-| S0004M Servo | 1 | [Shopee](https://shopee.co.th/%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%A7%E0%B8%94%E0%B8%B4%E0%B8%88%E0%B8%B4%E0%B8%97%E0%B8%B1%E0%B8%A5-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94%E0%B9%80%E0%B8%A5%E0%B9%87%E0%B8%81-2-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-4.3-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-6-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-8-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1-3.7V-6.0V-DC-%E0%B8%AA%E0%B9%8D%E0%B8%B2%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%AB%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B9%8C-%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9A%E0%B8%B4%E0%B8%99%E0%B8%9A%E0%B8%B1%E0%B8%87%E0%B8%84%E0%B8%B1%E0%B8%9A-1-%E0%B8%8A%E0%B8%B4%E0%B9%89%E0%B8%99-i.53028894.18020081677?is_from_login=true) |
+| S0009M Servo | 1 | [Shopee](https://shopee.co.th/Surpass-HOBBY-9G-%E0%B8%94%E0%B8%B4%E0%B8%88%E0%B8%B4%E0%B8%95%E0%B8%AD%E0%B8%A5%E0%B8%81%E0%B8%B1%E0%B8%99%E0%B8%99%E0%B9%89%E0%B9%8D%E0%B8%B2-Servo-%E0%B9%80%E0%B8%81%E0%B8%B5%E0%B8%A2%E0%B8%A3%E0%B9%8C%E0%B9%82%E0%B8%A5%E0%B8%AB%E0%B8%B0-S0009M-1.4KG-4.8V-~-6VDC-25T-%E0%B8%A1%E0%B8%AD%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%AA%E0%B9%8D%E0%B8%B2%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A-RC-Fixed-Wing-%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9A%E0%B8%B4%E0%B8%99%E0%B8%AB%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%A2%E0%B8%99%E0%B8%95%E0%B9%8C%E0%B8%A3%E0%B8%96%E0%B9%80%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%97%E0%B9%88%E0%B8%AD%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9A%E0%B8%B4%E0%B8%99-i.154644084.26716732064) |
 | N20 DC Motor + Encoder | 2 | [Shopee](https://shopee.co.th/product/627316253/26413874397?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkWVp3RFo3Mkw5czd4Z0hzdEF1WVFibXlBTE5VQ0pKTTRUMjllaFljblI4VVUzZVlWanM3K21aUFJRVnpoZE9HY3Y0bnAxT3daaXVtOUhoZXZ2ZDJzRzNkcmkzQ3VRNjdSUU5oNGRQZzIwbEE3UDA5LzQ3K2JpMWZKeEtQbHVsS2FnPT0&gad_campaignid=17496928273) |
 | Raspberry Pi M.2 HAT+ | 1 | [Shopee](https://shopee.co.th/product/1157514659/25882329690?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkVHQ3ZkZSUTMrR3pBWmZZNzdrcnRBM3hoa2xoUTJ1NnV3KytZYXhoSFV2OUlmR2NCUU02MDczVVhUUkNVdUNNNVVYd0VxL2dVd05wZkFxdnZIcFh4SC9uMmFOWHhKdFpuSCthU3Juc0xCMGltNDR1YWEyQ3VncVhIUWFRR2N3RlBRPT0&gad_campaignid=22728093025) |
 | DRV8871 Motor Driver | 1 | [Shopee](https://shopee.co.th/product/1032045852/43908925373?gads_t_sig=VTJGc2RHVmtYMTlxTFVSVVRrdENkVHQ3ZkZSUTMrR3pBWmZZNzdrcnRBMjkrZnU4MUU2YzU2T3QvM3grWWtKSzVQS0cyNXFvME00NWhneVloM2lIRHZzcE5wUlVlOFNTVE10T2VzUUxudUJLSW96blRWcERzeWJNSWF3YTdIREhURjFCclNpT0E3ZXhqRlhHU3lSQ05nPT0) |
