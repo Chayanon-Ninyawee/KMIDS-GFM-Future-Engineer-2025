@@ -65,22 +65,24 @@ const float TARGET_OUTER_WALL_DISTANCE = 0.50;
 const float TARGET_OUTER_WALL_OUTER1_DISTANCE = 0.43;
 const float TARGET_OUTER_WALL_OUTER2_DISTANCE = 0.25;
 const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62;
-const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.78;
+const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.76;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.31f;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CW = 0.31f;
 const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE_CCW = 0.75f;
 const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE_CW = 0.75f;
 
 const float PRE_TURN_FRONT_WALL_DISTANCE = 1.20f;
-const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(1500);
+const auto PRE_TURN_COOLDOWN = std::chrono::milliseconds(4000);
 
-const float TURNING_FRONT_WALL_DISTANCE = 0.80f;
+const float TURNING_FRONT_WALL_DISTANCE = 0.78f;
 const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.67f;
 const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.50f;
 const float TURNING_FRONT_WALL_INNER1_DISTANCE = 0.97f;
 const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.07f;
 const float TURNING_FRONT_WALL_CCW_PARKING_DISTANCE = 0.60f;
 const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.59f;
+
+const auto PRE_TURN_COOLDOWN_PUSH = std::chrono::milliseconds(2000);
 
 const float TURNING_FRONT_WALL_DISTANCE_PUSH = 0.89f;
 const float TURNING_FRONT_WALL_OUTER1_DISTANCE_PUSH = 0.76f;
@@ -345,6 +347,8 @@ private:
     std::map<std::pair<Segment, SegmentLocation>, std::vector<combined_processor::ClassifiedTrafficLight>> detectionHistory_;
     std::map<std::pair<Segment, SegmentLocation>, combined_processor::ClassifiedTrafficLight> trafficLightMap_;
 
+    bool isNormalNoBlockWhenEnter = false;
+
     // Timers
     std::optional<std::chrono::steady_clock::time_point> lastPreTurnTimestamp_;
     std::optional<std::chrono::steady_clock::time_point> timer_;
@@ -458,7 +462,9 @@ private:
         }
 
         float headingRate = calculateRecentHeadingRate(timedPico2Datas);
-        if (mode_ != Mode::TURNING && turnDirection_ && abs(headingRate) <= 10.0f) {
+        // FIXME: Changing from 10.0f to 20.0f
+        // if (mode_ != Mode::TURNING && turnDirection_ && abs(headingRate) <= 10.0f) {
+        if (mode_ != Mode::TURNING && turnDirection_ && abs(headingRate) <= 20.0f) {
             auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolvedWalls, deltaPose, turnDirection_);
             auto colorMasks = camera_processor::filterColors(timedFrame);
             auto blockAngles = camera_processor::computeBlockAngles(colorMasks, CAM_WIDTH, CAM_HFOV);
@@ -659,7 +665,11 @@ private:
 
     bool updateNormalState(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
-        if (turnCount_ >= 5) motorSpeed_ = FORWARD_MOTOR_SPEED_PUSH;
+        auto preTurnCooldown = PRE_TURN_COOLDOWN;
+        if (turnCount_ >= 5) {
+            motorSpeed_ = FORWARD_MOTOR_SPEED_PUSH;
+            preTurnCooldown = PRE_TURN_COOLDOWN_PUSH;
+        }
 
         Segment currentSegment = Segment::fromDirection(headingDirection_);
 
@@ -716,6 +726,12 @@ private:
             }
         }
 
+        if (!isNormalNoBlockWhenEnter) {
+            isNormalNoBlockWhenEnter = ((!firstTrafficLight) && (!secondTrafficLight) && (!thirdTrafficLight));
+        } else {
+            wallPid_.setGains(300.0f, WALL_PID_I, WALL_PID_D);
+        }
+
         float frontWallDistance = 0.0f;
         if (data.frontWall) {
             frontWallDistance = data.frontWall->perpendicularDistance(0.0f, 0.0f);
@@ -727,7 +743,9 @@ private:
         if (frontWallDistance > 2.00f && frontWallDistance <= 2.90f && firstTrafficLight) {
             targetedTrafficLight = firstTrafficLight;
         }
-        if (frontWallDistance > 1.50f && frontWallDistance <= 2.30f && secondTrafficLight) {
+        // FIXME: This maybe the issue i changed from 2.30f to 2.70f
+        // if (frontWallDistance > 1.50f && frontWallDistance <= 2.30f && secondTrafficLight) {
+        if (frontWallDistance > 1.50f && frontWallDistance <= 2.70f && secondTrafficLight) {
             targetedTrafficLight = secondTrafficLight;
         }
         if (frontWallDistance > 1.00f && frontWallDistance <= 1.80f && thirdTrafficLight) {
@@ -761,9 +779,14 @@ private:
         }
 
         auto now = std::chrono::steady_clock::now();
-        bool cooldownOver = !lastPreTurnTimestamp_ || (now - *lastPreTurnTimestamp_ >= PRE_TURN_COOLDOWN);
+        bool cooldownOver = !lastPreTurnTimestamp_ || (now - *lastPreTurnTimestamp_ >= preTurnCooldown);
 
         if (data.frontWall && data.frontWall->perpendicularDistance(0.0f, 0.0f) <= PRE_TURN_FRONT_WALL_DISTANCE && cooldownOver) {
+            if (isNormalNoBlockWhenEnter) {
+                wallPid_.setGains(WALL_PID_P, WALL_PID_I, WALL_PID_D);
+                isNormalNoBlockWhenEnter = false;
+            }
+
             mode_ = Mode::PRE_TURN;
             lastPreTurnTimestamp_ = now;
             return true;
@@ -795,17 +818,31 @@ private:
 
             // --- Only pick first traffic light for the next segment ---
             std::optional<combined_processor::ClassifiedTrafficLight> nextFirstTrafficLight;
+            bool isMid = false;
             if (*turnDirection_ == RotationDirection::CLOCKWISE) {
                 if (auto it = trafficLightMap_.find({nextSegment, SegmentLocation::A}); it != trafficLightMap_.end()) {
                     nextFirstTrafficLight = it->second;
+                } else if (auto it = trafficLightMap_.find({nextSegment, SegmentLocation::B}); it != trafficLightMap_.end()) {
+                    nextFirstTrafficLight = it->second;
+                    isMid = true;
                 }
             } else {  // COUNTER_CLOCKWISE
                 if (auto it = trafficLightMap_.find({nextSegment, SegmentLocation::C}); it != trafficLightMap_.end()) {
                     nextFirstTrafficLight = it->second;
+                } else if (auto it = trafficLightMap_.find({nextSegment, SegmentLocation::B}); it != trafficLightMap_.end()) {
+                    nextFirstTrafficLight = it->second;
+                    isMid = true;
                 }
             }
 
-            if (nextFirstTrafficLight) {
+            // FIXME: Fix this logic
+            if (isMid && turnCount_ == 11) {
+                if (*turnDirection_ == RotationDirection::CLOCKWISE) {
+                    turningFrontWallDistance_ = TURNING_FRONT_WALL_CW_PARKING_DISTANCE;
+                } else {
+                    turningFrontWallDistance_ = TURNING_FRONT_WALL_CCW_PARKING_DISTANCE;
+                }
+            } else if (nextFirstTrafficLight) {
                 const auto &tl = *nextFirstTrafficLight;
                 bool isGreen = (tl.info.cameraBlock.color == camera_processor::Color::GREEN);
                 bool isInner = (tl.location.side == WallSide::INNER);
@@ -1347,7 +1384,8 @@ int main() {
 
             robot.update(dt);
 
-            uint64_t timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(loopStart.time_since_epoch()).count();
+            uint64_t timestamp_ns =
+                std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
             uint8_t dummyData[1] = {0x39};
             obstacleChallengeLogger.writeData(timestamp_ns, dummyData, sizeof(dummyData));
 
