@@ -158,10 +158,11 @@ public:
         STOP
     };
 
-    Robot(LidarModule &lidar, Pico2Module &pico2, CameraModule &camera)
+    Robot(LidarModule &lidar, Pico2Module &pico2, CameraModule &camera, Logger &obstacleChallengeLogger)
         : lidar_(lidar)
         , pico2_(pico2)
         , camera_(camera)
+        , obstacleChallengeLogger_(obstacleChallengeLogger)
         , headingPid_(HEADING_PID_P, HEADING_PID_I, HEADING_PID_D, -100.0, 100.0)
         , wallPid_(WALL_PID_P, WALL_PID_I, WALL_PID_D, -90.0, 90.0) {
         headingPid_.setActive(true);
@@ -306,6 +307,7 @@ private:
     LidarModule &lidar_;
     Pico2Module &pico2_;
     CameraModule &camera_;
+    Logger &obstacleChallengeLogger_;
     PIDController headingPid_;
     PIDController wallPid_;
 
@@ -420,6 +422,24 @@ private:
         auto &timedPico2Data = timedPico2Datas.back();
         auto &timedFrame = timedFrames.back();
 
+        // Log main loop timestamp
+        auto now = std::chrono::steady_clock::now();
+        uint64_t timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
+        struct {
+            uint64_t lidarTimestamp_ns;
+            uint64_t pico2Timestamp_ns;
+            uint64_t cameraTimestamp_ns;
+        } obstacleChallengeData{
+            static_cast<uint64_t>(
+                std::chrono::duration_cast<std::chrono::nanoseconds>(timedLidarData.timestamp.time_since_epoch()).count()
+            ),
+            static_cast<uint64_t>(
+                std::chrono::duration_cast<std::chrono::nanoseconds>(timedPico2Data.timestamp.time_since_epoch()).count()
+            ),
+            static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(timedFrame.timestamp.time_since_epoch()).count())
+        };
+        obstacleChallengeLogger_.writeData(timestamp_ns, &obstacleChallengeData, sizeof(obstacleChallengeData));
+
         if (!initialHeading_) {
             initialHeading_ = timedPico2Data.euler.h;
             return std::nullopt;
@@ -461,6 +481,7 @@ private:
             data.innerWall = (*turnDirection_ == RotationDirection::CLOCKWISE) ? resolvedWalls.rightWall : resolvedWalls.leftWall;
         }
 
+        using namespace std::chrono_literals;
         float headingRate = calculateRecentHeadingRate(timedPico2Datas);
         // FIXME: Changing from 10.0f to 20.0f
         // if (mode_ != Mode::TURNING && turnDirection_ && abs(headingRate) <= 10.0f) {
@@ -1352,7 +1373,7 @@ int main() {
         return -1;
     }
 
-    Robot robot(lidar, pico2, camera);
+    Robot robot(lidar, pico2, camera, obstacleChallengeLogger);
 
     if (wiringPiSetupGpio() == -1) {
         std::cerr << "WiringPi setup failed." << std::endl;
@@ -1383,11 +1404,6 @@ int main() {
             lastTime = loopStart;
 
             robot.update(dt);
-
-            uint64_t timestamp_ns =
-                std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-            uint8_t dummyData[1] = {0x39};
-            obstacleChallengeLogger.writeData(timestamp_ns, dummyData, sizeof(dummyData));
 
             auto elapsed = std::chrono::steady_clock::now() - loopStart;
             if (elapsed < loopDuration) {
