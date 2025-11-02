@@ -17,6 +17,13 @@ const uint32_t camWidth = 1296;
 const uint32_t camHeight = 972;
 const float camHFov = 104.0f;
 
+struct SensorTimestamps {
+    uint64_t mainLoop_ns;
+    uint64_t lidar_ns;
+    uint64_t pico2_ns;
+    uint64_t camera_ns;  // Will be 0 if not available
+};
+
 std::vector<cv::Point> polygonPoints;
 bool selectMode = false;
 
@@ -246,7 +253,7 @@ int main(int argc, char **argv) {
     std::vector<LogEntry> scanMapEntries;
     std::vector<LogEntry> obstacleChallengeEntries;
 
-    std::vector<std::chrono::steady_clock::time_point> loopTimestamps;
+    std::vector<SensorTimestamps> challengeTimestamps;
 
     if (isOpenChallenge) {
         LogReader openChallengeReader((fs::path(folderPath) / "openChallenge.bin").string());
@@ -257,8 +264,26 @@ int main(int argc, char **argv) {
         std::cout << "Loaded " << openChallengeEntries.size() << " openChallenge entries." << std::endl;
 
         for (const auto &entry : openChallengeEntries) {
-            auto tp = std::chrono::steady_clock::time_point(std::chrono::nanoseconds(entry.timestamp));
-            loopTimestamps.push_back(tp);
+            // This struct must match exactly what was logged
+            struct {
+                uint64_t lidarTimestamp_ns;
+                uint64_t pico2Timestamp_ns;
+            } openChallengeData;
+
+            // Check if data size is correct before copying
+            if (entry.data.size() != sizeof(openChallengeData)) {
+                std::cerr << "Warning: Skipping corrupt openChallenge entry (size " << entry.data.size() << ")" << std::endl;
+                continue;
+            }
+
+            std::memcpy(&openChallengeData, entry.data.data(), sizeof(openChallengeData));
+
+            challengeTimestamps.push_back({
+                entry.timestamp,  // mainLoop_ns
+                openChallengeData.lidarTimestamp_ns,
+                openChallengeData.pico2Timestamp_ns,
+                0  // No camera in openChallenge
+            });
         }
     }
 
@@ -271,8 +296,27 @@ int main(int argc, char **argv) {
         std::cout << "Loaded " << scanMapEntries.size() << " scanMap entries." << std::endl;
 
         for (const auto &entry : scanMapEntries) {
-            auto tp = std::chrono::steady_clock::time_point(std::chrono::nanoseconds(entry.timestamp));
-            loopTimestamps.push_back(tp);
+            // This struct must match exactly what was logged
+            struct {
+                uint64_t lidarTimestamp_ns;
+                uint64_t pico2Timestamp_ns;
+                uint64_t cameraTimestamp_ns;
+            } scanMapData;
+
+            // Check if data size is correct before copying
+            if (entry.data.size() != sizeof(scanMapData)) {
+                std::cerr << "Warning: Skipping corrupt scanMap entry (size " << entry.data.size() << ")" << std::endl;
+                continue;
+            }
+
+            std::memcpy(&scanMapData, entry.data.data(), sizeof(scanMapData));
+
+            challengeTimestamps.push_back(
+                {entry.timestamp,  // mainLoop_ns
+                 scanMapData.lidarTimestamp_ns,
+                 scanMapData.pico2Timestamp_ns,
+                 scanMapData.cameraTimestamp_ns}
+            );
         }
     }
 
@@ -285,8 +329,27 @@ int main(int argc, char **argv) {
         std::cout << "Loaded " << obstacleChallengeEntries.size() << " obstacleChallenge entries." << std::endl;
 
         for (const auto &entry : obstacleChallengeEntries) {
-            auto tp = std::chrono::steady_clock::time_point(std::chrono::nanoseconds(entry.timestamp));
-            loopTimestamps.push_back(tp);
+            // This struct must match exactly what was logged
+            struct {
+                uint64_t lidarTimestamp_ns;
+                uint64_t pico2Timestamp_ns;
+                uint64_t cameraTimestamp_ns;
+            } obstacleChallengeData;
+
+            // Check if data size is correct before copying
+            if (entry.data.size() != sizeof(obstacleChallengeData)) {
+                std::cerr << "Warning: Skipping corrupt obstacleChallenge entry (size " << entry.data.size() << ")" << std::endl;
+                continue;
+            }
+
+            std::memcpy(&obstacleChallengeData, entry.data.data(), sizeof(obstacleChallengeData));
+
+            challengeTimestamps.push_back(
+                {entry.timestamp,  // mainLoop_ns
+                 obstacleChallengeData.lidarTimestamp_ns,
+                 obstacleChallengeData.pico2Timestamp_ns,
+                 obstacleChallengeData.cameraTimestamp_ns}
+            );
         }
     }
 
@@ -336,7 +399,7 @@ int main(int argc, char **argv) {
         if (key == 'j') {  // step one frame back (single frame mode)
             if (currentTimeIdx > 0) currentTimeIdx--;
         } else if (key == 'l') {  // step one frame forward
-            if (currentTimeIdx < loopTimestamps.size() - 1) currentTimeIdx++;
+            if (currentTimeIdx < challengeTimestamps.size() - 1) currentTimeIdx++;
         }
 
         // --- Handle continuous ---
@@ -359,21 +422,20 @@ int main(int argc, char **argv) {
 
         if (playDirection == -1 && currentTimeIdx > 0)
             currentTimeIdx--;
-        else if (playDirection == +1 && currentTimeIdx < loopTimestamps.size() - 1)
+        else if (playDirection == +1 && currentTimeIdx < challengeTimestamps.size() - 1)
             currentTimeIdx++;
         else if (key == -1 && playDirection == 0)
             continue;
-        uint64_t currentTime =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(loopTimestamps[currentTimeIdx].time_since_epoch()).count();
+        uint64_t currentTime = challengeTimestamps[currentTimeIdx].mainLoop_ns;
 
         // ---- LIDAR ----
-        lidarIdx = findClosestIndex(lidarEntries, lidarIdx, currentTime);
+        lidarIdx = findClosestIndex(lidarEntries, lidarIdx, challengeTimestamps[currentTimeIdx].lidar_ns);
         if (lidarIdx >= lidarEntries.size()) continue;
         const auto &lidarEntry = lidarEntries[lidarIdx];
         TimedLidarData timedLidarData = reconstructTimedLidar(lidarEntry);
 
         // ---- Pico2 ----
-        pico2Idx = findClosestIndex(pico2Entries, pico2Idx, currentTime);
+        pico2Idx = findClosestIndex(pico2Entries, pico2Idx, challengeTimestamps[currentTimeIdx].pico2_ns);
         if (pico2Idx >= pico2Entries.size()) continue;
         const auto &pico2Entry = pico2Entries[pico2Idx];
         TimedPico2Data timedPico2Data = reconstructTimedPico2(pico2Entry);
@@ -390,7 +452,7 @@ int main(int argc, char **argv) {
         camera_processor::ColorMasks colorMasks;
         std::vector<camera_processor::BlockAngle> blockAngles;
         if (hasCamera) {
-            cameraIdx = findClosestIndex(cameraEntries, cameraIdx, currentTime);
+            cameraIdx = findClosestIndex(cameraEntries, cameraIdx, challengeTimestamps[currentTimeIdx].camera_ns);
             if (cameraIdx < cameraEntries.size()) {
                 timedFrame = reconstructTimedFrame(cameraEntries[cameraIdx]);
                 colorMasks = camera_processor::filterColors(timedFrame);
