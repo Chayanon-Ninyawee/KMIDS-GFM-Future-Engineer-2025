@@ -80,9 +80,10 @@ public:
         STOP
     };
 
-    Robot(LidarModule &lidar, Pico2Module &pico2)
+    Robot(LidarModule &lidar, Pico2Module &pico2, Logger &openChallengeLogger)
         : lidar_(lidar)
         , pico2_(pico2)
+        , openChallengeLogger_(openChallengeLogger)
         , headingPid_(HEADING_PID_P, HEADING_PID_I, HEADING_PID_D, -100.0, 100.0)
         , wallPid_(WALL_PID_P, WALL_PID_I, WALL_PID_D, -90.0, 90.0) {
         // Activate PIDs. The wall PID will be toggled by the state machine.
@@ -144,6 +145,7 @@ private:
     // Store references to the hardware modules
     LidarModule &lidar_;
     Pico2Module &pico2_;
+    Logger &openChallengeLogger_;
 
     // PID controllers
     PIDController headingPid_;
@@ -191,6 +193,22 @@ private:
             initialHeading_ = pico2Datas.back().euler.h;
             return std::nullopt;  // Wait for the next cycle to have a valid heading
         }
+
+        // Log main loop timestamp
+        auto now = std::chrono::steady_clock::now();
+        uint64_t timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
+        struct {
+            uint64_t lidarTimestamp_ns;
+            uint64_t pico2Timestamp_ns;
+        } openChallengeData{
+            static_cast<uint64_t>(
+                std::chrono::duration_cast<std::chrono::nanoseconds>(lidarDatas.back().timestamp.time_since_epoch()).count()
+            ),
+            static_cast<uint64_t>(
+                std::chrono::duration_cast<std::chrono::nanoseconds>(pico2Datas.back().timestamp.time_since_epoch()).count()
+            )
+        };
+        openChallengeLogger_.writeData(timestamp_ns, &openChallengeData, sizeof(openChallengeData));
 
         RobotData data;
         data.heading = pico2Datas.back().euler.h - *initialHeading_;
@@ -350,7 +368,7 @@ int main() {
     }
 
     // --- Initialize Robot Controller ---
-    Robot robot(lidar, pico2);  // Pass modules by reference
+    Robot robot(lidar, pico2, openChallengeLogger);  // Pass modules by reference
 
     // --- Setup GPIO ---
     if (wiringPiSetupGpio() == -1) {
@@ -385,11 +403,6 @@ int main() {
             lastTime = loopStart;
 
             robot.update(dt);
-
-            // Log main loop timestamp
-            uint64_t timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(loopStart.time_since_epoch()).count();
-            uint8_t dummyData[1] = {0x39};
-            openChallengeLogger.writeData(timestamp_ns, dummyData, sizeof(dummyData));
 
             // Maintain loop rate
             auto loopEnd = std::chrono::steady_clock::now();
