@@ -660,7 +660,7 @@ private:
         if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
         motorSpeed_ = 1.5f;
         steeringPercent_ = 100.0f;
-        float targetEncoderAngle = 400;
+        float targetEncoderAngle = 450;
         if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
             startEncoderAngle_ = 0.0;
             mode_ = Mode::CW_UNPARK_2;
@@ -674,7 +674,7 @@ private:
         if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
         motorSpeed_ = 1.5f;
         steeringPercent_ = -100.0f;
-        float targetEncoderAngle = 270;
+        float targetEncoderAngle = 350;
         if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
             startEncoderAngle_ = 0.0;
             mode_ = Mode::NORMAL;
