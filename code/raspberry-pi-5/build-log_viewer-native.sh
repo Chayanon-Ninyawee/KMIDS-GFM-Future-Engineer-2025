@@ -12,3 +12,4 @@ fi
 cmake -B build_native -DCMAKE_EXPORT_COMPILE_COMMANDS=OFF
 
 cmake --build build_native --target log_viewer -j$(nproc)
+cmake --build build_native --target log_to_video -j$(nproc)
