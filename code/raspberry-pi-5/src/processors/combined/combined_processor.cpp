@@ -52,6 +52,13 @@ RobotDeltaPose aproximateRobotPose(const TimedLidarData &timedLidarData, const s
         totalDeltaY += dDistance * std::cos(headingRad);
     }
 
+    if (totalDeltaX >= 0.15f) return {0.0f, 0.0f, 0.0f};
+    if (totalDeltaY >= 0.15f) return {0.0f, 0.0f, 0.0f};
+    if (totalDeltaH >= 20.0f and totalDeltaH <= 180.0f)
+        return {0.0f, 0.0f, 0.0f};
+    else if (totalDeltaH <= 340.0f and totalDeltaH > 180.0f)
+        return {0.0f, 0.0f, 0.0f};
+
     deltaPose.deltaX = totalDeltaX;
     deltaPose.deltaY = totalDeltaY;
     deltaPose.deltaH = totalDeltaH;
