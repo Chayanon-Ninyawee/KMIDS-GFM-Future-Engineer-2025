@@ -99,11 +99,12 @@ Our objective is to create an intelligent robot that is capable of navigating th
 
 ### 1.3 Performance Video
 
-[Watch on YouTube](https://youtu.be/hUqdMjxhbqM)
+[Part 1: Open Challenge Video](https://youtu.be/gOz7pKEmLP0)
 
-[![video](http://img.youtube.com/vi/hUqdMjxhbqM/0.jpg)](http://www.youtube.com/watch?v=hUqdMjxhbqM "Performance video")
+[Part 2: Obstacle Challenge Video](https://youtu.be/q8gWAhReJgc)
 
-The video shows both the Open and Obstacle Challenges.
+
+These two parts show both the Open and Obstacle Challenges respectively.
 
 <p align="right">
   <a href="#top">Back To Top</a>
@@ -987,16 +988,11 @@ TBA. TODO:-->
 
 ## 5. Source Code
 
-
 ### 5.1 API Documentation
 
+[**[CLICK HERE] Link to the API Documentation**](code\README.md)
 
-[paragraph]
-link
-
-
-
-
+>This section will detail the ins and out of the various codes used in the robot
 
 ### 5.2 Code Structure
 
