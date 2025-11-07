@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.1.6](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.5...v0.1.6) (2025-11-07)
+
+
+### Documentation
+
+* Add BNO085 draft and fix slicer file and gcode confusion in file section ([4c4d662](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/4c4d6622ca5488f35872bca271dd6d6bb5fafedb))
+* Add BNO085 specs table and subsection 7 ([b48f3f0](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/b48f3f0ce3d0a5251d49c8dd1d988712401f8835))
+* Add brief title to each API README ([90b8f3f](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/90b8f3f6eeff70e76419473a00766c04f28a2425))
+* Add chassis pic and dimensions ([024cf1c](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/024cf1cebe980d25ee212ab159115c0c9b36a7c5))
+* Add component pics to building instructions ([5f244fd](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/5f244fd3ad5ea660c3f5b182fe43a25e9fe5f166))
+* Add differential gear section to 2.1 ([befae24](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/befae249a6f3cdecdba06aff27e93b0963555701))
+* Add M.2 HAT+ to power and sense management draft ([8db13ec](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/8db13ec84c6227d023151df619b59447026bd9a8))
+* Add new component pics ([67496df](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/67496dfa1a8866086de51dd00d8b7ec8e6819aa6))
+* Add numbering for subsection 7 and clarify 7.1 ([8265d35](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/8265d356ecb567008f7523dddb25e3daa5d804f8))
+* Add placeholder section for transistor and motor driver ([5ab1097](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/5ab1097b746f60841f25d0dd16c08a18bf0e161d))
+* Add power consumption section draft ([0f9771b](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/0f9771b6c54959a85b4f68066b3027bf678a2a9f))
+* Add randomiser files for documentation ([53b00e5](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/53b00e56003cd1a266f6c9afccd81c7da809bfc6))
+* Add README.md to folders ([612838c](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/612838cbd905c44cb6e2583a29700142d096d6ed))
+* Add small description paragraphs for processing units ([25f8b91](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/25f8b91e8418673698076f7b50e2d9aee71e404c))
+* Align the back to top button to the right ([8b83cf8](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/8b83cf8e0cf27cea0d3bbd13d7cc783e4f0278a1))
+* Change all path using backslash to forward slash ([836bda2](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/836bda26ac1b0c51a56dbf3b3f2eea9e70900d9c))
+* Change and add robot pics ([22e02fa](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/22e02fa41a1483bbefaf73e9e5a2e1482257688c))
+* Change LIDAR pic ([2f54820](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/2f5482084c6b5ae7aac7ab9d56dc9b6b19e51797))
+* Change servo from S0004M to S0009M ([a0745da](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/a0745da8e1834c1109b09d050d039f681cbb1539))
+* Change specs of LIDAR and specify component type ([5eef613](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/5eef613f3ac4cdf3b8f5d265641dcc214ce2cc7a))
+* Change wording structure of the steering section ([6fd49a4](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/6fd49a4a60d9d3c1625070d38b844ad0ebeafe1d))
+* Clean up documentation for typo and wording consistency ([cb82a95](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/cb82a95750bb44a2431bd87e2e41d787b252a021))
+* Finalise BNO085 details and Section 9 ([b254871](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/b2548710b1aedf32e92ab364a10535dd5392ebd4))
+* Improve readability of the API Documentation landing page ([85d791c](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/85d791cdff591413cbcea0868593d4c8bff49ce2))
+* List motor driver specs ([2c01a60](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/2c01a6067dbaeaf319dcd8a7db4ddc2290dffa5f))
+* Make expandable buttons bigger ([f7bfa6b](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/f7bfa6b1f6524e986e5454d903809090477ee418))
+* Move chassis design to mobility management ([4204fe4](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/4204fe4ab57e0ca613bb830f41ed3af460f1cdd8))
+* Move robot pictures to section 1 ([00a8cd6](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/00a8cd67c2828f2c4f869c0b11a4b702a7ac2fac))
+* Move shop link to bill of materials ([4c3d603](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/4c3d603715a35961e2e2d8b90497e9bc876958c5))
+* Move transistor and motor driver to power section ([3fbc61c](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/3fbc61c125a3a6f685bdf8d70c3d7d813805b9e3))
+* Move video to section 1 ([7f7bce7](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/7f7bce793345c478f2aed16eff83ffce75bf8f30))
+* Reformat building instruction pictures ([bc69ffb](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/bc69ffb76591f80559d4ac9b9a4551323f55ca86))
+* Remove lines ([8b62132](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/8b6213213ebd993ee3f5919665772d8b47e73d12))
+
 ## [0.1.5](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.4...v0.1.5) (2025-10-08)
 
 
