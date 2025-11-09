@@ -66,7 +66,7 @@ const float TARGET_OUTER_WALL_OUTER1_DISTANCE = 0.43;
 const float TARGET_OUTER_WALL_OUTER2_DISTANCE = 0.25;
 const float TARGET_OUTER_WALL_INNER1_DISTANCE = 0.62;
 const float TARGET_OUTER_WALL_INNER2_DISTANCE = 0.76;
-const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.31f;
+const float TARGET_OUTER_WALL_DISTANCE_PARKING_CCW = 0.29f;
 const float TARGET_OUTER_WALL_DISTANCE_PARKING_CW = 0.31f;
 const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE_CCW = 0.75f;
 const float TARGET_OUTER_WALL_UTURN_PARKING_DISTANCE_CW = 0.75f;
@@ -79,7 +79,7 @@ const float TURNING_FRONT_WALL_OUTER1_DISTANCE = 0.67f;
 const float TURNING_FRONT_WALL_OUTER2_DISTANCE = 0.50f;
 const float TURNING_FRONT_WALL_INNER1_DISTANCE = 0.97f;
 const float TURNING_FRONT_WALL_INNER2_DISTANCE = 1.07f;
-const float TURNING_FRONT_WALL_CCW_PARKING_DISTANCE = 0.60f;
+const float TURNING_FRONT_WALL_CCW_PARKING_DISTANCE = 0.59f;
 const float TURNING_FRONT_WALL_CW_PARKING_DISTANCE = 0.59f;
 
 const auto PRE_TURN_COOLDOWN_PUSH = std::chrono::milliseconds(2000);
@@ -485,7 +485,10 @@ private:
         float headingRate = calculateRecentHeadingRate(timedPico2Datas);
         // FIXME: Changing from 10.0f to 20.0f
         // if (mode_ != Mode::TURNING && turnDirection_ && abs(headingRate) <= 10.0f) {
-        if (mode_ != Mode::TURNING && turnDirection_ && abs(headingRate) <= 20.0f) {
+
+        bool isCorrectMode = (mode_ != Mode::TURNING) and (mode_ != Mode::CW_UNPARK_1) and (mode_ != Mode::CW_UNPARK_2) and
+                             (mode_ != Mode::CCW_UNPARK_1) and (mode_ != Mode::CCW_UNPARK_2);
+        if (isCorrectMode && turnDirection_ && abs(headingRate) <= 20.0f) {
             auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolvedWalls, deltaPose, turnDirection_);
             auto colorMasks = camera_processor::filterColors(timedFrame);
             auto blockAngles = camera_processor::computeBlockAngles(colorMasks, CAM_WIDTH, CAM_HFOV);
@@ -498,7 +501,7 @@ private:
             );
 
             for (const auto &cl : classifiedLights) {
-                // +++ DEBUG +++
+                // DEBUG
                 std::string clColorStr = (cl.info.cameraBlock.color == camera_processor::Color::RED)     ? "RED"
                                          : (cl.info.cameraBlock.color == camera_processor::Color::GREEN) ? "GREEN"
                                                                                                          : "UNKNOWN";
@@ -506,7 +509,7 @@ private:
                 std::cout << "\n--- Processing cl: Seg=" << static_cast<int>(cl.location.segment)
                           << ", Loc=" << static_cast<int>(cl.location.location) << ", Side=" << clSideStr << ", Color=" << clColorStr
                           << std::endl;
-                // +++++++++++++
+                // ----------
 
                 if (cl.location.segment == Segment::A && cl.location.side == WallSide::OUTER) continue;
                 std::pair<Segment, SegmentLocation> key = {cl.location.segment, cl.location.location};
@@ -515,7 +518,7 @@ private:
 
                 if (history.size() > 3) history.erase(history.begin());
 
-                // +++ DEBUG: This is the "cout history" part +++
+                // DEBUG
                 std::cout << "Current History (size=" << history.size() << "): [";
                 for (const auto &item : history) {
                     std::string itemColor = (item.info.cameraBlock.color == camera_processor::Color::RED)     ? "R"
@@ -525,7 +528,7 @@ private:
                     std::cout << "{S:" << itemSide << ",C:" << itemColor << "} ";
                 }
                 std::cout << "]" << std::endl;
-                // +++++++++++++++++++++++++++++++++++++++++++++++
+                // ----------
 
                 if (history.size() == 3) {
                     bool allSame = true;
@@ -951,7 +954,7 @@ private:
 
     bool updateCcwPreFindParkingState(const RobotData &data) {
         motorSpeed_ = FORWARD_MOTOR_SPEED;
-        wallPid_.setGains(300.0, WALL_PID_I, WALL_PID_D);
+        wallPid_.setGains(240.0, WALL_PID_I, WALL_PID_D);
         targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE_PARKING_CCW;
 
         if (!timer_) {
@@ -1016,7 +1019,7 @@ private:
         // float diff = data.heading - headingDirection_.toHeading();
         // diff = std::fmod(diff + 180.0f, 360.0f) - 180.0f;
         // if (diff <= HEADING_TOLERANCE_DEGREES_UTURN) {
-        if (data.heading >= 170.0f && data.heading <= 270.0f) {
+        if (data.heading >= 155.0f && data.heading <= 270.0f) {
             turnDirection_ = RotationDirection::CLOCKWISE;
             headingPid_.setGains(HEADING_PID_P, HEADING_PID_I, HEADING_PID_D);
             mode_ = Mode::CW_PRE_FIND_PARKING_1;
@@ -1184,7 +1187,7 @@ private:
         if (!data.frontWall.has_value()) return false;
 
         float frontWallDist = data.frontWall->perpendicularDistance(0.0f, 0.0f);
-        float targetFrontWallDistance = 0.96f;
+        float targetFrontWallDistance = 0.95f;
 
         if (frontWallDist <= targetFrontWallDistance) {
             wallPid_.setGains(WALL_PID_P, WALL_PID_I, WALL_PID_D);
@@ -1249,7 +1252,7 @@ private:
         if (!data.frontWall.has_value()) return false;
 
         float frontWallDist = data.frontWall->perpendicularDistance(0.0f, 0.0f);
-        float targetFrontWallDistance = 1.565f;
+        float targetFrontWallDistance = 1.575f;
 
         if (frontWallDist <= targetFrontWallDistance) {
             wallPid_.setGains(WALL_PID_P, WALL_PID_I, WALL_PID_D);
@@ -1273,7 +1276,7 @@ private:
             if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
             motorSpeed_ = -1.0f;
             steeringPercent_ = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -100.0f : 100.0f;
-            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -460 : -460;
+            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -460 : -500;
             if (data.encoderAngle - startEncoderAngle_ <= targetEncoderAngle) {
                 timer_.reset();
                 startEncoderAngle_ = 0.0;
@@ -1299,7 +1302,7 @@ private:
             if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
             motorSpeed_ = -1.0f;
             steeringPercent_ = (*turnDirection_ == RotationDirection::CLOCKWISE) ? 100.0f : -100.0f;
-            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -380 : -380;
+            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -400 : -370;
             if (data.encoderAngle - startEncoderAngle_ <= targetEncoderAngle) {
                 timer_.reset();
                 startEncoderAngle_ = 0.0;
@@ -1325,7 +1328,7 @@ private:
             if (startEncoderAngle_ == 0.0) startEncoderAngle_ = data.encoderAngle;
             motorSpeed_ = 1.0f;
             steeringPercent_ = (*turnDirection_ == RotationDirection::CLOCKWISE) ? -100.0f : 100.0f;
-            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? 80 : 80;
+            float targetEncoderAngle = (*turnDirection_ == RotationDirection::CLOCKWISE) ? 90 : 100;
             if (data.encoderAngle - startEncoderAngle_ >= targetEncoderAngle) {
                 timer_.reset();
                 startEncoderAngle_ = 0.0;
