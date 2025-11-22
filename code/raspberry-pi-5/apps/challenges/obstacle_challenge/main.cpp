@@ -488,7 +488,8 @@ private:
 
         bool isCorrectMode = (mode_ != Mode::TURNING) and (mode_ != Mode::CW_UNPARK_1) and (mode_ != Mode::CW_UNPARK_2) and
                              (mode_ != Mode::CCW_UNPARK_1) and (mode_ != Mode::CCW_UNPARK_2);
-        if (isCorrectMode && turnDirection_ && abs(headingRate) <= 20.0f) {
+        bool isPushingLap = turnCount_ >= 5;
+        if (isCorrectMode && turnDirection_ && abs(headingRate) <= 20.0f && (!isPushingLap)) {
             auto trafficLightPoints = lidar_processor::getTrafficLightPoints(filteredLidarData, resolvedWalls, deltaPose, turnDirection_);
             auto colorMasks = camera_processor::filterColors(timedFrame);
             auto blockAngles = camera_processor::computeBlockAngles(colorMasks, CAM_WIDTH, CAM_HFOV);
@@ -1135,7 +1136,7 @@ private:
     bool updateCcwFindParkingState(const RobotData &data) {
         motorSpeed_ = 1.0f;
         targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE_PARKING_CCW;
-        wallPid_.setGains(300.0, WALL_PID_I, WALL_PID_D);
+        wallPid_.setGains(300.0, 40.0, WALL_PID_D);
 
         // if (data.parkingWalls.empty()) return false;
 
@@ -1200,7 +1201,7 @@ private:
     bool updateCwFindParkingState(const RobotData &data) {
         motorSpeed_ = 1.0f;
         targetOuterWallDistance_ = TARGET_OUTER_WALL_DISTANCE_PARKING_CW;
-        wallPid_.setGains(300.0, WALL_PID_I, WALL_PID_D);
+        wallPid_.setGains(300.0, 80.0, WALL_PID_D);
 
         // if (data.parkingWalls.empty()) return false;
 
