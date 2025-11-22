@@ -8,7 +8,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cp -r "$SCRIPT_DIR/../shared" "$SCRIPT_DIR/src/shared_real"
 
 # Build the cross-compile Docker image
-docker buildx build -f "$SCRIPT_DIR/Dockerfile.cross" --tag cross-pi . || echo "WARNING: Docker build for cross-pi failed. Continuing..."
+# docker buildx build -f "$SCRIPT_DIR/Dockerfile.cross" --tag cross-pi . || echo "WARNING: Docker build for cross-pi failed. Continuing..."
 
 if [ -d "$SCRIPT_DIR/build" ]; then
     rm -r "$SCRIPT_DIR/build"
