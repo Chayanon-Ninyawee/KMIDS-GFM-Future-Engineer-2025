@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.2.0...v0.2.1) (2025-11-24)
+
+
+### Bug Fixes
+
+* Fix camera HFOV value ([a07019a](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/a07019a5bdc556d9cc0608c75cf16289d5e02873))
+
 ## [0.2.0](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.6...v0.2.0) (2025-11-24)
 
 
