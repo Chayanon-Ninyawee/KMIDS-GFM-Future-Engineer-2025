@@ -46,7 +46,7 @@ We are a team of dedicated students with a passion for robotics and innovation. 
   - [7.2 STL Files](#72-stl-files)
   - [7.3 Slicer Files](#73-slicer-files)
 - [8. Building Instructions](#8-building-instructions)
-- [9. Extra Documentation](#9-extra-documentation)
+- [9. Extras](#9-extras)
 
 <!-- tocstop -->
 
@@ -1467,13 +1467,13 @@ Before assembly, prepare the components listed above and print the 3D parts.
   <a href="#top">Back To Top</a>
 </p>
 
-## 9. Extra Documentation
+## 9. Extras
 
 [Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](docs/dhcp-server-on-ethernet-port.md)
 
 [How to Image Drive in Linux](docs/image-drive-linux.md)
 
-[Our Custom Randomiser Software](docs/randomizer.md)
+[Our Custom Randomiser Software](code/Future_Engineer_2025_Randomizer)
 
 <p align="right">
   <a href="#top">Back To Top</a>
