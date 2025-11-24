@@ -38,6 +38,16 @@ public:
      */
     CameraModule(CameraOptionCallback callback);
 
+    /**
+     * @brief Create the camera module with logging support.
+     *
+     * Initializes the camera module and stores the provided logger instance.
+     * Capture does not begin until start() is called.
+     *
+     * @param logger Pointer to a Logger instance for optional frame logging.
+     * @param callback Callback used to configure the internal lccv::PiCamera
+     *        before capture starts.
+     */
     CameraModule(Logger *logger, CameraOptionCallback callback);
 
     /**
@@ -61,22 +71,30 @@ public:
     void changeSetting(CameraOptionCallback callback);
 
     /**
-     * @brief Start capturing frames in a separate thread.
+     * @brief Start capturing frames in a background thread.
+     *
+     * Initializes the camera if needed, applies the configuration callback,
+     * and launches the capture loop in a dedicated thread.
+     *
+     * @return true if the camera started successfully, false on failure.
      */
     bool start();
 
     /**
-     * @brief Stop capturing frames and wait for the thread to finish.
+     * @brief Stop capturing frames and wait for the capture thread to exit.
+     *
+     * Safe to call even if the camera is not currently running.
+     * Cleans up internal resources associated with frame capture.
      */
     void stop();
 
     /**
-     * @brief Get the latest captured frame and timestamp.
+     * @brief Get the latest captured frame and its timestamp.
      *
-     * This is thread-safe.
+     * Thread-safe retrieval of the most recent frame stored in the internal buffer.
      *
-     * FIXME:
-     * @param[out] outFrame The frame image.
+     * @param[out] outTimedFrame A structure containing the frame image and the
+     *             timestamp at which it was captured.
      *
      * @return true if a frame is available, false otherwise.
      */
@@ -104,28 +122,42 @@ public:
     bool getAllTimedFrame(std::vector<TimedFrame> &outTimedFrames) const;
 
     /**
-     * @brief Waits until a new frame is available, then returns it.
+     * @brief Block until a new frame is available, then return it.
      *
-     * This function blocks the calling thread until a new frame is captured.
-     * Once available, it copies the latest frame and its timestamp into the output parameters.
+     * This call blocks the caller until the camera thread captures a frame more
+     * recent than the previously retrieved one. Once available, the frame and its
+     * timestamp are copied into the output structure.
      *
-     * FIXME:
-     * @param[out] outFrame The most recently captured frame.
-     * @param[out] outTimestamp The timestamp when the frame was captured.
+     * @param[out] outTimedFrame A structure containing the newly captured frame and
+     *             its timestamp.
      *
-     * @return true if a frame was successfully retrieved.
+     * @return true if a new frame was retrieved successfully, false otherwise.
      */
     bool waitForFrame(TimedFrame &outTimedFrame);
 
+    /**
+     * @brief Enable frame logging.
+     *
+     * When logging is enabled, captured frames (and/or metadata) are passed
+     * to the Logger provided during construction, if any.
+     */
     void startLogging();
 
+    /**
+     * @brief Disable frame logging.
+     *
+     * Stops sending captured frame information to the Logger.
+     */
     void stopLogging();
 
 private:
     /**
-     * @brief The function running in the background thread.
+     * @brief Background thread function responsible for continuous capture.
      *
-     * Continuously captures frames from the camera.
+     * Continuously grabs frames from the lccv::PiCamera, stores them in the
+     * internal ring buffer, signals waiting threads, and optionally logs data.
+     *
+     * This function runs until stop() is called.
      */
     void captureLoop();
 
