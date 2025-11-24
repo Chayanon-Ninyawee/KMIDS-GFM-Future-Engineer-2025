@@ -15,7 +15,7 @@ namespace fs = std::filesystem;
 
 const uint32_t camWidth = 1296;
 const uint32_t camHeight = 972;
-const float camHFov = 104.0f;
+const float camHFov = 98.0f;
 
 struct SensorTimestamps {
     uint64_t mainLoop_ns;

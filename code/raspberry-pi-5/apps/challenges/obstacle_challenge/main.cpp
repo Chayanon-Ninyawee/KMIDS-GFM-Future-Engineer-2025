@@ -35,7 +35,7 @@ const int BUTTON_PIN = 16;
 // Camera
 const uint32_t CAM_WIDTH = 1296;
 const uint32_t CAM_HEIGHT = 972;
-const float CAM_HFOV = 104.0f;
+const float CAM_HFOV = 98.0f;
 
 const auto cameraOptionCallback = [](lccv::PiCamera &cam) {
     libcamera::ControlList &camControls = cam.getControlList();
