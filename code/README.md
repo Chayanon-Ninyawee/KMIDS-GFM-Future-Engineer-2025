@@ -7,12 +7,7 @@ This section provides a complete overview of the software implemented in our sel
 <!-- toc -->
 
 - [Raspberry Pi 5](#raspberry-pi-5)
-  - [src](#src)
-  - [external](#external)
 - [Raspberry Pi Pico 2](#raspberry-pi-pico-2)
-  - [external](#external-1)
-  - [src/modules/controllers](#srcmodulescontrollers)
-  - [src/modules](#srcmodules)
 - [Shared](#shared)
 
 <!-- tocstop -->
@@ -21,35 +16,16 @@ This section provides a complete overview of the software implemented in our sel
 
 The Raspberry Pi 5 serves as the primary processing unit of the system, responsible for high-level perception, computation, and communication. It handles sensor fusion from LiDAR and camera modules, performs navigation logic, and manages data exchange with the Pico 2 controller via I²C.
 
-### src
-
-- [**[CLICK HERE] Link to the API Documentation**](raspberry-pi-5/src/README.md)
-
-### external
-
-- [lccv](raspberry-pi-5/external/lccv)
-- [rplidar_sdk](raspberry-pi-5/external/rplidar_sdk)
+[**[CLICK HERE] Link to the API Documentation**](raspberry-pi-5/src/README.md)
 
 ## Raspberry Pi Pico 2
 
 The Raspberry Pi Pico 2 acts as a low-level embedded controller dedicated to precise actuation and sensor interfacing. It governs real-time control loops, servo and motor operation, and communication with sensors like the BNO085 IMU through I²C and UART protocols.
 
-### external
-
-- [BNO08x_Pico_Library](raspberry-pi-pico-2/external/BNO08x_Pico_Library)
-- [pico_sdk](raspberry-pi-pico-2/external/pico-sdk)
-
-### src/modules/controllers
-
-- [bno085](raspberry-pi-pico-2/src/modules/controllers/bno085/README.md)
-- [motor](raspberry-pi-pico-2/src/modules/controllers/motor/README.md)
-- [servo](raspberry-pi-pico-2/src/modules/controllers/servo/README.md)
-
-### src/modules
-
-- [i2c_slave](raspberry-pi-pico-2/src/modules/i2c_slave/README.md)
+[**[CLICK HERE] Link to the API Documentation**](raspberry-pi-pico-2/src/README.md)
 
 ## Shared
 
-- [i2c](shared/i2c/README.md)
-- [types](shared/types/README.md)
+The Shared directory contains all cross-platform components used by both the Raspberry Pi 5 and Raspberry Pi Pico 2. These include common data structures, communication utilities, protocol definitions, and other foundational modules that standardize interactions across the entire system. By centralizing shared logic, this directory ensures consistent data handling, reduces duplication, and maintains interoperability between all subsystems.
+
+[**[CLICK HERE] Link to the API Documentation**](shared/README.md)
