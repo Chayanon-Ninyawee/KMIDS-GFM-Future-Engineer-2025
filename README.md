@@ -1469,9 +1469,9 @@ Before assembly, prepare the components listed above and print the 3D parts.
 
 ## 9. Extras
 
-[Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](docs/dhcp-server-on-ethernet-port.md)
+[Setting Up a DHCP Server Using Ethernet Port with Internet Connection from Wireless LAN](other/dhcp-server-on-ethernet-port.md)
 
-[How to Image Drive in Linux](docs/image-drive-linux.md)
+[How to Image Drive in Linux](other/image-drive-linux.md)
 
 [Our Custom Randomiser Software](code/Future_Engineer_2025_Randomizer)
 
