@@ -1,5 +1,54 @@
 # Changelog
 
+## [0.2.0](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.6...v0.2.0) (2025-11-24)
+
+
+### Features
+
+* Add log_to_video ([6b4a561](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/6b4a561095f6ad7b2c5020074f32a4223e50c1c3))
+* Add randomizer ([6a730c6](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/6a730c68042de092d1243c262ceffc361d50ad19))
+* Add unparking ([0725b79](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/0725b79c82d1b0e86e216618f0d4b9f667f311aa))
+* Change pico2 code to match to new servo ([16d0cbf](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/16d0cbf4d19d62a0ead5e200f94077c2bd1952a9))
+* Change servo to S0009m ([f1f7d38](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/f1f7d38cc288a3885c62ada8f46330f9c00fb5ea))
+* Make obstacle_challenge know turn direction when start in the parking lot ([357e9ea](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/357e9ea3be3eadd908b0683bcdb12e1ec62996ae))
+* Make the robot Push when it know all the traffic light ([e6ebc04](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/e6ebc04457d14d01e730fa49f284b337adaca4c0))
+* Re-slice the FrontCover ([1b9133b](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/1b9133becd7ba550b13069e33e0a839d672cad08))
+* Re-slice the Linkages ([c59011c](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/c59011c5b1d0a00ed8f390af8c047f892694d2d8))
+
+
+### Bug Fixes
+
+* Check for delta pose error ([5330650](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/5330650c2bac4897c8f94c2da23384ac4ac9cba7))
+* Fix camera see parking wall as red and associate that to the traffic light ([31b4a19](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/31b4a197741e015ba6914639b46747f7721ee104))
+* Fix CCW parking ([53957f9](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/53957f9bcf40376ac5299809e56d2b4ef2bdafd3))
+* Fix logger issue ([4a7a8f7](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/4a7a8f780bffa5e4a9756a679c043f2df5bd74e7))
+* Fix obstacle_challenge backward pid ([8f61485](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/8f6148572d78b3e689b6c7a4e2ac5a3ec5a92f35))
+* Fix obstacle_challenge heading diff calculation ([59ece05](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/59ece05e22e3a91ab1b4b5c5e59ee7faab672b8d))
+* Fix obstacle_challenge traffic light detection issue ([822ae8d](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/822ae8d92e3adeb365331d99c43e910c62df9d45))
+* Fix open_challenge backward pid ([ad4ab77](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/ad4ab776eec2c03cf4b5d303ee30ff24bbfea90a))
+* Fix scan map ([979dbdc](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/979dbdc6edc2410714c98800b33f26083ca9267b))
+* Fix traffic light detection issue and CW parking ([bb7ca82](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/bb7ca826213d53da3c94902d144f89272ddb8b65))
+* Make build-arm64.sh not fail when failed to pull docker image ([f96658f](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/f96658fd7f5915079d58323516af78aefde8a33d))
+* Make CW Unpark better ([b077179](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/b0771793c444d3054422d6c8172822dae9b82bd6))
+* Make LidarModule read lidar healy error code when timed out 3 times in a row ([3417f34](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/3417f347b1b6e0ee9102a7c6252a963487a01eac))
+* Make obstacle_challenge more stable ([74c1493](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/74c1493735c5ca68ac901cb45c6d8ac3cf9dd865))
+* Make pushing lap not check for traffic lights ([4b23905](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/4b2390551d9ec13fef30b19eed61634a1441ed9f))
+* Move lidarData filtering to the correct place ([0bf1d07](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/0bf1d0765e10f61500a1543a9d81b361e62e9460))
+* Start camera logging in obstacle_challenge ([59fedce](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/59fedce9350e9707633f02d97b2356babf8372b1))
+
+
+### Refactor
+
+* Encapsulate open challenge state machine ([05d75f8](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/05d75f8058d8dca053d82276666b21deffb0ff11))
+* Refactor obstacle challenge ([e7225c5](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/e7225c5e963644ec276be748eca567356a781b5d))
+* Refactor open_challenge ([6f74596](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/6f745961222d80291d9b3c37eef66697b76ee7e0))
+* Rename open challenge mode naming ([9a4abbc](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/9a4abbcc32818041515d9b42266b48b9d9078ebf))
+
+
+### Miscellaneous Tasks
+
+* Add QOL scripts ([4e07993](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/commit/4e0799357786b23a55872766809364f04e7f347f))
+
 ## [0.1.6](https://github.com/Chayanon-Ninyawee/KMIDS-GFM-Future-Engineer-2025/compare/v0.1.5...v0.1.6) (2025-11-07)
 
 
