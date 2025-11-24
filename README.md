@@ -19,32 +19,32 @@ We are a team of dedicated students with a passion for robotics and innovation. 
 <!-- toc -->
 
 - [1. Overview](#1-overview)
-  * [1.1 About the Project](#11-about-the-project)
-  * [1.2 Robot Images](#12-robot-images)
-  * [1.3 Performance Video](#13-performance-video)
+  - [1.1 About the Project](#11-about-the-project)
+  - [1.2 Robot Images](#12-robot-images)
+  - [1.3 Performance Video](#13-performance-video)
 - [2. Mobility Management](#2-mobility-management)
-  * [2.1 Drive System](#21-drive-system)
-  * [2.2 Steering](#22-steering)
-  * [2.3 Chassis Design](#23-chassis-design)
+  - [2.1 Drive System](#21-drive-system)
+  - [2.2 Steering](#22-steering)
+  - [2.3 Chassis Design](#23-chassis-design)
 - [3. Power and Sense Management](#3-power-and-sense-management)
-  * [3.1 Power Source](#31-power-source)
-  * [3.2 Sensor and Camera](#32-sensor-and-camera)
-  * [3.3 Processing Units](#33-processing-units)
-  * [3.4 Circuit Diagram](#34-circuit-diagram)
-  * [3.5 Power Consumption](#35-power-consumption)
+  - [3.1 Power Source](#31-power-source)
+  - [3.2 Sensor and Camera](#32-sensor-and-camera)
+  - [3.3 Processing Units](#33-processing-units)
+  - [3.4 Circuit Diagram](#34-circuit-diagram)
+  - [3.5 Power Consumption](#35-power-consumption)
 - [4. Obstacle Management](#4-obstacle-management)
-  * [4.1 Open Challenge](#41-open-challenge)
-  * [4.2 Obstacle Challenge](#42-obstacle-challenge)
-  * [4.3 Parallel Parking](#43-parallel-parking)
+  - [4.1 Open Challenge](#41-open-challenge)
+  - [4.2 Obstacle Challenge](#42-obstacle-challenge)
+  - [4.3 Parallel Parking](#43-parallel-parking)
 - [5. Source Code](#5-source-code)
-  * [5.1 API Documentation](#51-api-documentation)
-  * [5.2 Code Structure](#52-code-structure)
-  * [5.3 Compilation / Upload Instructions](#53-compilation--upload-instructions)
+  - [5.1 API Documentation](#51-api-documentation)
+  - [5.2 Code Structure](#52-code-structure)
+  - [5.3 Compilation / Upload Instructions](#53-compilation--upload-instructions)
 - [6. List of Components](#6-list-of-components)
 - [7. 3D Model Files](#7-3d-model-files)
-  * [7.1 FreeCAD Files](#71-freecad-files)
-  * [7.2 STL Files](#72-stl-files)
-  * [7.3 Slicer Files](#73-slicer-files)
+  - [7.1 FreeCAD Files](#71-freecad-files)
+  - [7.2 STL Files](#72-stl-files)
+  - [7.3 Slicer Files](#73-slicer-files)
 - [8. Building Instructions](#8-building-instructions)
 - [9. Extra Documentation](#9-extra-documentation)
 
@@ -102,7 +102,6 @@ Our objective is to create an intelligent robot that is capable of navigating th
 [Part 1: Open Challenge Video](https://youtu.be/gOz7pKEmLP0)
 
 [Part 2: Obstacle Challenge Video](https://youtu.be/q8gWAhReJgc)
-
 
 These two parts show both the Open and Obstacle Challenges respectively.
 
@@ -232,11 +231,11 @@ While the servo used is adequate for the task, it can still be replaced with som
 
 <img src="docs/resources/barechassis.png" alt="chassis" >
 
-| Dimension   | Value (mm)  |
+| Dimension | Value (mm) |
 | ----------- | ----------- |
-| Width       | 244         |
-| Length      | 120         |
-| Height      | 59          |
+| Width | 244 |
+| Length | 120 |
+| Height | 59 |
 
 **Design Overview**
 
@@ -414,6 +413,7 @@ This setup allows for a wide-angle view, enhancing environmental awareness durin
 - Track path lines and boundaries.
 
 **Gyroscope and Orientation Sensor: BNO085**
+
 <table>
   <tr>
     <td align="center" width="300">
@@ -458,8 +458,8 @@ We mounted the BNO085 near the center of the chassis. It communicates with the R
   </tr>
 </table>
 
-The Raspberry Pi 5 serves as the robot’s main processing unit, responsible for high-level decision-making, image processing, and sensor data integration.  
-With its powerful quad-core Arm Cortex-A76 CPU with 8GB RAM, it can efficiently handle real-time LIDAR and camera data for tasks such as mapping, obstacle avoidance, and path planning.  
+The Raspberry Pi 5 serves as the robot’s main processing unit, responsible for high-level decision-making, image processing, and sensor data integration.\
+With its powerful quad-core Arm Cortex-A76 CPU with 8GB RAM, it can efficiently handle real-time LIDAR and camera data for tasks such as mapping, obstacle avoidance, and path planning.\
 Its small size allows easy mounting on the chassis without adding significant weight.
 
 **Microcontroller: Raspberry Pi Pico 2**
@@ -482,8 +482,8 @@ Its small size allows easy mounting on the chassis without adding significant we
   </tr>
 </table>
 
-The Raspberry Pi Pico 2 acts as the robot’s low-level controller, managing tasks such as motor control, servo steering, and sensor input.  
-It communicates with the Raspberry Pi 5 via UART, and divides high-level processing and precise hardware control.  
+The Raspberry Pi Pico 2 acts as the robot’s low-level controller, managing tasks such as motor control, servo steering, and sensor input.\
+It communicates with the Raspberry Pi 5 via UART, and divides high-level processing and precise hardware control.\
 It provides reliable and responsive control for driving and steering functions, ensuring smoother and more accurate movement.
 
 **Adapter Board: Raspberry Pi M.2 HAT+**
@@ -505,9 +505,8 @@ It provides reliable and responsive control for driving and steering functions, 
   </tr>
 </table>
 
-The Raspberry Pi M.2 HAT+ extends the system’s capabilities by enabling high-speed PCIe 2.0 connectivity for M.2 NVMe SSDs.  
-This allows the robot to store and access large volumes of sensor and mapping data quickly, especially with the LIDAR sensor, improving runtime performance and reducing data bottlenecks during complex operations.  
-
+The Raspberry Pi M.2 HAT+ extends the system’s capabilities by enabling high-speed PCIe 2.0 connectivity for M.2 NVMe SSDs.\
+This allows the robot to store and access large volumes of sensor and mapping data quickly, especially with the LIDAR sensor, improving runtime performance and reducing data bottlenecks during complex operations.
 
 ### 3.4 Circuit Diagram
 
@@ -554,6 +553,7 @@ We divide the strategy into three phases:
 ### 4.1 Open Challenge
 
 ![Robot navigating Open Challenge](./docs/resources/lidar_image_open.png)
+
 *Figure: Example of robot sensing walls and navigating the field.*
 
 The Open Challenge requires the robot to complete three laps around the arena without touching the walls. The driving direction is randomised at the start, so relying on pre-programmed movements is not feasible
@@ -586,7 +586,6 @@ The robot determines which direction to turn by analysing the walls detected aro
 
 <details>
 <summary><b><span style="font-size:1.2em; background-color:#f2f2f2; padding:4px 8px; border-radius:5px;"> Click here to show C++ code</span></b></summary>
-
 
 getTurnDirection code (from [lidar_processor.h](code/raspberry-pi-5/src/processors/lidar/lidar_processor.h) / [lidar_processor.cpp](code/raspberry-pi-5/src/processors/lidar/lidar_processor.cpp))
 
@@ -990,9 +989,9 @@ TBA. TODO:-->
 
 ### 5.1 API Documentation
 
-[**[CLICK HERE] Link to the API Documentation**](code\README.md)
+[**[CLICK HERE] Link to the API Documentation**](code/README.md)
 
->This section will detail the ins and out of the various codes used in the robot
+> This section will detail the ins and out of the various codes used in the robot
 
 ### 5.2 Code Structure
 
@@ -1119,22 +1118,16 @@ cd ~/git/KMIDS-GFM-Future-Engineer-2025/code/raspberry-pi-5
 2. Make the build script executable:
 
 ```bash
-chmod +x build.sh
+chmod +x build-arm64.sh 
 ```
 
 3. Build all targets:
 
 ```bash
-./build.sh
+./build-arm64.sh
 ```
 
-4. Build a specific target (example: `open_challenge`):
-
-```bash
-./build.sh open_challenge
-```
-
-5. Executables are generated in the `build/` directory according to the CMake output settings.
+4. Executables are generated in the `build/` directory according to the CMake output settings.
 
 **Note:** To make builds faster and reproducible, we compile the Raspberry Pi binaries on a development machine using Docker. This avoids the need to install heavy build tools on the Pi itself.
 
@@ -1173,6 +1166,7 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 </p>
 
 ## 6. List of Components
+
 | Component | Quantity | Source/Supplier |
 |------------|-----------|----------------|
 | Raspberry Pi 5 | 1 | [Gammaco](https://gammaco.com/gammaco/Raspberry_Pi_GB_89RD014.html) |
@@ -1195,7 +1189,6 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 | Tape | Various | N/A |
 | Lithium Grease | Small | N/A |
 
-
 **Printers Used:**
 
 - [Bambu Lab P1S](https://asia.store.bambulab.com/products/p1s?p=W3sicHJvcGVydHlLZXkiOiJWYXJpYW50IiwicHJvcGVydHlWYWx1ZSI6IlAxUyBDb21ibyJ9LHsicHJvcGVydHlLZXkiOiJTaGlwIHRvIiwicHJvcGVydHlWYWx1ZSI6IiJ9LHsicHJvcGVydHlLZXkiOiJPcHRpb24iLCJwcm9wZXJ0eVZhbHVlIjoiQ29tYm8gd2l0aCBIdWIoU2hpcCBTZXBhcmF0ZWx5KSJ9XQ%3D%3D)
@@ -1204,6 +1197,7 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 
   <p align="right">
   <a href="#top">Back To Top</a>
+
 </p>
 
 ## 7. 3D Model Files
@@ -1212,7 +1206,7 @@ sudo picotool load build/gfm_pico_2.uf2 -f
 
 We used FreeCAD to design the 3D models used to make the robot. The files can be found [here](./FreeCAD-Files)
 
-- [**Assembly Files**](FreeCAD-Files/Assembly) - contains the full robot assembly including the part placements.  
+- [**Assembly Files**](FreeCAD-Files/Assembly) - contains the full robot assembly including the part placements.
 - [**Individual Parts**](FreeCAD-Files/Parts) - includes each 3D component separately.
 
 ### 7.2 STL Files
@@ -1255,7 +1249,7 @@ We used FreeCAD to design the 3D models used to make the robot. The files can be
 
 ### 7.3 Slicer Files
 
-All slicer project files (`.3mf`) used for printing the robot’s components can be found [here](./Slicer-Files).  
+All slicer project files (`.3mf`) used for printing the robot’s components can be found [here](./Slicer-Files).\
 These files contain optimized slicing settings such as layer height, infill, support, and print orientation for each part.
 
 **Chassis**
@@ -1265,6 +1259,7 @@ These files contain optimized slicing settings such as layer height, infill, sup
 - [`Lidar plate`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_LidarPlate_1x.3mf>)
 
 **Mobility and Steering**
+
 - [`Motor Gear`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_MotorGear_1x.3mf>)
 - [`Motor holder`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_AxleHolder_MotorHolder.3mf>)
 - [`Linkage parts`](<Slicer-Files%5CEnder_3_V3_KE_(Cura_Slicer)%5CCE3V3KE_Linkages.3mf>)
@@ -1291,95 +1286,96 @@ Before assembly, prepare the components listed above and print the 3D parts.
 
 </summary>
 
-| Part Name                    | Quantity |
+| Part Name | Quantity |
 | ---------------------------- | -------- |
-| Axle Holder                  | 3        |
-| Back Wheel Axle              | 2        |
-| Back Wheel Connector         | 2        |
-| Back Wheel Stopper           | 2        |
-| Chassis                      | 1        |
-| Front Cover                  | 1        |
-| Front Wheel Axle (Left)      | 1        |
-| Front Wheel Axle (Right)     | 1        |
-| Front Wheel Stopper          | 2        |
-| Lidar Plate                  | 1        |
-| Motor Gear                   | 1        |
-| Motor Holder                 | 1        |
-| Motor Plate                  | 1        |
-| T-Bone Linkage (Bottom)      | 1        |
-| T-Bone Linkage (Top)         | 1        |
-| Transfer Linkage (Left)      | 1        |
-| Transfer Linkage (Right)     | 1        |
-| Wheel Linkage (Bottom Left)  | 1        |
-| Wheel Linkage (Bottom Right) | 1        |
-| Wheel Linkage (Top Left)     | 1        |
-| Wheel Linkage (Top Right)    | 1        |
+| Axle Holder | 3 |
+| Back Wheel Axle | 2 |
+| Back Wheel Connector | 2 |
+| Back Wheel Stopper | 2 |
+| Chassis | 1 |
+| Front Cover | 1 |
+| Front Wheel Axle (Left) | 1 |
+| Front Wheel Axle (Right) | 1 |
+| Front Wheel Stopper | 2 |
+| Lidar Plate | 1 |
+| Motor Gear | 1 |
+| Motor Holder | 1 |
+| Motor Plate | 1 |
+| T-Bone Linkage (Bottom) | 1 |
+| T-Bone Linkage (Top) | 1 |
+| Transfer Linkage (Left) | 1 |
+| Transfer Linkage (Right) | 1 |
+| Wheel Linkage (Bottom Left) | 1 |
+| Wheel Linkage (Bottom Right) | 1 |
+| Wheel Linkage (Top Left) | 1 |
+| Wheel Linkage (Top Right) | 1 |
 
 </details>
 
 **The recommended settings can be found in the slicer files. The recommended basic settings are as follows:**
+
 <details>
 <summary> Chassis </summary>
 
-| Setting                   | Value  |
+| Setting | Value |
 | ------------------------- | ------ |
-| Layer Height              | 0.3    |
-| Infill Density            | 25%    |
-| Infill Pattern            | Gyroid |
-| Support Type              | Tree   |
-| Build Plate Adhesion Type | None   |
+| Layer Height | 0.3 |
+| Infill Density | 25% |
+| Infill Pattern | Gyroid |
+| Support Type | Tree |
+| Build Plate Adhesion Type | None |
 
 </details>
 
 <details>
 <summary> Motor Gear</summary>
 
-| Setting                   | Value |
+| Setting | Value |
 | ------------------------- | ----- |
-| Layer Height              | 0.2   |
-| Infill Density            | 20%   |
-| Infill Pattern            | Lines |
-| Support Type              | None  |
-| Build Plate Adhesion Type | Brim  |
+| Layer Height | 0.2 |
+| Infill Density | 20% |
+| Infill Pattern | Lines |
+| Support Type | None |
+| Build Plate Adhesion Type | Brim |
 
 </details>
 
 <details>
 <summary> Axle holder </summary>
 
-| Setting                   | Value |
+| Setting | Value |
 | ------------------------- | ----- |
-| Layer Height              | 0.2   |
-| Infill Density            | 20%   |
-| Infill Pattern            | Cubic |
-| Support Type              | None  |
-| Build Plate Adhesion Type | Brim  |
+| Layer Height | 0.2 |
+| Infill Density | 20% |
+| Infill Pattern | Cubic |
+| Support Type | None |
+| Build Plate Adhesion Type | Brim |
 
 </details>
 
 <details>
 <summary> Linkage & Back Wheel Components </summary>
 
-| Setting                   | Value  |
+| Setting | Value |
 | ------------------------- | ------ |
-| Layer Height              | 0.2    |
-| Infill Density            | 20%    |
-| Infill Pattern            | Cubic  |
-| Support Type              | Normal |
-| Build Plate Adhesion Type | Brim   |
+| Layer Height | 0.2 |
+| Infill Density | 20% |
+| Infill Pattern | Cubic |
+| Support Type | Normal |
+| Build Plate Adhesion Type | Brim |
 
 </details>
 
 <details>
 <summary> Front Cover </summary>
 
-| Setting                   | Value  |
+| Setting | Value |
 | ------------------------- | ------ |
-| Layer Height              | 0.2    |
-| Infill Density            | 20%    |
-| Infill Pattern            | Cubic  |
-| Support Type              | Normal |
-| Build Plate Adhesion Type | None   |
+| Layer Height | 0.2 |
+| Infill Density | 20% |
+| Infill Pattern | Cubic |
+| Support Type | Normal |
+| Build Plate Adhesion Type | None |
 
 </details>
 
@@ -1387,13 +1383,13 @@ Before assembly, prepare the components listed above and print the 3D parts.
 
 <summary> LIDAR Plate & Motor Plate</summary>
 
-| Setting                   | Value |
+| Setting | Value |
 | ------------------------- | ----- |
-| Layer Height              | 0.2   |
-| Infill Density            | 20%   |
-| Infill Pattern            | Cubic |
-| Support Type              | Tree  |
-| Build Plate Adhesion Type | None  |
+| Layer Height | 0.2 |
+| Infill Density | 20% |
+| Infill Pattern | Cubic |
+| Support Type | Tree |
+| Build Plate Adhesion Type | None |
 
 </details>
 
